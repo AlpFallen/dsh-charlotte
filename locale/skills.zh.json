@@ -1,0 +1,435 @@
+{
+  "version": 2,
+  "entries": {
+    "agently-mail": {
+      "sourceHash": "45da5de019ddf8d7",
+      "simple": "让 AI 帮你收发、搜索和整理邮件，不用自己打开邮箱。",
+      "professional": "通过 agently-cli 在对话内完成邮件的发送、回复、转发、检索与附件处理；操作限定在邮件域，白名单内发送免二次确认。"
+    },
+    "animation-quality-gate": {
+      "sourceHash": "d03096822a45f01c",
+      "simple": "检查一段 Blender 动画有没有闪烁、构图歪斜等问题，合格后再交付。",
+      "professional": "在验收 Blender 动画前做质量检查：接触表、剪影稳定性、闪烁、构图、主体占比、分层与导出兼容性。"
+    },
+    "atlas-uv-fitting": {
+      "sourceHash": "84d54f02d2ae9007",
+      "simple": "把贴图正确铺到 3D 模型的每个部位，避免拉伸或贴错位置。",
+      "professional": "识别纹理图集区域，把每个部件映射到自己的 UV 矩形或投影面，让贴图 1:1 贴合模型。"
+    },
+    "blender-animation": {
+      "sourceHash": "f800a7fe1a3f76d3",
+      "simple": "让 Blender 里的物体、相机和灯光动起来，包括关键帧和循环动画。",
+      "professional": "在 Blender 中做动画：关键帧、曲线与缓动、形态键、驱动器、NLA，以及任何随时间变化的属性。"
+    },
+    "blender-cameras": {
+      "sourceHash": "64e478325991cf2b",
+      "simple": "在 Blender 里摆好镜头，让画面看起来像电影镜头。",
+      "professional": "搭建有电影感的 Blender 相机：焦距、景深、构图、环绕与推拉、跟踪约束。"
+    },
+    "blender-export": {
+      "sourceHash": "b8f8028afb04f732",
+      "simple": "把 Blender 做好的 3D 场景保存成游戏、网页或 3D 打印能用的格式。",
+      "professional": "把 Blender 场景导出为 glTF/GLB、FBX、OBJ、USD 或 STL，含轴向转换、贴图打包、减面与目标平台校验。"
+    },
+    "blender-lighting": {
+      "sourceHash": "259f89c87011e165",
+      "simple": "给 Blender 场景打光，让画面有影棚、日落或电影的感觉。",
+      "professional": "为 Blender 场景布光：三点布光、HDRI、影棚或电影感配置、灯组、色温与软硬阴影。"
+    },
+    "blender-materials": {
+      "sourceHash": "062dd12e61609781",
+      "simple": "给 Blender 里的物体设置金属、玻璃、布料、皮肤等真实质感。",
+      "professional": "用 Principled BSDF 制作并分配 PBR 材质：金属、玻璃、塑料、布料、皮肤与程序化纹理。"
+    },
+    "blender-modeling": {
+      "sourceHash": "f3d3a3f49a673bd1",
+      "simple": "在 Blender 里做 3D 模型，比如建形状、加细节、改面数。",
+      "professional": "在 Blender 中创建与编辑网格：基础体、硬表面、修改器栈、bmesh 编辑与重拓扑基础。"
+    },
+    "blender-pro-workflow": {
+      "sourceHash": "a9dfb80bb16930dc",
+      "simple": "告诉你做一张完整 3D 作品应该先做什么、后做什么。",
+      "professional": "Blender 全流程制作指导：从 block-out 到相机、灯光、材质、渲染、合成与导出的顺序、评审与取舍。"
+    },
+    "blender-rendering": {
+      "sourceHash": "58898f56650096f0",
+      "simple": "把 Blender 场景渲染成图片或视频，并调好清晰度与画质。",
+      "professional": "用合适的引擎与参数渲染 Blender 场景：Cycles 或 EEVEE、采样、降噪、色彩管理与图片/序列输出。"
+    },
+    "blender-skill-harmonizer": {
+      "sourceHash": "3f113cb1ce82f47f",
+      "simple": "多个 Blender 技能一起用时，安排谁先谁后、怎么交接。",
+      "professional": "把多个 Blender 技能协调成一条流程：激活优先级、交接产物、依赖门槛与冲突处理。"
+    },
+    "blender-uv-texturing": {
+      "sourceHash": "0e346c3010cbfd4f",
+      "simple": "给 3D 模型展开贴图、贴花纹、烘焙光照。",
+      "professional": "UV 展开、图集映射、贴图投射、alpha 贴花、烘焙贴图与光照贴图，为导出准备纹理资产。"
+    },
+    "closed-surface-uv-coverage": {
+      "sourceHash": "b703054883b05e54",
+      "simple": "让贴图把模型正面、背面和侧面都铺满，不留空白。",
+      "professional": "让贴图与贴花覆盖闭合模型的全部可见面，包括前后盖与侧壁，而不是只靠局部投影。"
+    },
+    "contour-to-mesh": {
+      "sourceHash": "abf193343c3055f5",
+      "simple": "按照片或图纸里的轮廓，直接生成形状准确的 3D 模型。",
+      "professional": "直接从提取出的二维轮廓或蒙版生成 Blender 网格，用于 1:1 吉祥物、徽标与精确剪影重建。"
+    },
+    "create-3d-model": {
+      "sourceHash": "a1400ff3d8e1eaf9",
+      "simple": "根据文字、图片或图纸做 3D 模型，并检查像不像参考。",
+      "professional": "从文字、参考图、线框、三视图或纹理图集创建并打磨可移植 3D 模型，并校验多视图一致性。"
+    },
+    "design-taste-frontend": {
+      "sourceHash": "c8fcfc3073460889",
+      "simple": "帮你把网页设计得不俗气，像专业设计师做的。",
+      "professional": "面向前端界面的美术指导：从真实站点研究中给出方向、排版与配色方案，用真实浏览器检查并反复修正，避免模板化观感。"
+    },
+    "fit-repair-optimizer": {
+      "sourceHash": "89cb902b87285d3c",
+      "simple": "按参考图检查 3D 模型哪里不对，并排好修复顺序。",
+      "professional": "把多视图拟合报告变成修复队列，逐步把 Blender 成品对齐到作为基准的模板。"
+    },
+    "grill-me": {
+      "sourceHash": "11070b4d380cead9",
+      "simple": "用一句话开始盘问你的方案，把没想清楚的地方问出来。",
+      "professional": "用一句话触发那套连环盘问，把方案或设计里的含糊之处问清楚。"
+    },
+    "grilling": {
+      "sourceHash": "aefd3e0be77f0961",
+      "simple": "连续追问你的计划或想法，直到每个决定都清楚。",
+      "professional": "围绕一个计划、决策或想法持续追问，直到含糊之处都变成明确选择。"
+    },
+    "ha7ch-school": {
+      "sourceHash": "fa82e26390624919",
+      "simple": "像导师一样带你学 AI Native 和 FDE，并按你的进度排课。",
+      "professional": "在主对话线程内授课的导师型技能：按学习者水平动态排课，覆盖 AI Native、FDE、GitHub 基础与一号位沟通，并跨会话保存进度。"
+    },
+    "impeccable": {
+      "sourceHash": "23ce251f1a712a04",
+      "simple": "检查并打磨网页或 App 界面，让排版、颜色和交互更专业。",
+      "professional": "设计与打磨前端界面：层级、排版、配色、动效、无障碍与响应式；也用于让平淡的界面更有力量、让喧闹的界面安静下来。"
+    },
+    "landmark-fit-repair": {
+      "sourceHash": "d7b116aa1907bddb",
+      "simple": "按眼睛、边角等关键位置校准 3D 模型，让它和参考对齐。",
+      "professional": "用命名地标（叶尖、壳角、眼睛、笑容、描边厚度、光环中心等）校验并修复源锁定模型。"
+    },
+    "mascot-logo-reconstruction": {
+      "sourceHash": "c23d566cf5a3115e",
+      "simple": "按参考图 1:1 重建吉祥物、Logo 或品牌形象。",
+      "professional": "以失败门控、源锁定的方式重建吉祥物、徽标、品牌头像与扁平风格角色。"
+    },
+    "multiview-constraint-solver": {
+      "sourceHash": "fe5742ca91237d97",
+      "simple": "看多个视角的参考图能不能由同一个 3D 模型满足。",
+      "professional": "判断前、侧、后、顶视图能否由同一个刚体模型满足，并在重建前给出约束与取舍。"
+    },
+    "multiview-fit-loop": {
+      "sourceHash": "235863a7c576ad6f",
+      "simple": "反复比较和调整 3D 模型，直到各个视角都和参考吻合。",
+      "professional": "比较—调整—再比较的闭环：让模型在所有视图的包围盒、质心、剪影与边缘校验通过。"
+    },
+    "office": {
+      "sourceHash": "bf42e58525ccf7c1",
+      "simple": "帮你创建、修改、查看或转换 Word、Excel、PPT 和 PDF 文件。",
+      "professional": "创建、编辑、检查或转换 Office 文档、表格、演示文稿与 PDF，并选择对应的工作流。"
+    },
+    "office-docx": {
+      "sourceHash": "24c78f2901dc863b",
+      "simple": "创建、读取、修改并检查 Word 文档。",
+      "professional": "创建、读取、编辑并校验 Word 文档（.docx）。"
+    },
+    "office-export-pdf": {
+      "sourceHash": "e76275d3fdbddb80",
+      "simple": "把 Office 文档转换成 PDF。",
+      "professional": "用 LibreOffice Kit 把 Office 文档转换为指定 PDF。"
+    },
+    "office-pptx": {
+      "sourceHash": "4604563e44058fc6",
+      "simple": "创建、读取、修改并检查 PPT 演示文稿。",
+      "professional": "创建、读取、编辑并校验 PowerPoint 演示文稿（.pptx）。"
+    },
+    "office-recalculate": {
+      "sourceHash": "f7ba6f0cb17c4180",
+      "simple": "刷新表格里的公式结果，并核对算得对不对。",
+      "professional": "用 LibreOffice Kit 刷新电子表格公式缓存并核对计算结果。"
+    },
+    "office-render": {
+      "sourceHash": "0235afa9b8da71f2",
+      "simple": "把文档渲染成图片，或检查页面排版。",
+      "professional": "用 LibreOffice Kit 把文档渲染成图片，或检查版面布局。"
+    },
+    "office-xlsx": {
+      "sourceHash": "dff1ced33dac9549",
+      "simple": "创建、读取、修改并检查 Excel 表格、数据和公式。",
+      "professional": "读取、创建、编辑并校验 Excel 工作簿、数据与公式（.xlsx）。"
+    },
+    "orbital-hud-motion": {
+      "sourceHash": "c5e7415b9304c598",
+      "simple": "给吉祥物或 Logo 加上克制的光环、环绕动画。",
+      "professional": "围绕 Blender 主体制作克制的环形 HUD 与光环动画：弧线、点、虚线、透明度与视差。"
+    },
+    "orthographic-registration": {
+      "sourceHash": "14746c942ad82bda",
+      "simple": "把正面、侧面、背面、顶面视图对齐到同一套 3D 坐标里。",
+      "professional": "把前、侧、后、顶正交参考视图注册到统一的 Blender 坐标契约，供后续建模对齐。"
+    },
+    "ponytail": {
+      "sourceHash": "5f5a7a9a3014fa20",
+      "simple": "用最省事的办法完成任务，能不写的代码就不写。",
+      "professional": "强制最小可行解：先问要不要做，再复用现有实现、标准库与平台能力，能用一行就不写五十行。"
+    },
+    "ponytail-audit": {
+      "sourceHash": "ac53b0dbd1d8ca15",
+      "simple": "扫描整个项目，列出哪些代码和依赖可以删掉。",
+      "professional": "全仓扫描过度工程，按可删体量排出清单；只出报告，不改代码。"
+    },
+    "ponytail-debt": {
+      "sourceHash": "a3c72f15e919e032",
+      "simple": "把代码里“以后再说”的偷懒注释收集成一份待办清单。",
+      "professional": "收集代码里所有 ponytail: 注释，整理成技术债台账，并标出没有复查触发条件的条目。"
+    },
+    "ponytail-gain": {
+      "sourceHash": "15a774cb7e0f3aed",
+      "simple": "展示这套“偷懒写法”到底省了多少代码、成本和时间。",
+      "professional": "用基准中位数展示 ponytail 的实测收益：更少代码、更低成本、更快速度。"
+    },
+    "ponytail-help": {
+      "sourceHash": "543273c365b2d2e8",
+      "simple": "一张速查表，告诉你 ponytail 有哪些用法和命令。",
+      "professional": "ponytail 全家的速查卡：三档强度、各兄弟技能职责与停用方式。"
+    },
+    "ponytail-review": {
+      "sourceHash": "d397081713d17275",
+      "simple": "专门挑代码里不必要的复杂写法，并给出更短的写法。",
+      "professional": "只针对过度工程的代码评审：逐条指出可删代码、多余依赖与替代写法。"
+    },
+    "quality-refinement-autoloop": {
+      "sourceHash": "90d06888cc1ba734",
+      "simple": "结果不满意时自动复盘、修复，并把经验记下来。",
+      "professional": "结果不达标时运行自我改进循环：诊断差距、决定修复成品还是补齐技能，并沉淀可复用经验。"
+    },
+    "reference-analysis-validator": {
+      "sourceHash": "2b81e97c197e843c",
+      "simple": "对比参考图和成品，检查部件数量、轮廓是否一致。",
+      "professional": "在宣称 1:1 重建前，度量并校验参考图、线框、纹理图集与 Blender 渲染，核对部件数量与模板一致性。"
+    },
+    "reference-look-calibration": {
+      "sourceHash": "51dbb0c1fa5caba7",
+      "simple": "按参考图调整颜色、亮度、灯光和发光效果。",
+      "professional": "用可度量的颜色、亮度、饱和度、包围盒与蒙版统计，把 Blender 材质、灯光、构图与发光校准到参考图。"
+    },
+    "reference-to-3d": {
+      "sourceHash": "6e920ac2dea5857b",
+      "simple": "严格按参考图、模板或三视图重建 3D 模型。",
+      "professional": "按参考图、品牌模板、纹理图集或正交视图重建 Blender 模型，优先保证与源素材的视觉一致性。"
+    },
+    "source-part-segmentation": {
+      "sourceHash": "acfcb73773c2e271",
+      "simple": "把参考图里重叠的部件先拆开，方便后续建模。",
+      "professional": "在网格重建前，从参考图、线框、纹理图集与贴花中切分出相互重叠的部件掩版。"
+    },
+    "texture-driven-mesh-fitting": {
+      "sourceHash": "51b6a48e80c3d3ca",
+      "simple": "让 3D 模型的形状贴合贴图轮廓，避免贴图被拉伸。",
+      "professional": "让源锁定网格的边界贴合纹理图集或贴花轮廓，避免把贴图硬拉到近似模型上。"
+    },
+    "texture-state-animation": {
+      "sourceHash": "0e27fbafddf102fe",
+      "simple": "设计贴图状态之间的切换动画，避免闪烁和错位。",
+      "professional": "设计并校验 Blender 动画中的纹理状态切换，避免整图交叉淡化、贴图跳变与错位形变。"
+    },
+    "wireframe-to-3d": {
+      "sourceHash": "f293cc0d1c49f11a",
+      "simple": "把线稿或三视图转换成 3D 模型并导出。",
+      "professional": "把二维正交线框 PNG 转换为 Blender 模型并导出 glTF/GLB，包含视图对齐与线稿解析。"
+    },
+    "zh-ask-matt": {
+      "sourceHash": "cc97bfdfa50a9ada",
+      "simple": "告诉你当前情况该用哪个技能或流程。",
+      "professional": "本仓库技能体系的路由器：根据当前情境推荐合适的技能或流程，避免用户自己翻目录。"
+    },
+    "zh-claude-handoff": {
+      "sourceHash": "3e1ff2e710edda02",
+      "simple": "把当前对话交给另一个后台代理继续做。",
+      "professional": "把当前会话的上下文压缩成交接材料，交给新的后台代理立即接手，减少重复解释。"
+    },
+    "zh-code-review": {
+      "sourceHash": "2d90bedae5f6dc31",
+      "simple": "按仓库规范和相关需求两条线，检查这次代码改动。",
+      "professional": "从固定 commit 或 merge-base 出发，按 Standards（仓库编码标准）与 Spec（来源 issue/spec）两条轴线并行审查，并排输出发现。"
+    },
+    "zh-codebase-design": {
+      "sourceHash": "905ec7af758cdb90",
+      "simple": "教你怎样把代码拆成好懂、好改、好测试的模块。",
+      "professional": "提供深模块设计的共享词汇与判断标准：接口与实现的分离、seam 的位置、可测试性与可导航性。"
+    },
+    "zh-diagnosing-bugs": {
+      "sourceHash": "9c5dbbd52ef34525",
+      "simple": "一步步排查难查的 bug 和变慢的原因。",
+      "professional": "面向疑难缺陷与性能回退的诊断循环：先复现与缩小范围，再验证假设，最后给出根因与修复建议。"
+    },
+    "zh-domain-modeling": {
+      "sourceHash": "d5ff2a85b1738f37",
+      "simple": "帮你理清项目里的术语和领域概念，并写成文档。",
+      "professional": "梳理项目领域词汇并沉淀为 GLOSSARY.md 与 ADR，让代码、文档和讨论使用同一套术语。"
+    },
+    "zh-git-guardrails-claude-code": {
+      "sourceHash": "de2ddeec97473a83",
+      "simple": "在危险 git 操作执行前拦截，防止误删或误推。",
+      "professional": "在 Claude Code 中注册提交前钩子，拦截 push、reset --hard、clean、branch -D 等破坏性 git 命令。"
+    },
+    "zh-grill-me": {
+      "sourceHash": "349f9d53d4401608",
+      "simple": "用连续追问把你的计划或设计问清楚。",
+      "professional": "薄入口：调用 grilling，用连续追问把方案或设计中的模糊点逐一变成明确决策。"
+    },
+    "zh-grill-with-docs": {
+      "sourceHash": "438035a665bc5962",
+      "simple": "一边追问方案，一边把决定记录成文档。",
+      "professional": "在连续追问方案的同时产出 ADR 与术语表，让决策过程与文档同步沉淀。"
+    },
+    "zh-grilling": {
+      "sourceHash": "49053ffd00f50d2f",
+      "simple": "连续追问你的计划或想法，直到思路经得起推敲。",
+      "professional": "以设计树组织盘问：每轮只问前提已确定的问题，附推荐答案，直到没有分支被默认假设。"
+    },
+    "zh-handoff": {
+      "sourceHash": "68394d2bcdcb2f00",
+      "simple": "把当前对话整理成交接文档，方便别人接手。",
+      "professional": "把当前对话整理成结构化交接文档，供另一个代理或同事无缝接手。"
+    },
+    "zh-implement": {
+      "sourceHash": "e4c7a2ed3c184bfb",
+      "simple": "按需求说明或任务清单实现功能。",
+      "professional": "依据规格或任务集合实现代码改动，并在完成后说明改了什么、如何验证。"
+    },
+    "zh-implement-spec": {
+      "sourceHash": "e883c11bcd30bce1",
+      "simple": "把已经写好的规格和任务真正写进代码。",
+      "professional": "把 /zh-to-spec 与 /zh-to-tickets 的产出真正落到代码里，形成可提交的实现。"
+    },
+    "zh-improve-codebase-architecture": {
+      "sourceHash": "803dbdf8eedef83c",
+      "simple": "扫描项目，找出可以改得更清晰的地方并生成报告。",
+      "professional": "扫描代码库中的架构深化机会，生成可视化 HTML 报告，并围绕选中的候选项继续追问。"
+    },
+    "zh-loop-me": {
+      "sourceHash": "524ddac8eb9107fb",
+      "simple": "通过提问帮你把要做的工作流规格想清楚。",
+      "professional": "通过结构化提问把要做的工作流规格问清楚，再据此进入实现。"
+    },
+    "zh-migrate-to-shoehorn": {
+      "sourceHash": "5032b1c0feabdda2",
+      "simple": "把测试里的类型断言换成 shoehorn 的写法。",
+      "professional": "把测试文件里的 as 类型断言迁移到 @total-typescript/shoehorn，减少脆弱断言。"
+    },
+    "zh-pr": {
+      "sourceHash": "e646526c5f3dc0d6",
+      "simple": "帮你起草或改写 PR 说明，让评审更容易。",
+      "professional": "起草或改写 PR 说明，突出问题背景、改动范围与验证方式，方便评审。"
+    },
+    "zh-prototype": {
+      "sourceHash": "1e3a490ae5e19056",
+      "simple": "快速做个一次性原型，验证某个设计或交互是否可行。",
+      "professional": "用一次性原型回答设计问题，验证状态模型或交互是否成立，再决定是否正式实现。"
+    },
+    "zh-research": {
+      "sourceHash": "cd764808b56f935e",
+      "simple": "查可靠的一手资料，并把结论整理成仓库里的文档。",
+      "professional": "对照高可信一手来源调研问题，并把结论整理成仓库中的 Markdown 文档。"
+    },
+    "zh-retro": {
+      "sourceHash": "961b2d1045c0da39",
+      "simple": "复盘一次编程过程，总结做得好的和要改的。",
+      "professional": "对一次编程会话做复盘：回顾目标、过程与结果，提炼可复用的经验与改进点。"
+    },
+    "zh-scaffold-exercises": {
+      "sourceHash": "c190559cd5b9a84c",
+      "simple": "生成带题目、答案和讲解的练习结构。",
+      "professional": "生成包含章节、题目、答案与讲解的练习目录，并确保通过 lint。"
+    },
+    "zh-setup-matt-pocock-skills": {
+      "sourceHash": "9eac616ce51981d7",
+      "simple": "为仓库配置 issue、标签和文档结构，供其他技能使用。",
+      "professional": "为仓库配置工程技能所需的基础设施：issue tracker、triage 标签词汇与领域文档布局。"
+    },
+    "zh-setup-pre-commit": {
+      "sourceHash": "4659c5ac9ca52191",
+      "simple": "配置提交前自动格式化、类型检查和测试。",
+      "professional": "配置 Husky pre-commit 钩子，串联 lint-staged、类型检查与测试。"
+    },
+    "zh-setup-ts-deep-modules": {
+      "sourceHash": "3177d277c365e7d1",
+      "simple": "用工具约束 TypeScript 仓库的模块边界。",
+      "professional": "接入 dependency-cruiser，约束 TypeScript 仓库的模块边界，只允许通过入口文件访问实现。"
+    },
+    "zh-tdd": {
+      "sourceHash": "7fcce1feeb2d6d42",
+      "simple": "先写测试再写实现，按红绿重构推进。",
+      "professional": "以测试驱动方式构建功能或修复缺陷：先写失败测试，再实现，最后重构。"
+    },
+    "zh-teach": {
+      "sourceHash": "adb8ddd2682a7220",
+      "simple": "在对话里教你一个新技能或概念。",
+      "professional": "在工作区里以对话方式教授一个新技能或概念，按理解程度调整讲解深度。"
+    },
+    "zh-to-questionnaire": {
+      "sourceHash": "d5128634d4800fba",
+      "simple": "把暂时定不下来的选择写成一份问卷交给别人填。",
+      "professional": "把无法完整回答的决策整理成一份问卷，交给更合适的人填写。"
+    },
+    "zh-to-spec": {
+      "sourceHash": "497d7e7ab3c6200f",
+      "simple": "把当前讨论整理成规格并发布到 issue。",
+      "professional": "把当前讨论综合成规格并发布到项目 issue tracker，不做额外访谈。"
+    },
+    "zh-to-tickets": {
+      "sourceHash": "132d0528bfd14388",
+      "simple": "把计划拆成一张张可执行的小任务并发布。",
+      "professional": "把计划、规格或对话拆成带阻塞关系的 tracer-bullet 任务，并发布到 tracker。"
+    },
+    "zh-triage": {
+      "sourceHash": "ff0a0175bd90ed61",
+      "simple": "给 issue 和 PR 分类、验证并写成可执行简报。",
+      "professional": "让 issue 与外部 PR 流经一组 triage 状态机：分类、验证、必要时追问，并产出可执行的简报。"
+    },
+    "zh-wait-what": {
+      "sourceHash": "d532a7f4e4825008",
+      "simple": "让 AI 把没讲清楚的那句话重新说一遍。",
+      "professional": "当上一条消息表达不清时，要求对方重新表述，避免在误解上继续推进。"
+    },
+    "zh-wayfinder": {
+      "sourceHash": "42b0acba79c1ada5",
+      "simple": "把一个大目标拆成决策地图，逐个解决直到路径清晰。",
+      "professional": "把超出单个会话容量的大目标拆成 issue tracker 上的决策地图，逐个解决直到路径清晰。"
+    },
+    "zh-wizard": {
+      "sourceHash": "fc1e41f57a8c0644",
+      "simple": "生成一个一步步引导你完成手动操作的脚本。",
+      "professional": "生成交互式 bash 向导，引导人完成只有本人能执行的手动流程；代理能自己做的步骤不适用。"
+    },
+    "zh-writing-beats": {
+      "sourceHash": "caddd2c1a021b92d",
+      "simple": "把素材组织成有节奏的文章段落。",
+      "professional": "写作中的展开阶段：把原始素材组织成有节奏的段落旅程，先解释术语再让后续内容依赖它。"
+    },
+    "zh-writing-for-agents": {
+      "sourceHash": "9fade132c228878a",
+      "simple": "写专门给 AI 代理看的说明文档。",
+      "professional": "为 AI 代理编写文档：创建或编辑 skills，修改 AGENTS.md / CLAUDE.md 等代理指令文件。"
+    },
+    "zh-writing-fragments": {
+      "sourceHash": "455a79aa783d1307",
+      "simple": "先把零散素材写下来，不急着搭结构。",
+      "professional": "写作中的探索阶段：先挖掘零散素材，不急于施加结构。"
+    },
+    "zh-writing-shape": {
+      "sourceHash": "d2fabfa83498cb20",
+      "simple": "把素材整理成一篇完整文章的骨架。",
+      "professional": "写作中的成型阶段：把素材塑造成完整文章，逐段推进。"
+    }
+  }
+}
