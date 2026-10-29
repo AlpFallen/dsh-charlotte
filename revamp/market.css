@@ -169,7 +169,7 @@
 
 /* ------------------------------- detail drawer ---------------------------- */
 .sk_drawerScrim{position:absolute;inset:0;background:rgba(0,0,0,.24);z-index:20}
-.sk_drawer{position:absolute;top:0;right:0;bottom:0;width:440px;max-width:92vw;z-index:21;display:flex;flex-direction:column;background:var(--dsw-alias-bg-layer-1,#17181b);border-left:1px solid var(--dsw-alias-border-l2);box-shadow:-24px 0 60px rgba(0,0,0,.22)}
+.sk_drawer{position:absolute;top:0;right:0;bottom:0;width:min(760px,92vw);z-index:21;display:flex;flex-direction:column;background:var(--dsw-alias-bg-layer-1,#17181b);border-left:1px solid var(--dsw-alias-border-l2);box-shadow:-24px 0 60px rgba(0,0,0,.22)}
 .sk_drawerHead{padding:18px 22px 13px;border-bottom:1px solid var(--dsw-alias-border-l2);flex:none}
 .sk_drawerTop{display:flex;align-items:flex-start;gap:12px}
 .sk_drawerTitle{flex:1;min-width:0}
@@ -310,3 +310,20 @@
 @media (prefers-reduced-motion:reduce){
   .sk_switch:after{transition:none}
 }
+
+/* v0.8: tags, body audit, injection cost, ledger and diagnostics */
+.sk_tagRow{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}
+.sk_tagChip{height:22px;padding:0 8px;border:1px solid var(--dsw-alias-border-l2);border-radius:999px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);font:inherit;font-size:11px;cursor:pointer}
+.sk_tagChip:hover{border-color:var(--dsw-alias-border-l3);color:var(--dsw-alias-label-primary)}
+.sk_tagInput{width:100%;height:26px;padding:0 8px;border:1px solid var(--dsw-alias-border-l2);border-radius:7px;background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:12px}
+.sk_tagInput:focus{outline:none;border-color:var(--dsw-alias-border-l3)}
+.sk_ledgerTotals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0 16px}
+.sk_ledgerStat{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-alias-bg-layer-2)}
+.sk_ledgerStat span{font-size:11px;color:var(--dsw-alias-label-tertiary)}
+.sk_ledgerStat strong{font-size:18px;color:var(--dsw-alias-label-primary);font-variant-numeric:tabular-nums}
+.sk_trend{display:flex;align-items:flex-end;gap:3px;height:56px;margin:6px 0 16px}
+.sk_trendBar{flex:1;min-height:2px;background:var(--dsw-alias-link,#4f7cff);opacity:.7;border-radius:2px 2px 0 0}
+.sk_ledgerTable th{text-align:left;font-weight:600;font-size:11px;color:var(--dsw-alias-label-tertiary);padding:0 8px 6px 0;border-bottom:1px solid var(--dsw-alias-border-l2)}
+.sk_ledgerTable td{padding:5px 8px 5px 0;border-bottom:1px solid var(--dsw-alias-border-l2);font-size:11.5px}
+.sk_ledgerTable td:first-child{color:var(--dsw-alias-label-primary)}
+.sk_diag .sk_sec{margin-top:12px}

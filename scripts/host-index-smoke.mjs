@@ -6,7 +6,7 @@
  * real home is never touched.
  */
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { lstat, mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
@@ -34,6 +34,7 @@ const projectSkills = join(workspace, '.dsh', 'skills');
 const mountDir = join(sandbox, 'mounted');
 const pluginDir = join(sandbox, 'plugin');
 process.env.DSH_HOME = home;
+process.env.DSH_AGENTS_HOME = join(home, 'agents');
 const stateFile = join(home, 'charlotte', 'state.json');
 const overrideFile = join(home, 'charlotte', 'overrides.json');
 const cacheFile = join(sandbox, 'enrich.json');
@@ -107,6 +108,9 @@ await writeFile(stateFile, JSON.stringify({
 }), 'utf8');
 await writeFile(overrideFile, JSON.stringify({ [mountedPath]: { disabled: true } }), 'utf8');
 
+const pluginBodyFile = join(mountDir, 'plugin-body.md');
+await writeFile(pluginBodyFile, '---\nname: demo-plugin-path\ndescription: 由插件注册、带真实路径的技能。\n---\n\nplugin body\n', 'utf8');
+
 const registrySummaries = [
     {
         name: 'demo-review',
@@ -115,6 +119,14 @@ const registrySummaries = [
         source: 'user-dsh',
         provider: 'filesystem',
         path: join(dupRegistryDir, 'SKILL.md'),
+    },
+    {
+        name: 'demo-plugin-path',
+        description: '由插件注册、带真实路径的技能。',
+        invocation: { modelInvocable: true, userInvocable: true },
+        source: 'runtime',
+        provider: 'runtime',
+        path: pluginBodyFile,
     },
     {
         name: 'demo-mounted',
@@ -767,10 +779,133 @@ await check('corrupted state is tolerated instead of breaking the launcher', asy
     assert.equal(reread.prefs.x.favorite, true);
 });
 
+await check('GET /body reads the host-resolved path and refuses virtual skills', async () => {
+    const writable = await api('GET', '/body?name=demo-review');
+    assert.equal(writable.status, 200);
+    assert.match(writable.body.content, /demo-review|diff/i);
+    assert.equal('path' in writable.body, false, 'the host path is not leaked to the client');
+    const registry = await api('GET', '/body?name=demo-plugin-path');
+    assert.equal(registry.status, 200);
+    assert.match(registry.body.content, /plugin body/);
+    const virtual = await api('GET', '/body?name=runtime-skill');
+    assert.equal(virtual.status, 404);
+});
+
+await check('the two mutations reject non-POST methods', async () => {
+    const put = await api('PUT', '/tags', { name: 'demo-review', tags: ['x'] });
+    assert.equal(put.status, 405);
+    const del = await api('DELETE', '/migrate', { name: 'demo-mail', rootId: 'user-dsh' });
+    assert.equal(del.status, 405);
+});
+
+await check('a version 1 state file still loads and keeps its rows', async () => {
+    const legacyFile = join(sandbox, 'state-v1.json');
+    await writeFile(legacyFile, JSON.stringify({
+        version: 1,
+        prefs: { 'demo-review': { favorite: true, pinned: true, pinnedAt: 111 } },
+        usage: { 'demo-review': { loads: 4, invokes: 2, completions: 1, failures: 0, cancelled: 0, recommended: 2, accepted: 1, dismissed: 0, lastUsedAt: 222, lastLoadedAt: 222, recent: [{ at: 222, kind: 'loaded' }] } },
+        rec: { sessions: { s1: { shown: { 'demo-review': 222 }, ignored: {}, fingerprint: 'fp', lastShownAt: 222, count: 1, updatedAt: 222 } } },
+    }), 'utf8');
+    const store = new LauncherState(legacyFile);
+    const loaded = await store.read();
+    assert.equal(loaded.prefs['demo-review'].favorite, true);
+    assert.equal(loaded.usage['demo-review'].loads, 4);
+    assert.equal(loaded.usage['demo-review'].days['2020-01-01'], undefined);
+    assert.deepEqual(loaded.tags, {});
+    assert.equal(loaded.rec.sessions.s1.fingerprint, 'fp');
+    await store.update((draft) => { draft.tags['demo-review'] = ['legacy']; });
+    const raw = JSON.parse(await readFile(legacyFile, 'utf8'));
+    assert.equal(raw.version, 2, 'the next write upgrades the file');
+    assert.equal(raw.usage['demo-review'].loads, 4, 'old usage counters survive the upgrade');
+});
+
 await check('recommend config validation rejects nonsense', async () => {
     assert.throws(() => resolveRecommendConfig({ maxItems: 9 }), /maxItems/);
     assert.throws(() => resolveRecommendConfig({ enabled: 'yes' }), /enabled/);
     assert.throws(() => resolveRecommendConfig({ cooldownMs: -1 }), /cooldownMs/);
+});
+
+
+// --- audit, cost, ledger, tags, shared pool -----------------------------------
+const hiddenDir = await writeSkill(userSkills, 'hidden-skill', [
+    'name: hidden-skill',
+    'description: 正文里夹带隐藏控制字符的技能，用来验证审计。',
+], `visible text \u001b[31m and a tag char \u{E0041} and a bidi mark \u202E end`);
+void hiddenDir;
+
+await check('the index audits skill bodies for hidden characters', async () => {
+    index.invalidate();
+    const built = await index.build(workspace);
+    const hidden = built.byName['hidden-skill'];
+    assert.ok(hidden.audit, 'audit rides with the record');
+    const ids = hidden.audit.findings.map(finding => finding.id).sort();
+    assert.ok(ids.includes('escape'), 'bare ESC is reported');
+    assert.ok(ids.includes('tag-chars'), 'unicode tag characters are reported');
+    assert.ok(ids.includes('bidi'), 'bidi controls are reported');
+    assert.equal(hidden.audit.severity, 'high');
+    assert.equal(built.byName['demo-review'].audit.clean, true, 'a clean body has no findings');
+    assert.equal(built.audit.severity, 'high', 'the aggregate carries the worst severity');
+});
+
+await check('injection cost is an explicit heuristic and scales with the body', async () => {
+    const built = await index.build(workspace);
+    const review = built.byName['demo-review'];
+    assert.equal(review.cost.method, 'heuristic');
+    assert.ok(review.cost.tokens > 0);
+    assert.ok(review.cost.chars >= review.bodyLength);
+    assert.ok(review.cost.cjk > 0, 'CJK characters are counted separately');
+    // A skill with no readable body still pays for its name and description,
+    // which are what the model actually sees before the instructions.
+    const noBody = built.skills.find(skill => skill.bodyLength === 0);
+    if (noBody !== undefined) assert.ok(noBody.cost.tokens > 0);
+});
+
+await check('GET /ledger reports real ratios and null when nothing was attempted', async () => {
+    const use = await api('POST', '/use', { sessionId: 'ledger-1', name: 'demo-mail' });
+    assert.equal(use.status, 200);
+    await api('POST', '/event', { sessionId: 'ledger-1', name: 'demo-mail', phase: 'loaded' });
+    await api('POST', '/event', { sessionId: 'ledger-1', name: 'demo-mail', phase: 'loaded' });
+    const response = await api('GET', '/ledger');
+    assert.equal(response.status, 200);
+    assert.equal(typeof response.body.generatedAt, 'number');
+    assert.ok(response.body.totals.loads >= 2);
+    const mail = response.body.skills.find(row => row.name === 'demo-mail');
+    assert.ok(mail.loads >= 2);
+    assert.equal(mail.successRate, null, 'no completion/failure yet means no invented rate');
+    assert.equal(Array.isArray(response.body.trend) && response.body.trend.length, 14, 'the trend stays a dense 14-day series');
+    const review = response.body.skills.find(row => row.name === 'demo-review');
+    if (review !== undefined && review.completions + review.failures > 0) {
+        assert.ok(review.successRate >= 0 && review.successRate <= 1);
+    }
+});
+
+await check('POST /tags stores tags and the index exposes them', async () => {
+    const saved = await api('POST', '/tags', { name: 'demo-review', tags: ['审查', ' 审查 ', 'git'] });
+    assert.equal(saved.status, 200);
+    assert.deepEqual(saved.body.tags, ['审查', 'git'], 'tags are trimmed and deduplicated');
+    const built = await index.build(workspace);
+    assert.deepEqual(built.byName['demo-review'].tags, ['审查', 'git']);
+    const cleared = await api('POST', '/tags', { name: 'demo-review', tags: [] });
+    assert.deepEqual(cleared.body.tags, []);
+    const missing = await api('POST', '/tags', { name: 'no-such-skill', tags: ['x'] });
+    assert.equal(missing.status, 404);
+});
+
+await check('POST /migrate moves a skill into the shared pool and leaves a relative link', async () => {
+    const before = await lstat(userSkills + '/demo-mail');
+    assert.equal(before.isSymbolicLink(), false);
+    const response = await api('POST', '/migrate', { name: 'demo-mail', rootId: 'user-dsh' });
+    assert.equal(response.status, 200, JSON.stringify(response.body));
+    const poolCopy = join(home, 'agents', 'skills', 'demo-mail');
+    assert.equal((await lstat(poolCopy)).isDirectory(), true);
+    const after = await lstat(userSkills + '/demo-mail');
+    assert.equal(after.isSymbolicLink(), true);
+    assert.equal(response.body.linkTarget.startsWith('..'), true, 'the link stays portable (relative)');
+    const skillText = await readFile(join(poolCopy, 'SKILL.md'), 'utf8');
+    assert.match(skillText, /demo-mail/);
+    const again = await api('POST', '/migrate', { name: 'demo-mail', rootId: 'user-dsh' });
+    assert.equal(again.status, 409);
+    assert.equal(again.body.code, 'already-linked');
 });
 
 // --- summary ------------------------------------------------------------------

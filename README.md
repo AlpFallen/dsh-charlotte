@@ -45,6 +45,13 @@ dsh plugin --profile web add github:AlpFallen/dsh-charlotte
 - **拖拽安装** — 把技能文件夹或 `.zip` 拖进安装面板，或用选择器。zip 由服务端解压；先校验（SKILL.md 需含 kebab-case `name` 与 `description`）并预览，确认后才写入；写入先暂存再改名。
 - **回收站** — 删除的技能移入 `~/.dsh/charlotte/trash` 并记录来源，可在面板中恢复或清空。
 - **中文界面：一句大白话 + 官方描述 + 专业版** — 技能名保持原文；列表里是一句高中生能看懂的中文简介；详情页依次展示技能官方描述（原文中文就放中文，没有中文就放英文原文）和一段中文专业版概述。两段中文优先用技能自己声明的 `simple-zh` / `professional-zh`，其次用与原文哈希严格匹配的目录（`locale/skills.zh.json`），原文变动后旧文案自动失效。
+- **正文审计** — 每条技能读入的正文都会检查裸 ESC、Unicode 标签字符、双向控制符、零宽字符；详情页按条列出命中类型与数量，聚合结果在「诊断」里。
+- **注入开销** — 每条技能给出 ≈token / 字符估算，CJK 与拉丁字符分开计数；标注为启发式估算，不是分词器。
+- **调用台账** — 真实加载、执行、成功、失败的汇总，近 14 天加载趋势，每技能的 Success 与推荐采纳率；分母为零时显示「—」，不伪造比率。
+- **标签** — 任意技能可加标签（回车添加、点标签删除），搜索覆盖标签。
+- **共享池迁移** — 一键把可写根里的技能迁入共享池 `~/.agents/skills`，原位置留下相对软链；迁移先复制再验证再换链，失败自动还原。
+- **诊断** — 被跳过的文件、无效 frontmatter、挂载扫描失败的原因集中展示，不再只进日志。
+- **宽屏详情 + 复制正文** — 详情抽屉加宽到 760px，可一键复制技能正文。
 - **中英双语界面** — 启动器表面（标题、搜索、筛选、列表、弹窗、推荐卡、更多菜单）可切换中英文并记住选择；中文模式下推荐理由也用中文。复用的安装与回收站主体保留现有中文文案。
 
 ## 实时推荐
@@ -104,14 +111,14 @@ plugins:
 
 ## 状态
 
-0.7.3。改宿主（`lib/`）要完全退出 App（含托盘）再重开；改客户端（`revamp/`、CSS）只需 `npm run build` 后刷新页面。运行状态（`state.json`、`overrides.json`、`enrich-cache.json`、`trash/`）在 `~/.dsh/charlotte/`，不进仓库。
+0.8.0。改宿主（`lib/`）要完全退出 App（含托盘）再重开；改客户端（`revamp/`、CSS）只需 `npm run build` 后刷新页面。运行状态（`state.json`、`overrides.json`、`enrich-cache.json`、`trash/`）在 `~/.dsh/charlotte/`，不进仓库。
 
 ## 开发
 
 ```sh
 npm install
 npm run build                  # 从 client.baseline.js + revamp/ 重建 client/client.js
-npm test                       # 19 客户端 + 16 宿主契约 + 30 索引/推荐/中文化集成
+npm test                       # 30 客户端 + 16 宿主契约 + 43 索引/推荐/中文化集成
 DSH_WEB_URL=http://127.0.0.1:<当前端口> npm run check:zh   # 两段中文的覆盖与哈希校验
 node scripts/host-smoke.mjs    # 只测宿主契约：配置、根目录、provider、旧 API
 node scripts/host-index-smoke.mjs  # 索引、分类、推荐、权限、依赖、目录安装
