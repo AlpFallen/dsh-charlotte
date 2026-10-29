@@ -414,25 +414,6 @@ check('usage timestamps render deterministically', () => {
     assert.equal(internals.skTime(new Date(2026, 0, 2, 3, 4).getTime()), '01-02 03:04');
 });
 
-check('accepting a recommendation fills a complete, real next step', () => {
-    const fromIntent = internals.skContinuationPrompt(fixtures[0], '审查这个 diff', 'zh');
-    assert.match(fromIntent, /上一条消息/);
-    assert.match(fromIntent, /审查这个 diff/);
-    const fromIntentEn = internals.skContinuationPrompt(fixtures[0], 'review this diff', 'en');
-    assert.match(fromIntentEn, /previous message/);
-    assert.match(fromIntentEn, /review this diff/);
-    const fromUseCase = internals.skContinuationPrompt({ useCases: ['从固定点审查一次变更'], purpose: '代码审查' }, '', 'zh');
-    assert.match(fromUseCase, /从固定点审查一次变更/);
-    const bilingual = internals.skContinuationPrompt({ i18n: { simple: '中文用途' }, useCases: ['English use case'], purpose: 'English purpose' }, '', 'zh');
-    assert.match(bilingual, /中文用途/);
-    const bilingualEn = internals.skContinuationPrompt({ i18n: { simple: '中文用途' }, useCases: ['English use case'], purpose: 'English purpose' }, '', 'en');
-    assert.match(bilingualEn, /English use case/);
-    const fromPurpose = internals.skContinuationPrompt({ purpose: '审查 diff 并生成报告' }, '', 'zh');
-    assert.match(fromPurpose, /审查 diff 并生成报告/);
-    const fallback = internals.skContinuationPrompt({}, '', 'zh');
-    assert.match(fallback, /继续推进/);
-});
-
 // --- home recommendation helpers ----------------------------------------------
 const missingDep = skill('demo-missing-dep', {
     requires: [{ name: 'not-installed', kind: 'declared', satisfied: false }],
@@ -555,7 +536,7 @@ await checkAsync('load chain authorizes, stages the official token and reports l
     internals.skLoadSet('demo-dev', { phase: 'idle' });
 });
 
-await checkAsync('an accepted recommendation stages the complete next step in the composer', async () => {
+await checkAsync('an accepted recommendation stages only the skill token', async () => {
     resetFetch();
     draftCalls.length = 0;
     const { ctx } = makeCtx();
@@ -565,11 +546,10 @@ await checkAsync('an accepted recommendation stages the complete next step in th
         if (url.endsWith('/event')) return { ok: true, status: 200, json: async () => ({ recorded: true }) };
         return { ok: true, status: 200, json: async () => ({}) };
     };
-    const continuation = '基于我上一条消息继续推进：“审查这个 diff”。';
-    const outcome = await internals.skUseSkill('demo-dev', '', { continuation });
+    const outcome = await internals.skUseSkill('demo-dev', '', {});
     assert.equal(outcome.ok, true);
-    assert.equal(outcome.continuation, true);
-    assert.deepEqual(draftCalls.map(call => call.prompt), ['/demo-dev ' + continuation]);
+    assert.equal(outcome.continuation, false, 'nothing is appended after the token');
+    assert.deepEqual(draftCalls.map(call => call.prompt), ['/demo-dev '], 'the composer receives the token and nothing else');
     assert.equal(draftCalls[0].whenDraftExists, 'append');
     const useCall = fetchCalls.find(call => call.url.endsWith('/use'));
     assert.ok(useCall, 'host authorization still runs before staging');
@@ -652,7 +632,7 @@ check('dock registers into conversation.input.dock and renders nothing without a
 });
 
 check('dock copy exists in both languages', () => {
-    for (const key of ['dock.title', 'dock.use', 'dock.ignore', 'dock.loading', 'dock.loaded', 'dock.loadedNext', 'dock.failed', 'dock.ignored', 'dock.reason', 'dock.collapse', 'dock.expand']) {
+    for (const key of ['dock.title', 'dock.use', 'dock.ignore', 'dock.loading', 'dock.loaded', 'dock.failed', 'dock.ignored', 'dock.reason', 'dock.collapse', 'dock.expand']) {
         assert.ok(internals.strings.zh[key], `zh lacks ${key}`);
         assert.ok(internals.strings.en[key], `en lacks ${key}`);
     }

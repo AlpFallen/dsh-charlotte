@@ -63,7 +63,7 @@
 ## 基线与测试口径
 
 - 运行基线：桌面 App 内置 DSH `0.2.1-rc.3`、Node `24.21.0`；更新的 0.2.x 未验证。
-- 测试：`npm test` = 30 客户端 + 16 宿主契约 + 43 索引/推荐；`node scripts/render-probe.mjs` = 23 条渲染探针。
+- 测试：`npm test` = 29 客户端 + 16 宿主契约 + 44 索引/推荐；`node scripts/render-probe.mjs` = 23 条渲染探针。
 
 ## 文件地图
 
