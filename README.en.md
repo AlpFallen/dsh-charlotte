@@ -8,21 +8,23 @@ A skill launcher and skill hub inside [DeepSeek Harness](https://github.com/deep
 
 ## Install
 
+In the desktop app: Settings -> Plugins -> Add plugin -> Install a third-party plugin, enter `https://github.com/AlpFallen/dsh-charlotte` (the same dialog accepts npm package names and local directories), restart, and the dsh-charlotte button appears above Settings in the sidebar. The desktop profile is owned by the Electron app, so the CLI refuses `dsh plugin --profile desktop add` with `profile "desktop" is managed exclusively by the Electron application`.
+
+For the web profile:
+
 ```sh
-dsh plugin --profile desktop add github:AlpFallen/dsh-charlotte
+dsh plugin --profile web add github:AlpFallen/dsh-charlotte
 ```
 
-Restart the app afterwards: the dsh-charlotte button appears above Settings in the sidebar, and a settings section is added.
+The running environment here is the desktop app's bundled DSH `0.2.1-rc.3` (Node `24.21.0`); this plugin loads and runs there, and the screenshots below come from it. A separate CLI install of DSH `0.1.5-rc.2` was used for an interface comparison. The host seams (`webServer.register` with `WebRoute`, the `agent/pre-step` waterfall, `ctx.skills`) have the same shape in both; the client slot `conversation.input.dock` changed contract in 0.2 (`PropsRenderFactories`, the draft-editor split), the UI works on 0.2.1-rc.3, and newer 0.2.x builds are unverified.
 
-The plugin is developed and verified against DSH `0.1.5-rc.2` on Node `24.19.0`. Every host seam it uses (`webServer.register` with `WebRoute`, the `agent/pre-step` waterfall, the `conversation.input.dock` slot, `ctx.skills`) still exists in `0.2.1-rc.2` with the same shape, but the 0.2 client slot contracts changed (`PropsRenderFactories`, the `draft-editor` split) and this plugin has not been run against a 0.2.x build. Treat 0.2.x as untested until it is verified on a real install.
-
-The repository ships the compiled client bundle (`client/client.js`), so a `github:` install needs no build step. For live development, clone it, point the profile dependency at `"link:/absolute/path/to/dsh-charlotte"`, run `pnpm install`, and restart the app.
+The repository ships the compiled client bundle (`client/client.js`), so a GitHub install needs no build step. For live development, clone it, point the profile dependency at `"link:/absolute/path/to/dsh-charlotte"`, run `pnpm install`, and restart the app.
 
 ## Screenshots
 
-| Launcher home | In-composer recommendation |
+| Launcher home | Recommendation card (cropped) |
 |---|---|
-| ![Launcher home: recommendation card, category counts, frequency-aware rows](mockups/preview/home-v0.7.png) | ![Recommendation card above the composer with Use and Ignore](mockups/preview/dock-v0.7.png) |
+| ![Launcher home: recommendation card, category counts, frequency-aware rows](mockups/preview/home-v0.7.png) | ![Recommendation card: name, reason, Use and Ignore, cropped to the card](mockups/preview/dock-v0.7.png) |
 
 | All skills | Detail drawer |
 |---|---|
