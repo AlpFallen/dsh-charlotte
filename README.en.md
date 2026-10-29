@@ -45,6 +45,13 @@ The repository ships the compiled client bundle (`client/client.js`), so a GitHu
 - **Drag-and-drop install** — drop a skill folder or a `.zip` archive into the install panel, or pick them. Zip archives are decompressed server-side. Files are validated (SKILL.md with kebab-case `name` and `description`) and previewed before anything is written; every install is staged and renamed into place.
 - **Trash** — deletions move to `~/.dsh/charlotte/trash` with an origin manifest; restore or empty from the panel.
 - **Chinese UI: plain-language line, official text, professional summary** — skill names stay in their original form; the list shows one Chinese sentence a high-school student can follow; Details shows the skill's official description (Chinese when the skill wrote Chinese, otherwise the English original) followed by a Chinese professional paragraph. Both Chinese fields prefer the skill's own `simple-zh` / `professional-zh`, then a hash-guarded catalogue (`locale/skills.zh.json`) whose entries are ignored as soon as the source text changes. Recommendation reasons are localized too.
+- **Body audit** — every skill body is checked for bare ESC, Unicode tag characters, bidi controls and zero-width characters; the detail drawer lists each finding and count, and the aggregate lives in Diagnostics.
+- **Injection cost** — every skill shows an ≈token/char estimate with CJK counted separately; labelled as a heuristic, not a tokenizer.
+- **Usage ledger** — real loads, runs, successes and failures, a 14-day load trend, per-skill success and recommendation adoption; a zero denominator renders as "—" instead of an invented rate.
+- **Tags** — free-form tags per skill (Enter adds, clicking a tag removes); search covers tags.
+- **Shared-pool migration** — move a skill from a writable root into the shared pool `~/.agents/skills` and leave a relative symlink behind; copy, verify, then swap, with automatic restore on failure.
+- **Diagnostics** — skipped files, invalid frontmatter and mount-scan failures are shown in the UI instead of only in the log.
+- **Wide detail + copy body** — the detail drawer is 760px wide and can copy the full skill body in one click.
 - **Bilingual UI** — the launcher surface (title, search, filters, list, dialogs, recommendation card, More menu) switches between Chinese and English and remembers the choice; the reused install and recycle-bin bodies keep their existing Chinese copy.
 
 ## Live recommendations
@@ -104,14 +111,14 @@ plugins:
 
 ## Status
 
-0.7.3. Host changes (`lib/`) need the app fully quit and reopened; client changes (`revamp/`, CSS) need `npm run build` plus a page refresh. Runtime state (`state.json`, `overrides.json`, `enrich-cache.json`, `trash/`) lives in `~/.dsh/charlotte/`, never in this repository.
+0.8.0. Host changes (`lib/`) need the app fully quit and reopened; client changes (`revamp/`, CSS) need `npm run build` plus a page refresh. Runtime state (`state.json`, `overrides.json`, `enrich-cache.json`, `trash/`) lives in `~/.dsh/charlotte/`, never in this repository.
 
 ## Development
 
 ```sh
 npm install
 npm run build                  # rebuild client/client.js from client.baseline.js + revamp/
-npm test                       # 19 client + 16 host-contract + 30 index/recommend/i18n checks
+npm test                       # 30 client + 16 host-contract + 40 index/recommend/i18n checks
 npm run check:zh               # simple + professional coverage and hash check for every skill
 node scripts/host-smoke.mjs    # host contract only: config, roots, provider, legacy API
 node scripts/host-index-smoke.mjs  # index, categories, recommendations, permissions, dependencies, path install
