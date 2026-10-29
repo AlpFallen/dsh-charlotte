@@ -768,6 +768,27 @@ await check('corrupted state is tolerated instead of breaking the launcher', asy
     assert.equal(reread.prefs.x.favorite, true);
 });
 
+await check('a version 1 state file still loads and keeps its rows', async () => {
+    const legacyFile = join(sandbox, 'state-v1.json');
+    await writeFile(legacyFile, JSON.stringify({
+        version: 1,
+        prefs: { 'demo-review': { favorite: true, pinned: true, pinnedAt: 111 } },
+        usage: { 'demo-review': { loads: 4, invokes: 2, completions: 1, failures: 0, cancelled: 0, recommended: 2, accepted: 1, dismissed: 0, lastUsedAt: 222, lastLoadedAt: 222, recent: [{ at: 222, kind: 'loaded' }] } },
+        rec: { sessions: { s1: { shown: { 'demo-review': 222 }, ignored: {}, fingerprint: 'fp', lastShownAt: 222, count: 1, updatedAt: 222 } } },
+    }), 'utf8');
+    const store = new LauncherState(legacyFile);
+    const loaded = await store.read();
+    assert.equal(loaded.prefs['demo-review'].favorite, true);
+    assert.equal(loaded.usage['demo-review'].loads, 4);
+    assert.equal(loaded.usage['demo-review'].days['2020-01-01'], undefined);
+    assert.deepEqual(loaded.tags, {});
+    assert.equal(loaded.rec.sessions.s1.fingerprint, 'fp');
+    await store.update((draft) => { draft.tags['demo-review'] = ['legacy']; });
+    const raw = JSON.parse(await readFile(legacyFile, 'utf8'));
+    assert.equal(raw.version, 2, 'the next write upgrades the file');
+    assert.equal(raw.usage['demo-review'].loads, 4, 'old usage counters survive the upgrade');
+});
+
 await check('recommend config validation rejects nonsense', async () => {
     assert.throws(() => resolveRecommendConfig({ maxItems: 9 }), /maxItems/);
     assert.throws(() => resolveRecommendConfig({ enabled: 'yes' }), /enabled/);

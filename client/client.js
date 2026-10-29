@@ -333,6 +333,7 @@ var SK_STRINGS = {
     "more.ledger": "调用台账",
     "more.diagnostics": "诊断",
     "notice.tagsSaved": "标签已保存。",
+    "notice.tagsFailed": "标签保存失败：{reason}",
     "notice.migrated": "已迁入共享池并留下软链接：{path}",
     "notice.migrateRefused": "没有迁移：{reason}",
     "notice.copyFailed": "复制失败：{reason}",
@@ -555,6 +556,7 @@ var SK_STRINGS = {
     "more.ledger": "Usage ledger",
     "more.diagnostics": "Diagnostics",
     "notice.tagsSaved": "Tags saved.",
+    "notice.tagsFailed": "Tags not saved: {reason}",
     "notice.migrated": "Moved to the shared pool with a symlink: {path}",
     "notice.migrateRefused": "Not migrated: {reason}",
     "notice.copyFailed": "Copy failed: {reason}",
@@ -1234,6 +1236,27 @@ function skCall(path, options) {
   }).finally(function () {
     if (timer !== 0) window.clearTimeout(timer);
   });
+}
+
+/**
+ * Dictionary key for one audit severity.
+ * @param {string} severity - high | medium | low.
+ * @returns {string} i18n key.
+ */
+function skSeverityKey(severity) {
+  return severity === "high" ? "detail.auditHigh" : severity === "medium" ? "detail.auditMedium" : "detail.auditLow";
+}
+
+/**
+ * Dictionary key for one secondary panel title.
+ * @param {'install'|'trash'|'ledger'|'diagnostics'} panel - panel id.
+ * @returns {string} i18n key.
+ */
+function skPanelTitleKey(panel) {
+  if (panel === "install") return "panel.install";
+  if (panel === "ledger") return "ledger.title";
+  if (panel === "diagnostics") return "diag.title";
+  return "panel.trash";
 }
 
 /**
@@ -2400,7 +2423,7 @@ function SkDetailDrawer(props) {
     setTags(value);
     void skApi.tags({ name: skill.name, tags: value, workspace: props.workspace }).then(function (result) {
       if (!result.ok) {
-        props.onNotice("err", skT(lang, "notice.copyFailed", { reason: skApiError(result) }));
+        props.onNotice("err", skT(lang, "notice.tagsFailed", { reason: skApiError(result) }));
         return;
       }
       setTags(Array.isArray(result.body.tags) ? result.body.tags : value);
@@ -2567,8 +2590,7 @@ function SkDetailDrawer(props) {
           skill.audit === undefined || skill.audit === null || skill.audit.clean === true
             ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.auditClean"))
             : sk("ul", { className: "sk_bullets" }, skill.audit.findings.map(function (row) {
-              var level = row.severity === "high" ? "detail.auditHigh" : row.severity === "medium" ? "detail.auditMedium" : "detail.auditLow";
-              return sk("li", { key: "au-" + row.id }, "[" + skT(lang, level) + "] " + skT(lang, "detail.audit." + row.id) + " × " + String(row.count));
+              return sk("li", { key: "au-" + row.id }, "[" + skT(lang, skSeverityKey(row.severity)) + "] " + skT(lang, "detail.audit." + row.id) + " × " + String(row.count));
             }))
         ]),
         sk("div", { className: "sk_sec" }, [
@@ -2667,13 +2689,7 @@ function SkDetailDrawer(props) {
  */
 function StationPanelDialog(props) {
   var lang = props.lang;
-  var title = skT(lang, props.panel === "install"
-    ? "panel.install"
-    : props.panel === "ledger"
-      ? "ledger.title"
-      : props.panel === "diagnostics"
-        ? "diag.title"
-        : "panel.trash");
+  var title = skT(lang, skPanelTitleKey(props.panel));
   (0, import_react.useEffect)(function () {
     var onKey = function (event) {
       if (event.key !== "Escape") return;
@@ -2904,7 +2920,7 @@ function SkDiagPanel(props) {
   var diagnostics = Array.isArray(data.diagnostics) ? data.diagnostics : [];
   var audit = data.audit ?? null;
   var level = function (severity) {
-    return severity === "high" ? "detail.auditHigh" : severity === "medium" ? "detail.auditMedium" : "detail.auditLow";
+    return skSeverityKey(severity);
   };
   return sk("div", { className: "sk_diag" }, [
     sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "diag.intro")),
