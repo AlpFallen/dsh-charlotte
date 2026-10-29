@@ -658,5 +658,17 @@ check('dock copy exists in both languages', () => {
     }
 });
 
+await checkAsync('the bundle ships the audit, cost, tag, ledger and migration surfaces', async () => {
+    for (const endpoint of ['"/tags"', '"/migrate"', '"/ledger"', '"/body?"']) {
+        assert.ok(bundle.includes(endpoint), `bundle calls ${endpoint}`);
+    }
+    for (const key of ['detail.auditClean', 'detail.costValue', 'detail.tagsPlaceholder', 'ledger.trend', 'diag.title', 'more.ledger', 'action.migrate']) {
+        const hits = bundle.split(key).length - 1;
+        assert.ok(hits >= 2, `${key} exists in both dictionaries`);
+    }
+    assert.ok(bundle.includes('SkLedgerPanel') && bundle.includes('SkDiagPanel'), 'ledger and diagnostics panels ship');
+    assert.ok(bundle.includes('migrateSkill') && bundle.includes('copyBody'), 'drawer actions ship');
+});
+
 // --- summary -------------------------------------------------------------------
 console.log(`\n${results.length} client smoke checks passed`);

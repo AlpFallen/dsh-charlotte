@@ -249,6 +249,9 @@ var SK_STRINGS = {
     "action.pin": "置顶",
     "action.unpin": "取消置顶",
     "action.close": "关闭",
+    "action.copy": "复制正文",
+    "action.copied": "已复制",
+    "action.migrate": "迁入共享池",
     "action.retry": "重试",
     "detail.purpose": "用途",
     "detail.intro": "技能简介",
@@ -272,6 +275,21 @@ var SK_STRINGS = {
     "detail.path": "位置",
     "detail.updated": "更新时间",
     "detail.usage": "使用记录",
+    "detail.cost": "注入开销",
+    "detail.costValue": "≈{tokens} tokens · {chars} 字符（估算，不是分词器）",
+    "detail.audit": "正文审计",
+    "detail.auditClean": "没有发现隐藏字符。",
+    "detail.auditHigh": "高",
+    "detail.auditMedium": "中",
+    "detail.auditLow": "低",
+    "detail.audit.escape": "裸 ESC 控制符",
+    "detail.audit.tag-chars": "Unicode 标签字符（不可见）",
+    "detail.audit.bidi": "双向控制符",
+    "detail.audit.control": "其他控制字符",
+    "detail.audit.zero-width": "零宽字符",
+    "detail.tags": "标签",
+    "detail.tagsEmpty": "还没有标签。",
+    "detail.tagsPlaceholder": "输入标签后回车",
     "detail.noUsage": "暂无使用记录。",
     "detail.keywords": "关键词",
     "detail.enable": "启用",
@@ -312,6 +330,29 @@ var SK_STRINGS = {
     "more.refresh": "刷新",
     "more.language": "语言",
     "more.sources": "来源",
+    "more.ledger": "调用台账",
+    "more.diagnostics": "诊断",
+    "notice.tagsSaved": "标签已保存。",
+    "notice.migrated": "已迁入共享池并留下软链接：{path}",
+    "notice.migrateRefused": "没有迁移：{reason}",
+    "notice.copyFailed": "复制失败：{reason}",
+    "ledger.title": "调用台账",
+    "ledger.intro": "只统计真实的加载、执行与失败；分母为零时不给比率。",
+    "ledger.loads": "加载",
+    "ledger.invokes": "执行",
+    "ledger.success": "成功率",
+    "ledger.adoption": "推荐采纳率",
+    "ledger.noRate": "—",
+    "ledger.trend": "近 14 天加载",
+    "ledger.empty": "还没有调用记录。",
+    "ledger.skill": "技能",
+    "ledger.lastUsed": "最近使用",
+    "diag.title": "诊断",
+    "diag.intro": "被跳过的文件、无效 frontmatter 与挂载扫描失败都在这里。",
+    "diag.empty": "没有发现问题。",
+    "diag.writable": "可写根",
+    "diag.mounted": "挂载源",
+    "diag.audit": "正文审计汇总",
     "more.note": "内置与插件技能只读；启停与安装只影响可写目录。",
     "panel.install": "安装技能",
     "panel.trash": "回收站",
@@ -430,6 +471,9 @@ var SK_STRINGS = {
     "action.pin": "Pin",
     "action.unpin": "Unpin",
     "action.close": "Close",
+    "action.copy": "Copy body",
+    "action.copied": "Copied",
+    "action.migrate": "Move to shared pool",
     "action.retry": "Retry",
     "detail.purpose": "Purpose",
     "detail.intro": "Skill summary",
@@ -453,6 +497,21 @@ var SK_STRINGS = {
     "detail.path": "Location",
     "detail.updated": "Updated",
     "detail.usage": "Usage",
+    "detail.cost": "Injection cost",
+    "detail.costValue": "≈{tokens} tokens · {chars} chars (estimate, not a tokenizer)",
+    "detail.audit": "Body audit",
+    "detail.auditClean": "No hidden characters found.",
+    "detail.auditHigh": "high",
+    "detail.auditMedium": "medium",
+    "detail.auditLow": "low",
+    "detail.audit.escape": "bare ESC control",
+    "detail.audit.tag-chars": "Unicode tag characters (invisible)",
+    "detail.audit.bidi": "bidirectional controls",
+    "detail.audit.control": "other control characters",
+    "detail.audit.zero-width": "zero-width characters",
+    "detail.tags": "Tags",
+    "detail.tagsEmpty": "No tags yet.",
+    "detail.tagsPlaceholder": "Type a tag and press Enter",
     "detail.noUsage": "No usage recorded yet.",
     "detail.keywords": "Keywords",
     "detail.enable": "Enabled",
@@ -493,6 +552,29 @@ var SK_STRINGS = {
     "more.refresh": "Refresh",
     "more.language": "Language",
     "more.sources": "Sources",
+    "more.ledger": "Usage ledger",
+    "more.diagnostics": "Diagnostics",
+    "notice.tagsSaved": "Tags saved.",
+    "notice.migrated": "Moved to the shared pool with a symlink: {path}",
+    "notice.migrateRefused": "Not migrated: {reason}",
+    "notice.copyFailed": "Copy failed: {reason}",
+    "ledger.title": "Usage ledger",
+    "ledger.intro": "Only real loads, runs and failures; no rate without a denominator.",
+    "ledger.loads": "Loads",
+    "ledger.invokes": "Runs",
+    "ledger.success": "Success",
+    "ledger.adoption": "Adoption",
+    "ledger.noRate": "—",
+    "ledger.trend": "Loads, last 14 days",
+    "ledger.empty": "No usage recorded yet.",
+    "ledger.skill": "Skill",
+    "ledger.lastUsed": "Last used",
+    "diag.title": "Diagnostics",
+    "diag.intro": "Skipped files, invalid frontmatter and mount-scan failures land here.",
+    "diag.empty": "Nothing to report.",
+    "diag.writable": "Writable root",
+    "diag.mounted": "Mount source",
+    "diag.audit": "Body audit summary",
     "more.note": "Built-in and plugin skills are read-only; enable and install only touch writable roots.",
     "panel.install": "Install skill",
     "panel.trash": "Recycle bin",
@@ -678,7 +760,8 @@ function skSearchBlob(skill) {
     skill.source?.label ?? "",
     skill.source?.detail ?? "",
     skill.i18n?.simple ?? "",
-    skill.i18n?.professional ?? ""
+    skill.i18n?.professional ?? "",
+    (skill.tags ?? []).join(" ")
   ].join(" ").toLowerCase();
 }
 
@@ -1204,6 +1287,20 @@ var skApi = {
   },
   roots: function () {
     return skCall("/roots");
+  },
+  body: function (name, workspace) {
+    var query = "name=" + encodeURIComponent(name);
+    if (typeof workspace === "string" && workspace !== "") query += "&workspace=" + encodeURIComponent(workspace);
+    return skCall("/body?" + query);
+  },
+  ledger: function (workspace) {
+    return skCall("/ledger" + (typeof workspace === "string" && workspace !== "" ? "?workspace=" + encodeURIComponent(workspace) : ""));
+  },
+  tags: function (body) {
+    return skCall("/tags", { method: "POST", body: body });
+  },
+  migrate: function (body) {
+    return skCall("/migrate", { method: "POST", body: body, timeoutMs: 120000 });
   }
 };
 
@@ -2282,6 +2379,70 @@ function SkDetailDrawer(props) {
   var evidence = Array.isArray(skill.category?.evidence) ? skill.category.evidence : [];
   var triggers = skill.triggers ?? { values: [], provenance: "absent" };
   var usageRows = Array.isArray(skill.stats?.recent) ? skill.stats.recent.slice(-6).reverse() : [];
+  var tagState = (0, import_react.useState)(Array.isArray(skill.tags) ? skill.tags : []);
+  var tags = tagState[0];
+  var setTags = tagState[1];
+  var tagDraftState = (0, import_react.useState)("");
+  var tagDraft = tagDraftState[0];
+  var setTagDraft = tagDraftState[1];
+  var copiedState = (0, import_react.useState)(false);
+  var copied = copiedState[0];
+  var setCopied = copiedState[1];
+  var busyState = (0, import_react.useState)("");
+  var busy = busyState[0];
+  var setBusy = busyState[1];
+  (0, import_react.useEffect)(function () {
+    setTags(Array.isArray(skill.tags) ? skill.tags : []);
+    setTagDraft("");
+  }, [skill.name]);
+  var saveTags = function (next) {
+    var value = Array.isArray(next) ? next : [];
+    setTags(value);
+    void skApi.tags({ name: skill.name, tags: value, workspace: props.workspace }).then(function (result) {
+      if (!result.ok) {
+        props.onNotice("err", skT(lang, "notice.copyFailed", { reason: skApiError(result) }));
+        return;
+      }
+      setTags(Array.isArray(result.body.tags) ? result.body.tags : value);
+      props.onNotice("ok", skT(lang, "notice.tagsSaved"));
+    });
+  };
+  var commitTag = function () {
+    var value = tagDraft.trim();
+    if (value === "") return;
+    setTagDraft("");
+    if (tags.indexOf(value) !== -1) return;
+    saveTags(tags.concat([value]));
+  };
+  var copyBody = function () {
+    setBusy("copy");
+    void skApi.body(skill.name, props.workspace).then(function (result) {
+      if (!result.ok) {
+        props.onNotice("err", skT(lang, "notice.copyFailed", { reason: skApiError(result) }));
+        return;
+      }
+      var text = typeof result.body.content === "string" ? result.body.content : "";
+      if (navigator.clipboard === undefined || typeof navigator.clipboard.writeText !== "function") {
+        props.onNotice("err", skT(lang, "notice.copyFailed", { reason: "clipboard unavailable" }));
+        return;
+      }
+      return navigator.clipboard.writeText(text).then(function () {
+        setCopied(true);
+        window.setTimeout(function () { setCopied(false); }, 2000);
+      });
+    }).finally(function () { setBusy(""); });
+  };
+  var migrateSkill = function () {
+    setBusy("migrate");
+    void skApi.migrate({ name: skill.name, rootId: skill.management?.rootId, workspace: props.workspace }).then(function (result) {
+      if (!result.ok) {
+        props.onNotice("err", skT(lang, "notice.migrateRefused", { reason: skApiError(result) }));
+        return;
+      }
+      props.onNotice("ok", skT(lang, "notice.migrated", { path: result.body.link ?? "" }));
+      props.onClose();
+    }).finally(function () { setBusy(""); });
+  };
   (0, import_react.useEffect)(function () {
     var onKey = function (event) {
       if (event.key !== "Escape") return;
@@ -2397,6 +2558,47 @@ function SkDetailDrawer(props) {
             skill.updatedAt !== null && skill.updatedAt !== undefined ? sk("dd", null, skTime(skill.updatedAt)) : null
           ])
         ]),
+        skill.cost !== undefined && skill.cost !== null ? sk("div", { className: "sk_sec" }, [
+          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.cost")),
+          sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.costValue", { tokens: String(skill.cost.tokens), chars: String(skill.cost.chars) }))
+        ]) : null,
+        sk("div", { className: "sk_sec" }, [
+          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.audit")),
+          skill.audit === undefined || skill.audit === null || skill.audit.clean === true
+            ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.auditClean"))
+            : sk("ul", { className: "sk_bullets" }, skill.audit.findings.map(function (row) {
+              var level = row.severity === "high" ? "detail.auditHigh" : row.severity === "medium" ? "detail.auditMedium" : "detail.auditLow";
+              return sk("li", { key: "au-" + row.id }, "[" + skT(lang, level) + "] " + skT(lang, "detail.audit." + row.id) + " × " + String(row.count));
+            }))
+        ]),
+        sk("div", { className: "sk_sec" }, [
+          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.tags")),
+          tags.length === 0
+            ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.tagsEmpty"))
+            : sk("div", { className: "sk_tagRow" }, tags.map(function (tag) {
+              return sk("button", {
+                key: "tg-" + tag,
+                className: "sk_tagChip",
+                type: "button",
+                title: skT(lang, "detail.tags"),
+                onClick: function () { saveTags(tags.filter(function (row) { return row !== tag; })); }
+              }, tag + " ✕");
+            })),
+          sk("div", { className: "sk_tagRow" }, [
+            sk("input", {
+              className: "sk_tagInput",
+              type: "text",
+              value: tagDraft,
+              placeholder: skT(lang, "detail.tagsPlaceholder"),
+              onChange: function (event) { setTagDraft(event.target.value); },
+              onKeyDown: function (event) {
+                if (event.key !== "Enter") return;
+                event.preventDefault();
+                commitTag();
+              }
+            })
+          ])
+        ]),
         sk("div", { className: "sk_sec" }, [
           sk("div", { className: "sk_secLabel" }, skT(lang, "detail.usage")),
           usageRows.length === 0
@@ -2424,6 +2626,8 @@ function SkDetailDrawer(props) {
           disabled: !state.usable,
           onClick: function () { props.onUse(skill); }
         }, load.phase === "loading" ? skT(lang, "action.cancel") : skT(lang, "action.use")),
+        sk("button", { className: "sk_detailBtn", type: "button", disabled: busy === "copy", onClick: copyBody }, copied ? skT(lang, "action.copied") : skT(lang, "action.copy")),
+        writable ? sk("button", { className: "sk_detailBtn", type: "button", disabled: busy === "migrate", onClick: migrateSkill }, skT(lang, "action.migrate")) : null,
         writable ? sk("label", { className: "sk_toggle" }, [skT(lang, "detail.enableModel"), sk("button", {
           className: "sk_switch",
           type: "button",
@@ -2463,7 +2667,13 @@ function SkDetailDrawer(props) {
  */
 function StationPanelDialog(props) {
   var lang = props.lang;
-  var title = skT(lang, props.panel === "install" ? "panel.install" : "panel.trash");
+  var title = skT(lang, props.panel === "install"
+    ? "panel.install"
+    : props.panel === "ledger"
+      ? "ledger.title"
+      : props.panel === "diagnostics"
+        ? "diag.title"
+        : "panel.trash");
   (0, import_react.useEffect)(function () {
     var onKey = function (event) {
       if (event.key !== "Escape") return;
@@ -2490,7 +2700,11 @@ function StationPanelDialog(props) {
       ]),
       sk("div", { className: "sk_panelBody" }, props.panel === "install"
         ? skH(InstallTab, { workspace: props.workspace })
-        : skH(TrashTab, {}))
+        : props.panel === "ledger"
+          ? skH(SkLedgerPanel, { lang: lang, workspace: props.workspace })
+          : props.panel === "diagnostics"
+            ? skH(SkDiagPanel, { lang: lang, workspace: props.workspace })
+            : skH(TrashTab, {}))
     ])
   ]);
 }
@@ -2551,6 +2765,8 @@ function SkMoreMenu(props) {
       sk("div", { className: "sk_moreSep" }),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("install"); setOpen(false); } }, skT(lang, "more.install")),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("trash"); setOpen(false); } }, skT(lang, "more.trash")),
+      sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("ledger"); setOpen(false); } }, skT(lang, "more.ledger")),
+      sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("diagnostics"); setOpen(false); } }, skT(lang, "more.diagnostics")),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onRefresh(); setOpen(false); } }, skT(lang, "more.refresh")),
       sk("div", { className: "sk_moreSep" }),
       sk("div", { className: "sk_moreLabel" }, skT(lang, "more.language")),
@@ -2575,6 +2791,142 @@ function SkMoreMenu(props) {
 }
 
 // #endregion
+
+// #region ledger + diagnostics ---------------------------------------------------
+/**
+ * Usage ledger panel: totals, a real 14-day trend and per-skill rows.
+ * Every ratio is null-safe: no denominator means an em dash, never 0% or 100%.
+ * @param {{lang: 'zh'|'en', workspace: string}} props - props.
+ * @returns {object} panel body.
+ */
+function SkLedgerPanel(props) {
+  var lang = props.lang;
+  var dataState = (0, import_react.useState)(null);
+  var data = dataState[0];
+  var setData = dataState[1];
+  var errorState = (0, import_react.useState)("");
+  var error = errorState[0];
+  var setError = errorState[1];
+  (0, import_react.useEffect)(function () {
+    var live = true;
+    void skApi.ledger(props.workspace ?? "").then(function (result) {
+      if (!live) return;
+      if (!result.ok) {
+        setError(skApiError(result));
+        return;
+      }
+      setData(result.body);
+    }).catch(function (thrown) {
+      if (live) setError(String(thrown));
+    });
+    return function () { live = false; };
+  }, [props.workspace]);
+  if (data === null) return sk("div", { className: "sk_loading" }, error !== "" ? error : skT(lang, "loading"));
+  var totals = data.totals ?? {};
+  var trend = Array.isArray(data.trend) ? data.trend : [];
+  var peak = 1;
+  trend.forEach(function (row) { if (row.value > peak) peak = row.value; });
+  var rate = function (value) {
+    return value === null || value === undefined ? skT(lang, "ledger.noRate") : String(Math.round(value * 100)) + "%";
+  };
+  var rows = Array.isArray(data.skills) ? data.skills.slice(0, 50) : [];
+  return sk("div", { className: "sk_ledger" }, [
+    sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "ledger.intro")),
+    sk("div", { className: "sk_ledgerTotals" }, [
+      sk("div", { key: "t-loads", className: "sk_ledgerStat" }, [sk("span", null, skT(lang, "ledger.loads")), sk("strong", null, String(totals.loads ?? 0))]),
+      sk("div", { key: "t-invokes", className: "sk_ledgerStat" }, [sk("span", null, skT(lang, "ledger.invokes")), sk("strong", null, String(totals.invokes ?? 0))]),
+      sk("div", { key: "t-success", className: "sk_ledgerStat" }, [sk("span", null, skT(lang, "ledger.success")), sk("strong", null, rate(totals.successRate))]),
+      sk("div", { key: "t-adoption", className: "sk_ledgerStat" }, [sk("span", null, skT(lang, "ledger.adoption")), sk("strong", null, rate(totals.adoptionRate))])
+    ]),
+    sk("div", { className: "sk_secLabel" }, skT(lang, "ledger.trend")),
+    sk("div", { className: "sk_trend" }, trend.map(function (row) {
+      return sk("div", {
+        key: "td-" + row.date,
+        className: "sk_trendBar",
+        title: row.date + " · " + String(row.value),
+        style: { height: String(Math.max(2, Math.round(row.value / peak * 100))) + "%" }
+      });
+    })),
+    rows.length === 0
+      ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "ledger.empty"))
+      : sk("table", { className: "sk_hist sk_ledgerTable" }, [
+        sk("thead", { key: "th" }, [sk("tr", null, [
+          sk("th", null, skT(lang, "ledger.skill")),
+          sk("th", null, skT(lang, "ledger.loads")),
+          sk("th", null, skT(lang, "ledger.invokes")),
+          sk("th", null, skT(lang, "ledger.success")),
+          sk("th", null, skT(lang, "ledger.adoption")),
+          sk("th", null, skT(lang, "ledger.lastUsed"))
+        ])]),
+        sk("tbody", { key: "tb" }, rows.map(function (row) {
+          return sk("tr", { key: "lg-" + row.name }, [
+            sk("td", null, row.name),
+            sk("td", null, String(row.loads)),
+            sk("td", null, String(row.invokes)),
+            sk("td", null, rate(row.successRate)),
+            sk("td", null, rate(row.adoptionRate)),
+            sk("td", null, row.lastUsedAt > 0 ? skTime(row.lastUsedAt) : skT(lang, "ledger.noRate"))
+          ]);
+        }))
+      ])
+  ]);
+}
+
+/**
+ * Diagnostics panel: skipped files, invalid frontmatter and mount-scan
+ * failures, plus the aggregate body-audit summary.
+ * @param {{lang: 'zh'|'en', workspace: string}} props - props.
+ * @returns {object} panel body.
+ */
+function SkDiagPanel(props) {
+  var lang = props.lang;
+  var dataState = (0, import_react.useState)(null);
+  var data = dataState[0];
+  var setData = dataState[1];
+  var errorState = (0, import_react.useState)("");
+  var error = errorState[0];
+  var setError = errorState[1];
+  (0, import_react.useEffect)(function () {
+    var live = true;
+    void skApi.index(props.workspace ?? "").then(function (result) {
+      if (!live) return;
+      if (!result.ok) {
+        setError(skApiError(result));
+        return;
+      }
+      setData(result.body);
+    }).catch(function (thrown) {
+      if (live) setError(String(thrown));
+    });
+    return function () { live = false; };
+  }, [props.workspace]);
+  if (data === null) return sk("div", { className: "sk_loading" }, error !== "" ? error : skT(lang, "loading"));
+  var diagnostics = Array.isArray(data.diagnostics) ? data.diagnostics : [];
+  var audit = data.audit ?? null;
+  var level = function (severity) {
+    return severity === "high" ? "detail.auditHigh" : severity === "medium" ? "detail.auditMedium" : "detail.auditLow";
+  };
+  return sk("div", { className: "sk_diag" }, [
+    sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "diag.intro")),
+    sk("div", { className: "sk_sec" }, [
+      sk("div", { className: "sk_secLabel" }, skT(lang, "diag.audit")),
+      audit === null || audit.clean === true
+        ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.auditClean"))
+        : sk("ul", { className: "sk_bullets" }, audit.findings.map(function (row) {
+          return sk("li", { key: "da-" + row.id }, "[" + skT(lang, level(row.severity)) + "] " + skT(lang, "detail.audit." + row.id) + " × " + String(row.count) + " · " + String(row.skills) + " skills");
+        }))
+    ]),
+    sk("div", { className: "sk_sec" }, [
+      sk("div", { className: "sk_secLabel" }, skT(lang, "diag.title")),
+      diagnostics.length === 0
+        ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "diag.empty"))
+        : sk("ul", { className: "sk_bullets" }, diagnostics.slice(0, 80).map(function (row, index) {
+          var prefix = row.area === "mounted" ? skT(lang, "diag.mounted") : skT(lang, "diag.writable");
+          return sk("li", { key: "dg-" + String(index) }, "[" + prefix + "] " + row.message);
+        }))
+    ])
+  ]);
+}
 
 // #region browse -----------------------------------------------------------------
 /**
@@ -2978,6 +3330,8 @@ function SkillBrowse(props) {
     detail !== null ? skH(SkDetailDrawer, {
       skill: detail,
       lang: lang,
+      workspace: props.workspace,
+      onNotice: props.onNotice,
       onClose: function () { setDetail(null); },
       onUse: useSkill,
       onToggle: toggleSkill
@@ -3951,7 +4305,7 @@ var css = `
 
 /* ------------------------------- detail drawer ---------------------------- */
 .sk_drawerScrim{position:absolute;inset:0;background:rgba(0,0,0,.24);z-index:20}
-.sk_drawer{position:absolute;top:0;right:0;bottom:0;width:440px;max-width:92vw;z-index:21;display:flex;flex-direction:column;background:var(--dsw-alias-bg-layer-1,#17181b);border-left:1px solid var(--dsw-alias-border-l2);box-shadow:-24px 0 60px rgba(0,0,0,.22)}
+.sk_drawer{position:absolute;top:0;right:0;bottom:0;width:min(760px,92vw);z-index:21;display:flex;flex-direction:column;background:var(--dsw-alias-bg-layer-1,#17181b);border-left:1px solid var(--dsw-alias-border-l2);box-shadow:-24px 0 60px rgba(0,0,0,.22)}
 .sk_drawerHead{padding:18px 22px 13px;border-bottom:1px solid var(--dsw-alias-border-l2);flex:none}
 .sk_drawerTop{display:flex;align-items:flex-start;gap:12px}
 .sk_drawerTitle{flex:1;min-width:0}
@@ -4092,6 +4446,23 @@ var css = `
 @media (prefers-reduced-motion:reduce){
   .sk_switch:after{transition:none}
 }
+
+/* v0.8: tags, body audit, injection cost, ledger and diagnostics */
+.sk_tagRow{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}
+.sk_tagChip{height:22px;padding:0 8px;border:1px solid var(--dsw-alias-border-l2);border-radius:999px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);font:inherit;font-size:11px;cursor:pointer}
+.sk_tagChip:hover{border-color:var(--dsw-alias-border-l3);color:var(--dsw-alias-label-primary)}
+.sk_tagInput{width:100%;height:26px;padding:0 8px;border:1px solid var(--dsw-alias-border-l2);border-radius:7px;background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:12px}
+.sk_tagInput:focus{outline:none;border-color:var(--dsw-alias-border-l3)}
+.sk_ledgerTotals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0 16px}
+.sk_ledgerStat{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-alias-bg-layer-2)}
+.sk_ledgerStat span{font-size:11px;color:var(--dsw-alias-label-tertiary)}
+.sk_ledgerStat strong{font-size:18px;color:var(--dsw-alias-label-primary);font-variant-numeric:tabular-nums}
+.sk_trend{display:flex;align-items:flex-end;gap:3px;height:56px;margin:6px 0 16px}
+.sk_trendBar{flex:1;min-height:2px;background:var(--dsw-alias-link,#4f7cff);opacity:.7;border-radius:2px 2px 0 0}
+.sk_ledgerTable th{text-align:left;font-weight:600;font-size:11px;color:var(--dsw-alias-label-tertiary);padding:0 8px 6px 0;border-bottom:1px solid var(--dsw-alias-border-l2)}
+.sk_ledgerTable td{padding:5px 8px 5px 0;border-bottom:1px solid var(--dsw-alias-border-l2);font-size:11.5px}
+.sk_ledgerTable td:first-child{color:var(--dsw-alias-label-primary)}
+.sk_diag .sk_sec{margin-top:12px}
 
 `;
 function injectStyles() {
