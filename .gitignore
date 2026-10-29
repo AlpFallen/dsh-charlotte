@@ -1,6 +1,7 @@
 node_modules/
 .DS_Store
 *.log
+*.bak
 *.before-publish
 .gh-token
 backups/

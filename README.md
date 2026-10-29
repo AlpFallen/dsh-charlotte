@@ -8,21 +8,23 @@
 
 ## 安装
 
+桌面应用：设置 → 插件 → 添加插件 → 安装第三方插件，填 `https://github.com/AlpFallen/dsh-charlotte`（该入口同样接受 npm 包名和本地目录），装完重启应用，侧边栏设置按钮上方会出现「dsh-charlotte」入口。桌面 profile 由 App 托管，CLI 的 `dsh plugin --profile desktop add` 会被拒绝（`profile "desktop" is managed exclusively by the Electron application`）。
+
+命令行（web profile）：
+
 ```sh
-dsh plugin --profile desktop add github:AlpFallen/dsh-charlotte
+dsh plugin --profile web add github:AlpFallen/dsh-charlotte
 ```
 
-装完重启应用：侧边栏设置按钮上方会出现「dsh-charlotte」入口，设置页里也有对应分区。
+本机运行环境是桌面 App 内置的 DSH `0.2.1-rc.3`（Node `24.21.0`），本插件在这套环境上加载运行，下面的截图也来自它；另外用 CLI 安装的 DSH `0.1.5-rc.2` 做过接口比对。宿主接口（`webServer.register` 的 `WebRoute`、`agent/pre-step` waterfall、`ctx.skills`）两版形状一致；客户端槽位（`conversation.input.dock`）在 0.2 里改过契约（`PropsRenderFactories`、草稿编辑器拆分），0.2.1-rc.3 上界面可用，更新的 0.2.x 版本未验证。
 
-开发与验证基线是 DSH `0.1.5-rc.2`、Node `24.19.0`。它用到的宿主接口（`webServer.register` 的 `WebRoute`、`agent/pre-step` waterfall、`conversation.input.dock` 槽位、`ctx.skills`）在 `0.2.1-rc.2` 里都还在且形状一致，但 0.2 的客户端槽位契约变了（`PropsRenderFactories`、草稿编辑器拆分），本插件没有在 0.2.x 上真机跑过，0.2.x 按未验证对待。
-
-仓库里带着编译好的客户端产物（`client/client.js`），用 `github:` 安装不需要构建。本地开发时克隆后把 profile 依赖改成 `"link:/absolute/path/to/dsh-charlotte"` 再 `pnpm install`，然后重启应用。
+仓库里带着编译好的客户端产物（`client/client.js`），从 GitHub 安装不需要构建。本地开发时克隆后把 profile 依赖改成 `"link:/absolute/path/to/dsh-charlotte"` 再 `pnpm install`，然后重启应用。
 
 ## 截图
 
-| 启动器首页 | 输入框上方推荐卡 |
+| 启动器首页 | 推荐卡（局部） |
 |---|---|
-| ![启动器首页：推荐卡、功能分类计数、按调用频率排列的技能行](mockups/preview/home-v0.7.png) | ![输入框上方的推荐卡，带「使用」「忽略」](mockups/preview/dock-v0.7.png) |
+| ![启动器首页：推荐卡、功能分类计数、按调用频率排列的技能行](mockups/preview/home-v0.7.png) | ![推荐卡：名称、推荐原因、使用与忽略，截图裁到卡片区域](mockups/preview/dock-v0.7.png) |
 
 | 全部技能 | 详情抽屉 |
 |---|---|
