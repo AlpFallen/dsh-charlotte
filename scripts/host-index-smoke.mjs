@@ -108,6 +108,9 @@ await writeFile(stateFile, JSON.stringify({
 }), 'utf8');
 await writeFile(overrideFile, JSON.stringify({ [mountedPath]: { disabled: true } }), 'utf8');
 
+const pluginBodyFile = join(mountDir, 'plugin-body.md');
+await writeFile(pluginBodyFile, '---\nname: demo-plugin-path\ndescription: 由插件注册、带真实路径的技能。\n---\n\nplugin body\n', 'utf8');
+
 const registrySummaries = [
     {
         name: 'demo-review',
@@ -116,6 +119,14 @@ const registrySummaries = [
         source: 'user-dsh',
         provider: 'filesystem',
         path: join(dupRegistryDir, 'SKILL.md'),
+    },
+    {
+        name: 'demo-plugin-path',
+        description: '由插件注册、带真实路径的技能。',
+        invocation: { modelInvocable: true, userInvocable: true },
+        source: 'runtime',
+        provider: 'runtime',
+        path: pluginBodyFile,
     },
     {
         name: 'demo-mounted',
@@ -766,6 +777,18 @@ await check('corrupted state is tolerated instead of breaking the launcher', asy
     });
     const reread = await new LauncherState(broken).read();
     assert.equal(reread.prefs.x.favorite, true);
+});
+
+await check('GET /body reads the host-resolved path and refuses virtual skills', async () => {
+    const writable = await api('GET', '/body?name=demo-review');
+    assert.equal(writable.status, 200);
+    assert.match(writable.body.content, /demo-review|diff/i);
+    assert.equal('path' in writable.body, false, 'the host path is not leaked to the client');
+    const registry = await api('GET', '/body?name=demo-plugin-path');
+    assert.equal(registry.status, 200);
+    assert.match(registry.body.content, /plugin body/);
+    const virtual = await api('GET', '/body?name=runtime-skill');
+    assert.equal(virtual.status, 404);
 });
 
 await check('the two mutations reject non-POST methods', async () => {
