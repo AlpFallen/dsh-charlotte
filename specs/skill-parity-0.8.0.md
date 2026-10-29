@@ -19,7 +19,7 @@
 ## 范围与验收
 
 1. **正文审计**
-   - 宿主对每条读到的正文检查：裸 ESC（high）、Unicode 标签字符 U+E0000–E007F（high）、双向控制符（high）、其他 C0（medium）、零宽字符（low）。
+   - 宿主对每条读到的正文检查：裸 ESC（high）、Unicode 标签字符 U+E0000–E007F（high）、双向控制符（high）、其他 C0 与 DEL（medium）、零宽字符（low）。ESC 单独计数，不重复计入 medium。
    - 每条索引记录带 `audit: { findings: [{id, severity, count}], clean, severity }`；整份索引带聚合 `audit`，含每个 finding 命中的技能数。
    - 验收：`host-index-smoke` 的「the index audits skill bodies for hidden characters」通过；干净正文 `clean === true`。
 
@@ -29,7 +29,7 @@
    - 验收：诊断面板能列出被跳过的路径；`enumerateRoot(root, issues)` 不改变原有枚举结果。
 
 3. **注入开销**
-   - `estimateInjection(text, extra)` 返回 `{chars, cjk, tokens, method: 'heuristic'}`；CJK 一字一 token，ASCII 四字符一 token，其他两码点一 token。
+   - `estimateInjection(text, extra)` 返回 `{chars, cjk, tokens, method: 'heuristic'}`；CJK 一字一 token，ASCII 四字符一 token，其他两码点一 token，且最少计 1 个 token（空正文不显示 0）。
    - 索引记录带 `cost`；界面标注「估算，不是分词器」。
    - 验收：`injection cost is an explicit heuristic and scales with the body` 通过；正文为空时仍计算名称与描述的成本。
 
@@ -40,7 +40,7 @@
 
 5. **共享池迁移**
    - `POST /migrate` 把一个可写根里的目录技能复制进 `~/.agents/skills/<name>`（可用 `DSH_AGENTS_HOME` 覆盖），验证 `SKILL.md` 存在，再把原目录换成相对软链。
-   - 拒绝情形返回 409 与稳定 code：`already-linked`、`already-in-pool`、`target-exists`、`not-a-directory`、`missing-source`。
+   - 拒绝情形返回 409 与稳定 code：`already-linked`、`already-in-pool`、`target-exists`、`not-a-directory`、`missing-source`、`invalid-name`。
    - 任一步失败都还原原目录，不允许半迁移。
    - 验收：`POST /migrate moves a skill into the shared pool and leaves a relative link` 通过，第二次调用返回 409 / `already-linked`。
 
@@ -56,10 +56,14 @@
 - 覆盖 provider 式启停重构（@lokda 的做法）。现有覆盖表可用，重构风险大于收益。
 - DSH 0.1.5 双版本兼容。运行环境是桌面 App 内置的 0.2.1-rc.3。
 
+## 接口约束
+
+`/tags` 与 `/migrate` 只接受 POST；其它方法返回 405。`/body` 只读宿主已解析的路径（可写根内，或挂载 provider 的现存候选），不返回主机绝对路径。
+
 ## 基线与测试口径
 
 - 运行基线：桌面 App 内置 DSH `0.2.1-rc.3`、Node `24.21.0`；更新的 0.2.x 未验证。
-- 测试：`npm test` = 30 客户端 + 16 宿主契约 + 41 索引/推荐；`node scripts/render-probe.mjs` = 23 条渲染探针。
+- 测试：`npm test` = 30 客户端 + 16 宿主契约 + 42 索引/推荐；`node scripts/render-probe.mjs` = 23 条渲染探针。
 
 ## 文件地图
 
@@ -78,3 +82,4 @@
 - 迁移有一个无法完全消除的崩溃窗口：`rename(source → parked)` 与 `symlink` 之间进程被杀，原路径会缺失，只剩 `<source>.migrating-<pid>`。正常失败路径全部还原，崩溃路径需要人工恢复，暂不做启动时自动修复。
 - 台账按本地日历日分桶、按本地时区展示；同一份状态在不同时区会显示不同的日期标签。这是产品选择，不是缺陷。
 - 客户端界面未在重启后的 App 里逐项点过，只有渲染探针与 HTML 字符串层面的验证。
+- 标签按技能名全局存储，不区分工作区：同名技能在两个工作区共用一份标签。

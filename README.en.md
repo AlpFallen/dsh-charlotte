@@ -118,7 +118,7 @@ plugins:
 ```sh
 npm install
 npm run build                  # rebuild client/client.js from client.baseline.js + revamp/
-npm test                       # 30 client + 16 host-contract + 41 index/recommend/i18n checks
+npm test                       # 30 client + 16 host-contract + 42 index/recommend/i18n checks
 npm run check:zh               # simple + professional coverage and hash check for every skill
 node scripts/host-smoke.mjs    # host contract only: config, roots, provider, legacy API
 node scripts/host-index-smoke.mjs  # index, categories, recommendations, permissions, dependencies, path install
