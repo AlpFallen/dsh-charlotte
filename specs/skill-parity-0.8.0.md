@@ -59,7 +59,7 @@
 ## 基线与测试口径
 
 - 运行基线：桌面 App 内置 DSH `0.2.1-rc.3`、Node `24.21.0`；更新的 0.2.x 未验证。
-- 测试：`npm test` = 30 客户端 + 16 宿主契约 + 40 索引/推荐；`node scripts/render-probe.mjs` = 23 条渲染探针。
+- 测试：`npm test` = 30 客户端 + 16 宿主契约 + 41 索引/推荐；`node scripts/render-probe.mjs` = 23 条渲染探针。
 
 ## 文件地图
 
@@ -72,7 +72,9 @@
 | 迁移 | `lib/pool.js`、`lib/api.js` |
 | 标签 | `lib/state.js`、`lib/api.js`、`revamp/launcher.js`（搜索与详情） |
 
-## 已知未验证
+## 已知限制与未验证
 
 - 共享池迁移在真机 `~/.agents/skills` 上未跑过，只在 `DSH_AGENTS_HOME` 指向沙箱时验证。
+- 迁移有一个无法完全消除的崩溃窗口：`rename(source → parked)` 与 `symlink` 之间进程被杀，原路径会缺失，只剩 `<source>.migrating-<pid>`。正常失败路径全部还原，崩溃路径需要人工恢复，暂不做启动时自动修复。
+- 台账按本地日历日分桶、按本地时区展示；同一份状态在不同时区会显示不同的日期标签。这是产品选择，不是缺陷。
 - 客户端界面未在重启后的 App 里逐项点过，只有渲染探针与 HTML 字符串层面的验证。
