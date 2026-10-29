@@ -11,9 +11,6 @@
   "bugs": {
     "url": "https://github.com/AlpFallen/dsh-charlotte/issues"
   },
-  "engines": {
-    "node": ">=22"
-  },
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -30,8 +27,7 @@
     "cordis.patch.yml",
     "locale/*.json",
     "README.md",
-    "README.zh.md",
-    "README.revamp.md",
+    "README.en.md",
     "LICENSE",
     "NOTICE.md",
     "THIRD_PARTY_NOTICES.md"
