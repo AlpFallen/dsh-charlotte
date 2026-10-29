@@ -1,7 +1,7 @@
 {
   "name": "dsh-charlotte",
   "version": "0.8.0",
-  "description": "dsh-charlotte — skill launcher for DeepSeek Harness: a smart-recommendation home backed by the live conversation and real usage history (1 primary + up to 2 extra picks, permission-checked), a review-before-send complete next step, adoption counters, a collapsible recommendation card and one canonical Skill intro shared by the card, list and detail drawer, an index-driven all-skills page, favourites/category navigation, a right-side detail drawer, a host-side recommendation engine with cooldown/ignore rules, and a load chain that authorizes on the host before staging the official /name token. Mounts Claude Code / Codex / ZCode / Cursor / Gemini skill directories read-only and keeps enable/install/delete/trash management. · dsh-charlotte：默认智能推荐、可检查后发送的完整下一步、可收起推荐卡、三处统一的技能简介、采纳漏斗与真实加载链路；同时只读挂载各家 agent 技能库并保留开关、安装、删除与回收站。",
+  "description": "dsh-charlotte — skill launcher for DeepSeek Harness: a smart-recommendation home backed by the live conversation and real usage history (1 primary + up to 2 extra picks, permission-checked), adoption counters, a collapsible recommendation card and one canonical Skill intro shared by the card, list and detail drawer, an index-driven all-skills page, favourites/category navigation, a right-side detail drawer, a host-side recommendation engine with cooldown/ignore rules, and a load chain that authorizes on the host before staging the official /name token. Mounts Claude Code / Codex / ZCode / Cursor / Gemini skill directories read-only and keeps enable/install/delete/trash management. · dsh-charlotte：默认智能推荐、可收起推荐卡、三处统一的技能简介、采纳漏斗与真实加载链路；同时只读挂载各家 agent 技能库并保留开关、安装、删除与回收站。",
   "author": "dsh-charlotte",
   "repository": {
     "type": "git",

@@ -118,7 +118,7 @@ plugins:
 ```sh
 npm install
 npm run build                  # 从 client.baseline.js + revamp/ 重建 client/client.js
-npm test                       # 30 客户端 + 16 宿主契约 + 43 索引/推荐/中文化集成
+npm test                       # 29 客户端 + 16 宿主契约 + 44 索引/推荐/中文化集成
 DSH_WEB_URL=http://127.0.0.1:<当前端口> npm run check:zh   # 两段中文的覆盖与哈希校验
 node scripts/host-smoke.mjs    # 只测宿主契约：配置、根目录、provider、旧 API
 node scripts/host-index-smoke.mjs  # 索引、分类、推荐、权限、依赖、目录安装

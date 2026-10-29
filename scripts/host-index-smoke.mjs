@@ -891,6 +891,21 @@ await check('POST /tags stores tags and the index exposes them', async () => {
     assert.equal(missing.status, 404);
 });
 
+await check('a skill used in the session is not recommended again', async () => {
+    const session = 'rec-used';
+    const first = await api('POST', '/recommend', { sessionId: session, intent: reviewIntent });
+    assert.equal(first.body.decision, 'recommend');
+    const picked = first.body.items[0].name;
+    await api('POST', '/event', { sessionId: session, name: picked, phase: 'recommended' });
+    const use = await api('POST', '/use', { sessionId: session, name: picked });
+    assert.equal(use.status, 200);
+    const nextTask = await api('POST', '/recommend', { sessionId: session, intent: mailIntent });
+    assert.ok(nextTask.body.items.every(item => item.name !== picked), 'the used skill is not offered again in this session');
+    // A different session still sees it.
+    const otherSession = await api('POST', '/recommend', { sessionId: 'rec-used-other', intent: reviewIntent });
+    assert.ok(otherSession.body.items.some(item => item.name === picked), 'another session is unaffected');
+});
+
 await check('POST /migrate moves a skill into the shared pool and leaves a relative link', async () => {
     const before = await lstat(userSkills + '/demo-mail');
     assert.equal(before.isSymbolicLink(), false);

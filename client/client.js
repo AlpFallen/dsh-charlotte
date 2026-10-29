@@ -312,7 +312,6 @@ var SK_STRINGS = {
     "usage.accepted": "已采纳推荐",
     "usage.dismissed": "已忽略推荐",
     "notice.loaded": "已放入输入框：发送后技能才会生效。",
-    "notice.loadedNext": "已填入完整下一步，检查后发送。",
     "notice.loadedSession": "已放入该会话的输入框。",
     "notice.failed": "加载失败：{reason}",
     "notice.cancelled": "已取消加载。",
@@ -370,7 +369,6 @@ var SK_STRINGS = {
     "dock.ignore": "忽略",
     "dock.loading": "正在校验权限…",
     "dock.loaded": "已放入输入框，发送后生效。",
-    "dock.loadedNext": "已填入完整下一步，检查后发送。",
     "dock.failed": "无法加载：{reason}",
     "dock.ignored": "已忽略，本次任务不再推荐。",
     "dock.reason": "推荐原因",
@@ -535,7 +533,6 @@ var SK_STRINGS = {
     "usage.accepted": "Recommendation accepted",
     "usage.dismissed": "Recommendation dismissed",
     "notice.loaded": "Added to the composer: the skill takes effect when you send.",
-    "notice.loadedNext": "The next step is filled in; review it and send.",
     "notice.loadedSession": "Added to that conversation's composer.",
     "notice.failed": "Could not load: {reason}",
     "notice.cancelled": "Load cancelled.",
@@ -593,7 +590,6 @@ var SK_STRINGS = {
     "dock.ignore": "Ignore",
     "dock.loading": "Checking permissions…",
     "dock.loaded": "Added to the composer; it applies when you send.",
-    "dock.loadedNext": "The next step is filled in; review and send.",
     "dock.failed": "Cannot load: {reason}",
     "dock.ignored": "Ignored; this task will not be suggested again.",
     "dock.reason": "Why",
@@ -957,41 +953,6 @@ function skHomeReason(item, lang) {
   if (typeof item.reason === "string" && item.reason !== "") return item.reason;
   if (typeof item.reasonEn === "string" && item.reasonEn !== "") return item.reasonEn;
   return skT(lang, "home.reason.history");
-}
-
-/**
- * Compose the complete next step staged in the composer when a recommendation
- * is accepted.
- *
- * The user's own latest sentence is the payload when we have it; otherwise the
- * skill's declared use case or purpose. This is deterministic — no model call,
- * no invented task — and it never sends anything: the user reviews and presses
- * send themselves.
- * @param {object} source - skill record or recommendation item.
- * @param {string} intent - the user's latest sentence, when known.
- * @param {'zh'|'en'} lang - active language.
- * @returns {string} continuation instruction.
- */
-function skContinuationPrompt(source, intent, lang) {
-  var text = String(intent ?? "").replace(/\s+/g, " ").trim();
-  if (text.length > 160) text = text.slice(0, 159) + "…";
-  if (text !== "") {
-    return lang === "zh"
-      ? "基于我上一条消息继续推进：“" + text + "”。信息不够就先问我。"
-      : "Continue from my previous message: \"" + text + "\". Ask me first if anything is missing.";
-  }
-  var useCases = Array.isArray(source?.useCases) ? source.useCases : [];
-  // Prefer a cue in the active UI language: the Chinese summary for zh, the
-  // declared use case for en.
-  var cue = lang === "zh"
-    ? useCases[0] ?? source?.i18n?.simple ?? source?.simple ?? source?.purpose ?? source?.description ?? ""
-    : useCases[0] ?? source?.purpose ?? source?.description ?? source?.i18n?.simple ?? source?.simple ?? "";
-  if (lang === "zh" && typeof source?.i18n?.simple === "string" && source.i18n.simple !== "") cue = source.i18n.simple;
-  cue = skClip(cue, 160);
-  if (cue !== "") {
-    return lang === "zh" ? "请用这个技能帮我：" + cue : "Use this skill to help me: " + cue;
-  }
-  return lang === "zh" ? "请用这个技能继续推进我手头的事。" : "Use this skill to move my current task forward.";
 }
 
 /**
@@ -2075,7 +2036,7 @@ function SkHomeHero(props) {
         type: "button",
         disabled: !state.usable && !busy,
         onClick: function () {
-          props.onUse(skill, skContinuationPrompt(skill, props.intent, lang), true);
+          props.onUse(skill, true);
         }
       }, label),
       sk("button", {
@@ -2120,7 +2081,7 @@ function SkHomeRow(props) {
         disabled: !state.usable && !busy,
         onClick: function (event) {
           event.stopPropagation();
-          props.onUse(skill, skContinuationPrompt(skill, props.intent, lang), true);
+          props.onUse(skill, true);
         }
       }, label),
       sk("button", {
@@ -3160,15 +3121,14 @@ function SkillBrowse(props) {
     });
   };
 
-  var useSkill = function (skill, continuation, recommendation) {
-    var stage = typeof continuation === "string" ? continuation : "";
+  var useSkill = function (skill, recommendation) {
     if (recommendation === true) {
       var acceptedSession = skCurrentSessionId();
       if (acceptedSession !== "") skReportEvent(skill.name, "accepted", "", props.workspace, acceptedSession);
     }
-    void skUseSkill(skill.name, props.workspace, { continuation: stage }).then(function (outcome) {
+    void skUseSkill(skill.name, props.workspace, {}).then(function (outcome) {
       if (outcome.ok) {
-        props.onNotice("ok", skT(skGetLang(), outcome.continuation === true ? "notice.loadedNext" : "notice.loaded"));
+        props.onNotice("ok", skT(skGetLang(), "notice.loaded"));
         return;
       }
       if (outcome.cancelled === true) {
@@ -3498,7 +3458,6 @@ if (typeof window !== "undefined" && window.__DSH_CHARLOTTE_TEST__ === true) {
     skHomePendingEntries: skHomePendingEntries,
     skHomeReason: skHomeReason,
     skSkillIntro: skSkillIntro,
-    skContinuationPrompt: skContinuationPrompt,
     skFallbackHome: skFallbackHome,
     skFavGroups: skFavGroups,
     strings: SK_STRINGS,
@@ -3709,12 +3668,12 @@ function SkRecommendDock(props) {
     setBusy(item.name);
     setStatus({ kind: null, text: skT(lang, "dock.loading") });
     if (sessionId !== "") skReportEvent(item.name, "accepted", "", "", sessionId);
-    var continuation = skContinuationPrompt(item, intent, lang);
-    void skUseSkill(item.name, "", { continuation: continuation }).then(function (outcome) {
+    // Load stages the skill token and nothing else: the user writes the task.
+    void skUseSkill(item.name, "", {}).then(function (outcome) {
       if (!aliveRef.current) return;
       setBusy("");
       if (outcome.ok) {
-        setStatus({ kind: "ok", text: skT(lang, continuation !== "" ? "dock.loadedNext" : "dock.loaded") });
+        setStatus({ kind: "ok", text: skT(lang, "dock.loaded") });
         setItems(items.filter(function (row) { return row.name !== item.name; }));
         return;
       }

@@ -198,12 +198,12 @@ function SkRecommendDock(props) {
     setBusy(item.name);
     setStatus({ kind: null, text: skT(lang, "dock.loading") });
     if (sessionId !== "") skReportEvent(item.name, "accepted", "", "", sessionId);
-    var continuation = skContinuationPrompt(item, intent, lang);
-    void skUseSkill(item.name, "", { continuation: continuation }).then(function (outcome) {
+    // Load stages the skill token and nothing else: the user writes the task.
+    void skUseSkill(item.name, "", {}).then(function (outcome) {
       if (!aliveRef.current) return;
       setBusy("");
       if (outcome.ok) {
-        setStatus({ kind: "ok", text: skT(lang, continuation !== "" ? "dock.loadedNext" : "dock.loaded") });
+        setStatus({ kind: "ok", text: skT(lang, "dock.loaded") });
         setItems(items.filter(function (row) { return row.name !== item.name; }));
         return;
       }
