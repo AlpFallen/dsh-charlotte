@@ -2420,9 +2420,13 @@ function SkDetailDrawer(props) {
   }, [skill.name]);
   var saveTags = function (next) {
     var value = Array.isArray(next) ? next : [];
+    var previous = tags;
     setTags(value);
     void skApi.tags({ name: skill.name, tags: value, workspace: props.workspace }).then(function (result) {
       if (!result.ok) {
+        // The list was updated optimistically; put it back so the screen
+        // never claims a save that failed.
+        setTags(previous);
         props.onNotice("err", skT(lang, "notice.tagsFailed", { reason: skApiError(result) }));
         return;
       }
@@ -2614,6 +2618,8 @@ function SkDetailDrawer(props) {
               placeholder: skT(lang, "detail.tagsPlaceholder"),
               onChange: function (event) { setTagDraft(event.target.value); },
               onKeyDown: function (event) {
+                // A confirming Enter during IME composition must not commit.
+                if (event.isComposing || event.keyCode === 229) return;
                 if (event.key !== "Enter") return;
                 event.preventDefault();
                 commitTag();
@@ -2649,7 +2655,7 @@ function SkDetailDrawer(props) {
           onClick: function () { props.onUse(skill); }
         }, load.phase === "loading" ? skT(lang, "action.cancel") : skT(lang, "action.use")),
         sk("button", { className: "sk_detailBtn", type: "button", disabled: busy === "copy", onClick: copyBody }, copied ? skT(lang, "action.copied") : skT(lang, "action.copy")),
-        writable ? sk("button", { className: "sk_detailBtn", type: "button", disabled: busy === "migrate", onClick: migrateSkill }, skT(lang, "action.migrate")) : null,
+        writable && !/\.md$/.test(String(skill.management?.path ?? "")) ? sk("button", { className: "sk_detailBtn", type: "button", disabled: busy === "migrate", onClick: migrateSkill }, skT(lang, "action.migrate")) : null,
         writable ? sk("label", { className: "sk_toggle" }, [skT(lang, "detail.enableModel"), sk("button", {
           className: "sk_switch",
           type: "button",

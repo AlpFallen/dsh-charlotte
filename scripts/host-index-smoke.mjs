@@ -768,6 +768,13 @@ await check('corrupted state is tolerated instead of breaking the launcher', asy
     assert.equal(reread.prefs.x.favorite, true);
 });
 
+await check('the two mutations reject non-POST methods', async () => {
+    const put = await api('PUT', '/tags', { name: 'demo-review', tags: ['x'] });
+    assert.equal(put.status, 405);
+    const del = await api('DELETE', '/migrate', { name: 'demo-mail', rootId: 'user-dsh' });
+    assert.equal(del.status, 405);
+});
+
 await check('a version 1 state file still loads and keeps its rows', async () => {
     const legacyFile = join(sandbox, 'state-v1.json');
     await writeFile(legacyFile, JSON.stringify({
@@ -842,7 +849,7 @@ await check('GET /ledger reports real ratios and null when nothing was attempted
     const mail = response.body.skills.find(row => row.name === 'demo-mail');
     assert.ok(mail.loads >= 2);
     assert.equal(mail.successRate, null, 'no completion/failure yet means no invented rate');
-    assert.equal(mail.loadsByDay.length, 14);
+    assert.equal(Array.isArray(response.body.trend) && response.body.trend.length, 14, 'the trend stays a dense 14-day series');
     const review = response.body.skills.find(row => row.name === 'demo-review');
     if (review !== undefined && review.completions + review.failures > 0) {
         assert.ok(review.successRate >= 0 && review.successRate <= 1);
