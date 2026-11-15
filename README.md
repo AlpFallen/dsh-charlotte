@@ -104,7 +104,9 @@ plugins:
 
 - 技能写入只落在上述可写根目录，以及 dsh-charlotte 自己的状态目录 `~/.dsh/charlotte/`；每个路径在规范化后做包含性检查，复制不跟随 symlink，上传拒绝路径穿越。
 - 外部 agent 目录只读挂载；开关状态存在 dsh-charlotte 的覆盖表里，不写回它们的 `SKILL.md`。
-- 变更类 HTTP 接口拒绝跨源请求；API 与 GUI 同一本地服务。
+- 变更类 HTTP 接口拒绝跨源请求，包括 `Origin: null` 的沙箱 iframe 与 `file://` 页面；只有完全不带 Origin 的本机调用者（网页无法伪造）被视为可信。API 与 GUI 同一本地服务。
+- 客户端传来的 `workspace` 必须是已打开的工作区；只有完全没有 workspace registry 的无头组合才信任原样路径。
+- API 只接受 loopback Host（`127.0.0.1` / `localhost` / `::1`）的请求，挡住 DNS rebinding；监听范围、鉴权现状与复现命令见 [docs/security-model.md](docs/security-model.md)。
 - 加载/启停/收藏都在服务端复核：`/use` 重新检查可见性、启用状态与依赖；`loaded` 事件只接受刚被授权的会话；前端展示不替代权限检查。
 - 技能使用授权不等于具体操作授权：删除文件、发送消息、提交数据等高风险动作仍由 DSH 工具权限与审批独立校验。
 - 挂载与上传的技能都是第三方内容，启用前请先审阅。
@@ -118,12 +120,14 @@ plugins:
 ```sh
 npm install
 npm run build                  # 从 client.baseline.js + revamp/ 重建 client/client.js
-npm test                       # 29 客户端 + 16 宿主契约 + 44 索引/推荐/中文化集成
+npm test                       # 34 客户端 + 16 宿主契约 + 56 索引/推荐/中文化集成
 DSH_WEB_URL=http://127.0.0.1:<当前端口> npm run check:zh   # 两段中文的覆盖与哈希校验
 node scripts/host-smoke.mjs    # 只测宿主契约：配置、根目录、provider、旧 API
 node scripts/host-index-smoke.mjs  # 索引、分类、推荐、权限、依赖、目录安装
 node scripts/render-probe.mjs  # 可选：真 React 渲染探针
 ```
+
+CI（`.github/workflows/ci.yml`）在 push 与 PR 上跑 `npm test`、渲染探针，并在 `npm run build` 后校验 `client/client.js` 与 `revamp/` 源一致。
 
 客户端是已检入的编译基线（`client/client.baseline.js`）上的切片补丁，由 `scripts/build-client.mjs` 拼装，源片段在 `revamp/`；宿主是 `lib/` 下的普通 ESM。
 

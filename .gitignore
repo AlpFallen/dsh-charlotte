@@ -1,9 +1,4 @@
 node_modules/
 .DS_Store
 *.log
-*.bak
-*.before-publish
 .gh-token
-backups/
-README.revamp.md
-dsh-charlotte.md

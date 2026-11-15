@@ -345,6 +345,7 @@ check('category, source and availability filters use the record fields', () => {
     assert.deepEqual(Array.from(internals.skFilterSkills(fixtures, { state: 'user' })).map(row => row.name), ['demo-office']);
     assert.deepEqual(Array.from(internals.skFilterSkills(fixtures, { state: 'disabled' })).map(row => row.name), ['demo-off']);
     assert.deepEqual(Array.from(internals.skFilterSkills(fixtures, { category: '__disabled' })).map(row => row.name), ['demo-off']);
+    assert.deepEqual(Array.from(internals.skFilterSkills(fixtures, { state: 'fav' })).map(row => row.name), ['demo-review']);
 });
 
 check('sorts cover usage, name and recency only', () => {
@@ -567,7 +568,8 @@ await checkAsync('a rejected authorization surfaces the host reason and records 
     };
     const outcome = await internals.skUseSkill('demo-review', '');
     assert.equal(outcome.ok, false);
-    assert.equal(outcome.error, 'skill is not user-invocable');
+    assert.equal(outcome.error, internals.skT('zh', 'error.denied'), 'the interface gets a plain sentence');
+    assert.equal(outcome.error.includes('user-invocable'), false, 'no technical code leaks to the interface');
     assert.equal(internals.skLoadSnapshot('demo-review').phase, 'error');
     const eventCall = fetchCalls.find(call => call.url.endsWith('/event'));
     assert.ok(eventCall);
@@ -648,6 +650,50 @@ await checkAsync('the bundle ships the audit, cost, tag, ledger and migration su
     }
     assert.ok(bundle.includes('SkLedgerPanel') && bundle.includes('SkDiagPanel'), 'ledger and diagnostics panels ship');
     assert.ok(bundle.includes('migrateSkill') && bundle.includes('copyBody'), 'drawer actions ship');
+});
+
+// --- phase-2 UX surfaces -------------------------------------------------------
+check('error mapping hides technical details behind plain sentences', () => {
+    const t = (key) => internals.skT('zh', key);
+    assert.equal(internals.skErrorText({ ok: false, status: 0, body: {} }), t('error.network'));
+    assert.equal(internals.skErrorText({ ok: false, status: 403, body: { error: 'skill is disabled' } }), t('error.denied'));
+    assert.equal(internals.skErrorText({ ok: false, status: 404, body: { error: 'skill not found' } }), t('error.notFound'));
+    assert.equal(internals.skErrorText({ ok: false, status: 409, body: { error: 'missing dependency: x' } }), 'missing dependency: x');
+});
+
+check('search highlight marks only the matched term', () => {
+    const json = (value) => JSON.parse(JSON.stringify(value));
+    assert.deepEqual(json(internals.skHighlightParts('blender-lighting', 'light')), ['blender-', { mark: 'light' }, 'ing']);
+    assert.deepEqual(json(internals.skHighlightParts('office', 'xlsx')), ['office']);
+    assert.deepEqual(json(internals.skHighlightParts('office', '')), ['office']);
+});
+
+check('phase-2 UI surfaces ship in the bundle', () => {
+    for (const marker of ['sk_notices', 'empty.all.title', 'empty.filter.title', 'empty.all.action', 'sk_skeletonRow', 'skTrapFocus', 'detail.trash', 'sk_searchClear', 'sk_mark']) {
+        assert.ok(bundle.includes(marker), `bundle ships ${marker}`);
+    }
+    assert.ok(bundle.includes('skReportInstall'), 'install results are reported through the notice sink');
+    assert.ok(bundle.includes('notice.deleteDone'), 'delete has its own success text');
+});
+
+// --- phase-3 surfaces ----------------------------------------------------------
+check('phase-3 UI ships detail info, batch actions and the activity log', () => {
+    for (const marker of ['detail.copyPath', 'detail.files', 'detail.showBody', 'sk_pathRow', 'batch.delete', 'batch.export', 'sk_batchBar', 'activity.title', 'sk_checkOn']) {
+        assert.ok(bundle.includes(marker), `bundle ships ${marker}`);
+    }
+    for (const endpoint of ['"/skill?"', '"/catalog-skill?"']) {
+        assert.ok(bundle.includes(endpoint), `bundle calls ${endpoint}`);
+    }
+});
+
+// --- phase-4 surfaces ----------------------------------------------------------
+check('phase-4 UI ships inspection, related search, updates and statistics', () => {
+    for (const marker of ['inspect.title', 'inspect.level.high', 'related.title', 'updates.title', 'stats.topTitle', 'stats.neverTitle', 'sk_level', 'sk_relatedRow', 'detail.trashConfirmDeps']) {
+        assert.ok(bundle.includes(marker), `bundle ships ${marker}`);
+    }
+    for (const endpoint of ['"/inspect?"', '"/search?"']) {
+        assert.ok(bundle.includes(endpoint), `bundle calls ${endpoint}`);
+    }
 });
 
 // --- summary -------------------------------------------------------------------

@@ -132,9 +132,9 @@
       "professional": "比较—调整—再比较的闭环：让模型在所有视图的包围盒、质心、剪影与边缘校验通过。"
     },
     "office": {
-      "sourceHash": "bf42e58525ccf7c1",
-      "simple": "帮你创建、修改、查看或转换 Word、Excel、PPT 和 PDF 文件。",
-      "professional": "创建、编辑、检查或转换 Office 文档、表格、演示文稿与 PDF，并选择对应的工作流。"
+      "sourceHash": "3756b9e7a790957d",
+      "simple": "创建或修改 Word、Excel、PPT 等 Office 文件，也能查看 Office 文件和 PDF。",
+      "professional": "创建、编辑 Office 文件，或检查 Office 文件与 PDF；在做渲染、格式转换或表格重算之前先加载，以便下一步启用 office_render、office_convert、office_recalculate。"
     },
     "office-docx": {
       "sourceHash": "24c78f2901dc863b",

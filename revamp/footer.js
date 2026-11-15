@@ -16,6 +16,13 @@ function StationFooterButton(props) {
   var openState = (0, import_react2.useState)(false);
   var open = openState[0];
   var setOpen = openState[1];
+  var panelRef = (0, import_react2.useRef)(null);
+  (0, import_react2.useEffect)(function () {
+    if (!open) return undefined;
+    // The drawer is a modal dialog: keep Tab inside it and restore focus to the
+    // sidebar button when it closes (skTrapFocus lives in the launcher bundle).
+    return skTrapFocus(panelRef.current);
+  }, [open]);
   (0, import_react2.useEffect)(function () {
     if (!open) return undefined;
     var onKey = function (event) {
@@ -42,6 +49,7 @@ function StationFooterButton(props) {
       role: "dialog",
       "aria-modal": "true",
       "aria-label": skT(lang, "panel.title"),
+      ref: panelRef,
       onClick: function (event) {
         event.stopPropagation();
       }

@@ -1,0 +1,19 @@
+# dsh bundle patch: activates dsh-charlotte in any profile that installs this
+# package (via `dsh plugin --profile <name> add dsh-charlotte`).
+# The user's own cordis.patch.yml may override or disable this row by id.
+#
+# dsh-charlotte mounts five external skill sources read-only by default,
+# keeps hot reload on, and leaves the station's writable roots untouched.
+- insert:
+    - id: dsh-charlotte
+      name: 'dsh-charlotte'
+      config:
+        providerName: charlotte
+        sources:
+          claude: true
+          codex: true
+          zcode: true
+          cursor: true
+          gemini: true
+        extraDirs: []
+        watch: true

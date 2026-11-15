@@ -1,0 +1,79 @@
+{
+  "name": "dsh-charlotte",
+  "version": "0.5.0",
+  "description": "dsh-charlotte — skill launcher for DeepSeek Harness: one dsh-charlotte entry, a responsive card grid grouped by invocation policy, and a two-option loading dialog that stages a Skill in the current or a new conversation without sending a message. Also mounts Claude Code / Codex / ZCode / Cursor / Gemini skill directories read-only and keeps enable, install, delete and trash management, and shows plugin/bundled provider skills as read-only cards. · dsh-charlotte：单入口、按调用策略分组的技能启动器，两步把技能加载进当前或新对话而不自动发送消息；同时只读挂载各家 agent 技能库并保留开关、安装、删除与回收站；插件 provider 自带的技能以只读卡片展示。",
+  "author": "dsh-charlotte",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./client/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/",
+    "client/client.js",
+    "client/client.baseline.js",
+    "revamp/",
+    "scripts/",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "README.md",
+    "README.zh.md",
+    "README.revamp.md",
+    "LICENSE",
+    "NOTICE.md",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build-client.mjs",
+    "test": "node scripts/smoke.mjs && node scripts/host-smoke.mjs",
+    "deploy": "sh scripts/deploy.sh"
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "dsh-plugin",
+    "skills",
+    "skill-manager",
+    "skill-provider",
+    "agent-skills",
+    "claude",
+    "codex",
+    "zcode",
+    "cursor",
+    "gemini",
+    "charlotte"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "chokidar": "^5.0.0",
+    "unzipper": "^0.12.5",
+    "yaml": "^2.6.1"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.14",
+    "@types/unzipper": "^0.10.11",
+    "esbuild": "^0.24.2",
+    "react": "^18.3.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

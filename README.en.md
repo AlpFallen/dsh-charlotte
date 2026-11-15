@@ -104,7 +104,9 @@ plugins:
 
 - Skill writes only ever land inside the writable roots above plus the station's own state (`~/.dsh/charlotte/`); every path is containment-checked after normalization, symlinks are never followed during copies, and uploads reject traversal segments.
 - External agent directories are mounted read-only; the switch state lives in the station's override file, not in their `SKILL.md`.
-- Mutating HTTP endpoints reject cross-origin requests; the API is served on the same local server as the GUI.
+- Mutating HTTP endpoints reject cross-origin requests, including `Origin: null` from sandboxed iframes and `file://` pages; only a caller that sends no Origin at all (which a web page cannot forge) is trusted. The API is served on the same local server as the GUI.
+- A client-supplied `workspace` must be an open workspace; only a headless composition with no workspace registry trusts the raw path.
+- The API only accepts requests whose Host is loopback (`127.0.0.1` / `localhost` / `::1`), which blocks DNS rebinding; listen scope, auth facts and reproduction commands live in [docs/security-model.md](docs/security-model.md).
 - Load, enable and favourite are re-checked server-side: `/use` re-validates visibility, enablement and dependencies; a `loaded` event is only accepted for a session that was just authorized. Front-end display never replaces a permission check.
 - Skill usage authorization is not operation authorization: deleting files, sending messages or submitting data still go through DSH tool permissions and approval independently.
 - Mounted and uploaded skills are third-party content — review them before enabling.
@@ -118,12 +120,14 @@ plugins:
 ```sh
 npm install
 npm run build                  # rebuild client/client.js from client.baseline.js + revamp/
-npm test                       # 29 client + 16 host-contract + 44 index/recommend/i18n checks
+npm test                       # 34 client + 16 host-contract + 56 index/recommend/i18n checks
 npm run check:zh               # simple + professional coverage and hash check for every skill
 node scripts/host-smoke.mjs    # host contract only: config, roots, provider, legacy API
 node scripts/host-index-smoke.mjs  # index, categories, recommendations, permissions, dependencies, path install
-node scripts/render-probe.mjs  # optional real-React render probe (18 components)
+node scripts/render-probe.mjs  # optional real-React render probe (23 components)
 ```
+
+CI (`.github/workflows/ci.yml`) runs `npm test` and the render probe on pushes and pull requests, then rebuilds the client and fails if `client/client.js` differs from its `revamp/` sources.
 
 The client half is a patch over the checked-in compiled baseline (`client/client.baseline.js`), sliced by `scripts/build-client.mjs`; the source fragments live in `revamp/`. The host half is plain ESM under `lib/`.
 

@@ -1,0 +1,77 @@
+# dsh-charlotte 本地 API 威胁模型（2026-11）
+
+范围：`/charlotte/api` 这一前缀下的 HTTP 接口。结论先写：**API 只在本机 loopback 上
+监听，浏览器网页无法驱动变更；本机同一用户的其他进程按设计被视为可信。** 下面每条
+都给出证据和验证方式，没有验证的地方写明「未验证」。
+
+## 1. 监听范围（确定）
+
+DSH 桌面 App 的 Web 服务只绑定 loopback：
+
+```console
+$ lsof -nP -iTCP:51996 -sTCP:LISTEN
+DeepSeek  1841 user   21u  IPv4 ... TCP 127.0.0.1:51996 (LISTEN)
+```
+
+没有 `0.0.0.0` 或 `*` 监听，局域网内其他设备无法直连。这一点由 DSH 宿主决定，
+不是本插件的能力；若将来宿主监听范围改变，插件不能阻止外部访问。
+
+## 2. 认证现状（确定，实测）
+
+- GUI 页面本身要求鉴权：`GET /` 返回 `401`。
+- 插件的 `/charlotte/api` 路由**不继承**这层鉴权：不带任何凭据的
+  `GET /charlotte/api/roots` 返回 `200`。
+
+所以插件的写入能力只依赖下面第 3 节的边界检查，不能假定外层还有认证。
+
+## 3. 插件自身的边界（确定，有测试）
+
+| 边界 | 规则 | 测试 |
+|---|---|---|
+| Host | `Host` 必须是 `127.0.0.1`、`localhost`、`::1`（可带端口），否则 `403`。这挡住 DNS rebinding：攻击页把自己的域名解析到 `127.0.0.1` 后，`Origin` 与 `Host` 相同，同源检查会被骗过。 | `a non-loopback Host is refused even with a matching Origin` |
+| Origin | 变更类请求的 `Origin` 必须与 `Host` 同源；`Origin: null`（沙箱 iframe、`file://`）一律拒绝；完全不带 `Origin` 视为本机非浏览器调用者（网页无法伪造缺失的 Origin）。 | `mutations reject cross-origin browsers`（含 null）、`a non-loopback Host ...` |
+| workspace | 客户端传来的 `workspace` 必须是已打开的工作区；只有完全没有 workspace registry 的无头组合才信任原样路径。 | `a client-supplied workspace is only trusted without a registry` |
+| 路径包含 | 读取 `/body`、写入、迁移都经过 `assertContained`（分隔符边界，不是裸前缀）。上传相对路径拒绝 `..`、绝对路径、反斜杠。 | `GET /body reads the host-resolved path...`、`POST /migrate ...` |
+| 大小 | 上传单文件 64 MB、总量 256 MB、zip 解压总量 256 MB、条目 10 000、目录深度 6 层。 | 安装用例 |
+
+## 4. `/import-path`（确定，行为说明）
+
+它接受一个**任意绝对路径**的本地目录，读取后按上传流程安装进可写根：
+
+- 只读源目录、不修改源目录；写入目标始终是 `~/.dsh/skills`、`~/.agents/skills`
+  或某个工作区的 `.dsh/skills` / `.agents/skills`。
+- 不跟随源目录内的 symlink，隐藏文件和 `.DS_Store` 跳过。
+- 错误信息会把源路径回显给调用方；调用方仍是本机 API 客户端，没有跨设备泄露。
+
+允许任意绝对路径是产品需要（「把本机已有目录装进技能库」）。它不扩大本机权限：
+能调用这个 API 的本机进程，本来就能直接读同一个目录。
+
+## 5. 信任边界与残余风险
+
+- **本机同一用户进程**：被视为可信。此类进程本来就能读写用户文件，API 不增加它的
+  权限。仍未做的是 API token/能力令牌——需要改已检入的编译客户端，收益低于成本。
+- **网页**：同源之外的网页被 Origin/Host 双重检查挡住。DNS rebinding 需要先猜中
+  端口（每次启动随机），加上 Host 检查后整条路径已封死。
+- **迁移崩溃窗口**：`pool.js` 在 `rename` 与 `symlink` 之间被强杀，会留下
+  `<source>.migrating-<pid>`，需要手工恢复；这是已知限制，未做启动自动修复。
+- **替换安装的崩溃窗口**：旧版本先进入回收站，再换入新版本；在两步之间被强杀时，
+  旧版本在回收站里可恢复，新版本尚未生效。失败路径会自动把旧版本放回原位，但
+  「强制杀死进程」这条路径不会自动执行还原。
+- **宿主鉴权**：只验证过 GUI 路由 401、插件前缀 200 这一个版本（桌面 App 内置
+  DSH）。没有验证 DSH 是否在其他部署下给插件路由加鉴权；本插件不依赖这一点。
+
+## 6. 复现命令
+
+```sh
+# 监听地址
+lsof -nP -iTCP:<端口> -sTCP:LISTEN
+
+# GUI 鉴权 vs 插件路由
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:<端口>/
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:<端口>/charlotte/api/roots
+curl -s -o /dev/null -w '%{http_code}\n' -H 'Host: evil.example:<端口>' \
+  http://127.0.0.1:<端口>/charlotte/api/roots   # 期望 403
+
+# 自动化（临时目录，不碰真实 home）
+npm test
+```
