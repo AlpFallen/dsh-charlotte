@@ -20,16 +20,6 @@ The running environment here is the desktop app's bundled DSH `0.2.1-rc.3` (Node
 
 The repository ships the compiled client bundle (`client/client.js`), so a GitHub install needs no build step. For live development, clone it, point the profile dependency at `"link:/absolute/path/to/dsh-charlotte"`, run `pnpm install`, and restart the app.
 
-## Screenshots
-
-| Launcher home | Recommendation card (cropped) |
-|---|---|
-| ![Launcher home: recommendation card, category counts, frequency-aware rows](mockups/preview/home-v0.7.png) | ![Recommendation card: name, reason, Use and Ignore, cropped to the card](mockups/preview/dock-v0.7.png) |
-
-| All skills | Detail drawer |
-|---|---|
-| ![Skill list with sort, source and availability filters](mockups/preview/all-skills-v0.7.png) | ![Detail drawer: purpose, why recommended, triggers, permissions, usage history](mockups/preview/detail.png) |
-
 ## What you get
 
 - **One dsh-charlotte entry** — the sidebar button opens the launcher. Secondary administration lives under **More**: scope, drag-and-drop install, recycle bin, refresh and language.
