@@ -106,7 +106,7 @@ plugins:
 - 外部 agent 目录只读挂载；开关状态存在 dsh-charlotte 的覆盖表里，不写回它们的 `SKILL.md`。
 - 变更类 HTTP 接口拒绝跨源请求，包括 `Origin: null` 的沙箱 iframe 与 `file://` 页面；只有完全不带 Origin 的本机调用者（网页无法伪造）被视为可信。API 与 GUI 同一本地服务。
 - 客户端传来的 `workspace` 必须是已打开的工作区；只有完全没有 workspace registry 的无头组合才信任原样路径。
-- API 只接受 loopback Host（`127.0.0.1` / `localhost` / `::1`）的请求，挡住 DNS rebinding；监听范围、鉴权现状与复现命令见 [docs/security-model.md](docs/security-model.md)。
+- API 只接受 loopback Host（`127.0.0.1` / `localhost` / `::1`）的请求，挡住 DNS rebinding；监听范围、鉴权现状与复现命令见 [文档/01-安全模型.md](文档/01-安全模型.md)。
 - 加载/启停/收藏都在服务端复核：`/use` 重新检查可见性、启用状态与依赖；`loaded` 事件只接受刚被授权的会话；前端展示不替代权限检查。
 - 技能使用授权不等于具体操作授权：删除文件、发送消息、提交数据等高风险动作仍由 DSH 工具权限与审批独立校验。
 - 挂载与上传的技能都是第三方内容，启用前请先审阅。

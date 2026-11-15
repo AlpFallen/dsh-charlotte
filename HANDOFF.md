@@ -3,29 +3,24 @@
 日期：2026-11-15
 插件版本：0.8.0（未升版）
 分支：`feat/0.8.0-skill-parity`，基线提交 `1bd1179`
-工作区：**全部改动未提交、未推送**
+工作区：**已提交、未推送**（整理提交见下方「仓库整理」）
 
 ## 一句话现状
 
 第一至第四阶段的功能改动都已完成，自动化测试全过（34 客户端 / 16 宿主契约 / 56 索引、23 条渲染探针、中文覆盖 83/83），构建产物可重现；实机只在第一阶段被用户验收过，第二至第四阶段尚未在真实 App 里逐项点验，宿主改动需要完全退出 App 重开才生效。
 
-## 工作区状态（截至本记录）
+## 仓库整理（2026-11-15）
 
-已修改（15 个）：
+项目入口见 [PROJECT.md](PROJECT.md)，现行文档从 [文档/00-文档索引.md](文档/00-文档索引.md) 起读，历史只读副本见 [历史/00-历史索引.md](历史/00-历史索引.md)。
 
-```
-README.md  README.en.md
-lib/api.js  lib/importer.js  lib/ledger.js  lib/recommend.js  lib/state.js
-revamp/launcher.js  revamp/footer.js  revamp/market.css
-client/client.js
-locale/skills.zh.json
-scripts/host-index-smoke.mjs  scripts/smoke-client.mjs
-specs/skill-parity-0.8.0.md
-```
+提交顺序：
 
-未跟踪：`.github/`（CI）、`docs/`（安全模型）、`lib/inspect.js`（第四阶段新增）、`dsh-charlotte-agent-change-recommendations.md`（用户放进去的评审文档）。
+1. `49d7649` chore: snapshot before repository tidy —— 整理前的完整状态（含当时全部未提交的四阶段改动与被忽略的旧文件），删除前的恢复基线。
+2. `414a32e` chore: archive legacy snapshots into 历史 and remove originals —— 旧代码/旧文档打包为 `历史/备份-2026-11-15.tar.gz`，校验后删原件。
+3. `613d1ad` docs: move current docs and specs into 文档 —— `docs/`、`specs/`、评审文档迁入 `文档/`。
+4. 文档提交：新增 `PROJECT.md`、两份目录索引，修正 README/HANDOFF 中的路径引用。
 
-另有本地文件不进 Git：`dsh-charlotte.md`（0.7.3 旧交接稿，已过期）、`README.revamp.md`、`*.before-publish`，均在 `.gitignore` 里。
+未推送；远端分支仍停在整理前的 `1bd1179`。
 
 ## 四个阶段做了什么
 
@@ -35,7 +30,7 @@ specs/skill-parity-0.8.0.md
 - 替换安装：先写暂存目录并读回校验，再换入；失败自动把旧版本从回收站还原；修好平铺 `.md` 技能无法替换的问题；失败清理暂存目录。
 - 本地 API：`Host` 必须是 loopback（`127.0.0.1`/`localhost`/`::1`），`Origin: null` 拒绝，客户端 `workspace` 必须是已打开工作区，`/body` 用 `assertContained` 边界检查。
 - macOS 红黄绿按钮：抽屉面板高度改为 `min(840px, calc(100vh - 2*48px))`，面板顶边恒 ≥48px，按钮永远落在背景上；不再用左侧 padding 兜底。
-- 安全模型写进 [docs/security-model.md](docs/security-model.md)。
+- 安全模型写进 [文档/01-安全模型.md](文档/01-安全模型.md)。
 
 ### 第二阶段：操作体验
 
@@ -98,13 +93,13 @@ DSH_WEB_URL=http://127.0.0.1:<端口> npm run check:zh   # 中文简介覆盖
 - **批量删除**：只处理可写根本地技能；挂载/插件技能不会被删除，也不会报成功。
 - **替换安装**：入栈失败后的自动还原路径只有代码审查，没有可注入失败的自动化测试；迁移的强杀崩溃窗口仍存在（需手工恢复）。
 - **回收站「清空」**：仍是基线组件里的系统 `window.confirm`，没有换成页内确认（详情页删除已换）。
-- **旧文档**：`dsh-charlotte.md` 是 0.7.3 旧稿，已过期但被 gitignore；`dsh-charlotte-agent-change-recommendations.md` 是用户放进去的评审文档，未纳入 Git。
-- **未提交**：以上改动全部未提交/未推送；工作区有 15 个修改文件、4 个未跟踪路径。
+- **旧文档**：0.7.3 交接稿、`README.revamp.md`、`*.before-publish` 与 `backups/pre-0.6.0` 已收进 `历史/备份-2026-11-15.tar.gz`；评审文档已迁到 [文档/03-改造建议-2026-11-15.md](文档/03-改造建议-2026-11-15.md)。
+- **未推送**：整理提交只在本地分支，远端仍是 `1bd1179`。
 
 ## 建议的下一步
 
 1. 重启 App 后按清单实机验收第二至四阶段：通知（成功/失败/常驻错误）、骨架屏与刷新、三种空状态、弹窗键盘与焦点还原、详情检查/依赖/复制路径/正文预览、搜索无结果时的相关推荐、版本面板、统计区块、批量选择与删除、窄窗口布局。
-2. 实机验收通过后再拆提交，建议顺序：渲染/安装安全修复 → API 边界 → 客户端体验（通知/空态/焦点/批量）→ 检查与搜索 → 文档/CI；测试文件按 hunk 归属到对应提交。
+2. 整理前的四阶段改动已在 `49d7649` 一次性快照；若需要按阶段拆历史，以该快照为起点重建提交（成本高，只在需要干净历史时做）。
 3. 若需要“更新/回滚”，先定义一个真实更新源（例如技能包的版本索引），再实现“备份到回收站 → 换入 → 失败还原”，不要在没有来源时做假按钮。
 4. 统一回收站「清空」的确认方式；补 `locale/skills.zh.json` 的长期维护流程（技能文案变更后会过期）。
 5. 视需要升版 0.8.0 → 0.9.0 并同步 `package.json`、README、`lib/api.js`（`/config` 已改为读 package.json，不用再改代码）。
@@ -113,5 +108,7 @@ DSH_WEB_URL=http://127.0.0.1:<端口> npm run check:zh   # 中文简介覆盖
 
 - 单个文件回滚：`git checkout -- <path>`（未跟踪文件直接删除）。
 - 客户端产物回滚：`cp client/client.baseline.js client/client.js` 后刷新。
-- 若要完全丢弃本轮改动：`git checkout -- .` 并删除 `.github/`、`docs/`、`lib/inspect.js`，但会同时丢掉第一至第四阶段全部修复，**不建议**。
+- 回到整理前完整状态：`git checkout 49d7649 -- .`（不会自动删除整理后新增的 `PROJECT.md`、`文档/00`、`历史/00`、`历史/*.tar.gz`，需手动清理）。
+- 撤销单个整理提交：`git revert <commit>`。
+- 若要完全丢弃四阶段改动：以 `1bd1179` 为基础重建工作区，会丢掉第一至第四阶段全部修复，**不建议**。
 - 宿主每次改动都需要退出 App（含托盘）重开才能验证；仅刷新页面不会加载新的 `lib/`。

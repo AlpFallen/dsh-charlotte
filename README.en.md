@@ -106,7 +106,7 @@ plugins:
 - External agent directories are mounted read-only; the switch state lives in the station's override file, not in their `SKILL.md`.
 - Mutating HTTP endpoints reject cross-origin requests, including `Origin: null` from sandboxed iframes and `file://` pages; only a caller that sends no Origin at all (which a web page cannot forge) is trusted. The API is served on the same local server as the GUI.
 - A client-supplied `workspace` must be an open workspace; only a headless composition with no workspace registry trusts the raw path.
-- The API only accepts requests whose Host is loopback (`127.0.0.1` / `localhost` / `::1`), which blocks DNS rebinding; listen scope, auth facts and reproduction commands live in [docs/security-model.md](docs/security-model.md).
+- The API only accepts requests whose Host is loopback (`127.0.0.1` / `localhost` / `::1`), which blocks DNS rebinding; listen scope, auth facts and reproduction commands live in [文档/01-安全模型.md](文档/01-安全模型.md).
 - Load, enable and favourite are re-checked server-side: `/use` re-validates visibility, enablement and dependencies; a `loaded` event is only accepted for a session that was just authorized. Front-end display never replaces a permission check.
 - Skill usage authorization is not operation authorization: deleting files, sending messages or submitting data still go through DSH tool permissions and approval independently.
 - Mounted and uploaded skills are third-party content — review them before enabling.
