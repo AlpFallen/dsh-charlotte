@@ -273,6 +273,8 @@ var SK_STRINGS = {
     "related.empty": "没有找到相关技能。",
     "related.use": "使用",
     "detail.source": "来源",
+    "detail.permissions": "声明权限",
+    "detail.noPermissions": "技能没有声明权限或工具。",
     "detail.path": "位置",
     "detail.updated": "更新时间",
     "detail.usage": "使用记录",
@@ -605,6 +607,8 @@ var SK_STRINGS = {
     "related.empty": "No related skills found.",
     "related.use": "Use",
     "detail.source": "Source",
+    "detail.permissions": "Declared permissions",
+    "detail.noPermissions": "The skill declares no permissions or tools.",
     "detail.path": "Location",
     "detail.updated": "Updated",
     "detail.usage": "Usage",
@@ -2868,6 +2872,7 @@ function SkDetailDrawer(props) {
   var writable = skill.management?.kind === "writable";
   var mounted = skill.management?.kind === "mounted";
   var evidence = Array.isArray(skill.category?.evidence) ? skill.category.evidence : [];
+  var declaredPermissions = Array.isArray(skill.declaredPermissions) ? skill.declaredPermissions : [];
   var triggers = skill.triggers ?? { values: [], provenance: "absent" };
   var usageRows = Array.isArray(skill.stats?.recent) ? skill.stats.recent.slice(-6).reverse() : [];
   var tagState = (0, import_react.useState)(Array.isArray(skill.tags) ? skill.tags : []);
@@ -3203,6 +3208,14 @@ function SkDetailDrawer(props) {
             skill.version !== null && skill.version !== undefined ? sk("dt", null, skT(lang, "detail.version")) : null,
             skill.version !== null && skill.version !== undefined ? sk("dd", null, String(skill.version)) : null
           ])
+        ]),
+        sk("div", { className: "sk_sec" }, [
+          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.permissions")),
+          declaredPermissions.length === 0
+            ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.noPermissions"))
+            : sk("div", { className: "sk_chipRow" }, declaredPermissions.map(function (row, index) {
+              return sk("span", { key: "perm-" + String(index), className: "sk_evidence" }, row);
+            }))
         ]),
         skill.cost !== undefined && skill.cost !== null ? sk("div", { className: "sk_sec" }, [
           sk("div", { className: "sk_secLabel" }, skT(lang, "detail.cost")),

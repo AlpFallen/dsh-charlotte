@@ -1,6 +1,6 @@
 # dsh-charlotte 项目入口
 
-本文件是**项目结构与协作入口**；产品说明（安装、功能、截图）在 [README.md](README.md)，当前交接记录在 [HANDOFF.md](HANDOFF.md)。
+本文件是**项目结构与协作入口**；产品说明（安装、功能）在 [README.md](README.md)，当前交接记录在 [HANDOFF.md](HANDOFF.md)。
 
 ## 现状
 
@@ -19,7 +19,6 @@
 | `revamp/` | 客户端源切片（launcher、dock、footer、CSS） | 改这里，再 `npm run build` |
 | `scripts/` | 构建与冒烟测试 | 改后跑全套测试 |
 | `locale/` | 技能中文简介目录（按源哈希失效） | 需要维护 |
-| `mockups/` | README 引用的产品截图 | 只读素材 |
 | `文档/` | 现行文档，从 [文档/00-文档索引.md](文档/00-文档索引.md) 起读 | 只改文档内容 |
 | `历史/` | 旧版本与历史文档的唯一副本，只读；见 [历史/00-历史索引.md](历史/00-历史索引.md) | 禁止修改 |
 | `.github/` | CI（安装、测试、构建一致性） | 改后本地跑 `npm test` |
@@ -48,7 +47,7 @@ DSH_WEB_URL=http://127.0.0.1:<端口> npm run check:zh
 1. 不手改 `client/client.js`；只改 `revamp/` 后重建，构建两次 sha 必须一致。
 2. 不改 `lib/`、`client/`、`revamp/`、`scripts/`、`locale/` 的目录结构：`package.json` 的 `files` 白名单与 CI 依赖这些路径。
 3. `历史/` 只读；历史版本只以 `*.tar.gz` 形式存在，文件名日期用 `yyyy-mm-dd`。
-4. 不提交凭据、token、`.env`；仓库必须保持 private（当前含真实技能文案与用户数据截图）。
+4. 不提交凭据、token、`.env`、个人路径、邮箱、电话或用户数据截图；仓库是公开的，提交前按公开内容审一遍。
 5. 更新/删除技能必须走确认与回收站，不自动覆盖用户文件。
 6. 未经确认不推送远端。
 

@@ -57,6 +57,7 @@ const reviewDir = await writeSkill(userSkills, 'demo-review', [
     'name: demo-review',
     'description: 审查 diff 并生成代码审查报告。适用于 review、代码审查、质量把关；用户说“review this diff”时使用。',
     'version: 1.2.0',
+    'permissions: [Bash, Read]',
     'metadata:',
     '  keywords: [审查, review, diff]',
 ], 'Read the diff and report findings grouped by Standards and Spec.');
@@ -380,6 +381,7 @@ await check('enrichment carries purpose, keywords, triggers, version and provena
     assert.ok(review.keywords.includes('review'));
     assert.equal(review.triggers.provenance, 'derived');
     assert.ok(review.triggers.values.length > 0);
+    assert.deepEqual(review.declaredPermissions, ['Bash', 'Read']);
     assert.equal(review.description, '审查 diff 并生成代码审查报告。适用于 review、代码审查、质量把关；用户说“review this diff”时使用。');
 });
 

@@ -677,7 +677,7 @@ check('phase-2 UI surfaces ship in the bundle', () => {
 
 // --- phase-3 surfaces ----------------------------------------------------------
 check('phase-3 UI ships detail info, batch actions and the activity log', () => {
-    for (const marker of ['detail.copyPath', 'detail.files', 'detail.showBody', 'sk_pathRow', 'batch.delete', 'batch.export', 'sk_batchBar', 'activity.title', 'sk_checkOn']) {
+    for (const marker of ['detail.copyPath', 'detail.files', 'detail.showBody', 'sk_pathRow', 'batch.delete', 'batch.export', 'sk_batchBar', 'activity.title', 'sk_checkOn', 'detail.permissions', 'detail.noPermissions']) {
         assert.ok(bundle.includes(marker), `bundle ships ${marker}`);
     }
 });

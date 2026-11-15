@@ -16,19 +16,9 @@
 dsh plugin --profile web add github:AlpFallen/dsh-charlotte
 ```
 
-本机运行环境是桌面 App 内置的 DSH `0.2.1-rc.3`（Node `24.21.0`），本插件在这套环境上加载运行，下面的截图也来自它；另外用 CLI 安装的 DSH `0.1.5-rc.2` 做过接口比对。宿主接口（`webServer.register` 的 `WebRoute`、`agent/pre-step` waterfall、`ctx.skills`）两版形状一致；客户端槽位（`conversation.input.dock`）在 0.2 里改过契约（`PropsRenderFactories`、草稿编辑器拆分），0.2.1-rc.3 上界面可用，更新的 0.2.x 版本未验证。
+本机运行环境是桌面 App 内置的 DSH `0.2.1-rc.3`（Node `24.21.0`），本插件在这套环境上加载运行；另外用 CLI 安装的 DSH `0.1.5-rc.2` 做过接口比对。宿主接口（`webServer.register` 的 `WebRoute`、`agent/pre-step` waterfall、`ctx.skills`）两版形状一致；客户端槽位（`conversation.input.dock`）在 0.2 里改过契约（`PropsRenderFactories`、草稿编辑器拆分），0.2.1-rc.3 上界面可用，更新的 0.2.x 版本未验证。
 
 仓库里带着编译好的客户端产物（`client/client.js`），从 GitHub 安装不需要构建。本地开发时克隆后把 profile 依赖改成 `"link:/absolute/path/to/dsh-charlotte"` 再 `pnpm install`，然后重启应用。
-
-## 截图
-
-| 启动器首页 | 推荐卡（局部） |
-|---|---|
-| ![启动器首页：推荐卡、功能分类计数、按调用频率排列的技能行](mockups/preview/home-v0.7.png) | ![推荐卡：名称、推荐原因、使用与忽略，截图裁到卡片区域](mockups/preview/dock-v0.7.png) |
-
-| 全部技能 | 详情抽屉 |
-|---|---|
-| ![技能列表，含排序、来源与可用状态筛选](mockups/preview/all-skills-v0.7.png) | ![详情抽屉：用途、推荐理由、触发条件、权限依赖、真实使用记录](mockups/preview/detail.png) |
 
 ## 功能
 
