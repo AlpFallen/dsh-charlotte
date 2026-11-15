@@ -523,8 +523,8 @@ await check('POST /use enforces visibility, enablement and dependencies', async 
     const allowed = await api('POST', '/use', { name: 'demo-review', sessionId: 's1' });
     assert.equal(allowed.status, 200);
     assert.equal(allowed.body.token, '/demo-review ');
-    // A content change invalidates the acceptance; restoring the exact old
-    // content makes the old hash valid again.
+    // A content change invalidates the acceptance. Restoring the bytes also
+    // changes mtime, so the conservative manifest still requires a new review.
     const skillFile = join(userSkills, 'demo-review', 'SKILL.md');
     const original = await readFile(skillFile, 'utf8');
     await writeFile(skillFile, `${original}\ncontent changed\n`, 'utf8');
@@ -535,7 +535,11 @@ await check('POST /use enforces visibility, enablement and dependencies', async 
     await writeFile(skillFile, original, 'utf8');
     index.invalidate();
     const restored = await api('POST', '/use', { name: 'demo-review', sessionId: 's1' });
-    assert.equal(restored.status, 200);
+    assert.equal(restored.status, 409);
+    const reaccepted = await reviewSkill('demo-review');
+    assert.equal(reaccepted.status, 200);
+    const restoredUse = await api('POST', '/use', { name: 'demo-review', sessionId: 's1' });
+    assert.equal(restoredUse.status, 200);
 });
 
 await check('POST /event records a confirmed load only after authorization', async () => {
@@ -834,6 +838,15 @@ await check('local directory install validates and copies a real skill', async (
     const record = indexed.body.skills.find(row => row.name === 'path-skill');
     assert.equal(record.review.reviewed, false, 'an install is not accepted on the user\'s behalf');
     assert.ok(['high', 'warn', 'ok'].includes(record.review.risk), 'the install scan saved a risk level');
+    const accepted = await reviewSkill('path-skill');
+    assert.equal(accepted.status, 200);
+    let built = await index.build(workspace);
+    assert.equal(built.byName['path-skill'].review.reviewed, true);
+    // Changing an attachment without touching SKILL.md must invalidate the review.
+    await writeFile(join(home, 'skills', 'path-skill', 'notes.txt'), 'asset changed', 'utf8');
+    index.invalidate();
+    built = await index.build(workspace);
+    assert.equal(built.byName['path-skill'].review.reviewed, false, 'asset changes invalidate the review');
 });
 
 await check('local directory install reports real reasons for bad input', async () => {
