@@ -199,7 +199,7 @@ function SkRecommendDock(props) {
     setStatus({ kind: null, text: skT(lang, "dock.loading") });
     if (sessionId !== "") skReportEvent(item.name, "accepted", "", "", sessionId);
     // Load stages the skill token and nothing else: the user writes the task.
-    void skUseSkill(item.name, "", {}).then(function (outcome) {
+    void skUseSkill(item.name, "").then(function (outcome) {
       if (!aliveRef.current) return;
       setBusy("");
       if (outcome.ok) {

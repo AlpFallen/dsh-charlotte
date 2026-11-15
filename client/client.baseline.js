@@ -43,14 +43,11 @@ async function call(path, options) {
   });
   return { ok: resp.ok, status: resp.status, body: await resp.json().catch(() => ({})) };
 }
-var fetchRoots = () => call("/roots");
-var fetchSkills = (workspace) => call(`/skills${workspace !== "" ? `?workspace=${encodeURIComponent(workspace)}` : ""}`);
 var scanSources = (workspace) => call("/scan", { method: "POST", body: { ...workspace !== "" ? { workspace } : {} } });
 var importSkills = (body) => call("/import", { method: "POST", body });
 var uploadFiles = (body) => call("/upload", { method: "POST", body });
 var uploadZip = (body) => call("/upload-zip", { method: "POST", body });
 var toggleSkill = (body) => call("/toggle", { method: "POST", body });
-var deleteSkill = (body) => call("/delete", { method: "POST", body });
 var fetchTrash = () => call("/trash");
 var restoreTrash = (id) => call("/trash-restore", { method: "POST", body: { id } });
 var emptyTrash = () => call("/trash-empty", { method: "POST", body: {} });

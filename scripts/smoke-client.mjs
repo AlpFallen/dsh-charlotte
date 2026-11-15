@@ -547,9 +547,8 @@ await checkAsync('an accepted recommendation stages only the skill token', async
         if (url.endsWith('/event')) return { ok: true, status: 200, json: async () => ({ recorded: true }) };
         return { ok: true, status: 200, json: async () => ({}) };
     };
-    const outcome = await internals.skUseSkill('demo-dev', '', {});
+    const outcome = await internals.skUseSkill('demo-dev', '');
     assert.equal(outcome.ok, true);
-    assert.equal(outcome.continuation, false, 'nothing is appended after the token');
     assert.deepEqual(draftCalls.map(call => call.prompt), ['/demo-dev '], 'the composer receives the token and nothing else');
     assert.equal(draftCalls[0].whenDraftExists, 'append');
     const useCall = fetchCalls.find(call => call.url.endsWith('/use'));
@@ -681,17 +680,14 @@ check('phase-3 UI ships detail info, batch actions and the activity log', () => 
     for (const marker of ['detail.copyPath', 'detail.files', 'detail.showBody', 'sk_pathRow', 'batch.delete', 'batch.export', 'sk_batchBar', 'activity.title', 'sk_checkOn']) {
         assert.ok(bundle.includes(marker), `bundle ships ${marker}`);
     }
-    for (const endpoint of ['"/skill?"', '"/catalog-skill?"']) {
-        assert.ok(bundle.includes(endpoint), `bundle calls ${endpoint}`);
-    }
 });
 
 // --- phase-4 surfaces ----------------------------------------------------------
 check('phase-4 UI ships inspection, related search, updates and statistics', () => {
-    for (const marker of ['inspect.title', 'inspect.level.high', 'related.title', 'updates.title', 'stats.topTitle', 'stats.neverTitle', 'sk_level', 'sk_relatedRow', 'detail.trashConfirmDeps']) {
+    for (const marker of ['inspect.title', 'inspect.level.high', 'related.title', 'updates.title', 'stats.topTitle', 'stats.neverTitle', 'sk_level', 'sk_relatedRow', 'detail.trashConfirmDeps', 'review.title', 'review.accept', 'review.badge']) {
         assert.ok(bundle.includes(marker), `bundle ships ${marker}`);
     }
-    for (const endpoint of ['"/inspect?"', '"/search?"']) {
+    for (const endpoint of ['"/inspect?"', '"/search?"', '"/review"']) {
         assert.ok(bundle.includes(endpoint), `bundle calls ${endpoint}`);
     }
 });
