@@ -122,7 +122,7 @@ plugins:
 ```sh
 npm install
 npm run build                  # 从 client.baseline.js + revamp/ 重建 client/client.js
-npm test                       # 43 客户端 + 17 宿主契约 + 58 索引/推荐/中文化 + 67 安全
+npm test                       # 43 客户端 + 18 宿主契约 + 58 索引/推荐/中文化 + 67 安全
 npm run test:security          # 只跑安全规则、API 边界、ZIP 与安全历史
 DSH_WEB_URL=http://127.0.0.1:<当前端口> npm run check:zh   # 两段中文的覆盖与哈希校验
 node scripts/host-smoke.mjs    # 只测宿主契约：配置、根目录、provider、旧 API

@@ -7,7 +7,7 @@
 - 版本：0.8.0（`package.json`，未升版）
 - 分支：`feat/0.8.0-skill-parity`；安全审计与标签式详情改动仍在工作树，**未提交、未推送远端**
 - 代码：宿主 `lib/` 为普通 ESM；客户端 `revamp/` 为源切片，`client/client.js` 由 `scripts/build-client.mjs` 构建生成
-- 测试：43 客户端 + 17 宿主契约 + 58 索引 + 67 安全；32 条渲染探针
+- 测试：43 客户端 + 18 宿主契约 + 58 索引 + 67 安全；32 条渲染探针
 - 最近一次整理前的完整快照提交：`49d7649`（`chore: snapshot before repository tidy`）
 
 ## 目录地图
@@ -34,7 +34,7 @@
 ```sh
 npm install
 npm run build                  # 由 client.baseline.js + revamp/ 重建 client/client.js
-npm test                       # 43 客户端 + 17 宿主契约 + 58 索引 + 67 安全
+npm test                       # 43 客户端 + 18 宿主契约 + 58 索引 + 67 安全
 node scripts/render-probe.mjs  # 32 条渲染探针
 DSH_WEB_URL=http://127.0.0.1:<端口> npm run check:zh
 ```
