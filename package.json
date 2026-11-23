@@ -33,6 +33,7 @@
     "client/client.js",
     "client/client.baseline.js",
     "revamp/",
+    "skills/",
     "scripts/",
     "cordis.patch.yml",
     "locale/*.json",

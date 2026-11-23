@@ -18,7 +18,7 @@ import { Readable } from 'node:stream';
 import { makeApiHandler } from '../lib/api.js';
 import { apply as applyPlugin, name as pluginName } from '../lib/index.js';
 import { resolveConfig } from '../lib/mount/config.js';
-import { resolveRoots } from '../lib/mount/roots.js';
+import { resolveRoots, SELF_SKILL_DIR } from '../lib/mount/roots.js';
 import { MergedSkillProvider } from '../lib/merged-provider.js';
 import { OverrideStore } from '../lib/overrides.js';
 
@@ -107,11 +107,21 @@ try {
 await check('root resolution unions the sources in rank order', async () => {
         const roots = await resolveRoots(config, undefined);
         const paths = roots.map(root => root.path);
-        assert.deepEqual([...paths].sort(), [claudeRoot, codexRoot, cursorRoot, extraRoot, geminiRoot, zcodeRoot].sort());
+        assert.deepEqual([...paths].sort(), [claudeRoot, codexRoot, cursorRoot, extraRoot, geminiRoot, zcodeRoot, SELF_SKILL_DIR].sort());
         const rankOf = (path) => roots.find(root => root.path === path)?.rank;
         assert.ok(rankOf(extraRoot) < rankOf(claudeRoot), 'extra dirs rank above user roots');
         assert.ok(rankOf(claudeRoot) < rankOf(codexRoot) && rankOf(codexRoot) < rankOf(zcodeRoot), 'claude < codex < zcode');
         assert.ok(rankOf(zcodeRoot) < rankOf(cursorRoot) && rankOf(cursorRoot) < rankOf(geminiRoot), 'zcode < cursor < gemini');
+        assert.ok(rankOf(geminiRoot) < rankOf(SELF_SKILL_DIR), 'the bundled self skill is the lowest priority');
+    });
+
+    // --- self-description ------------------------------------------------------
+    await check('the root SKILL.md stays identical to the packaged copy', async () => {
+        const [atRoot, packaged] = await Promise.all([
+            readFile(new URL('../SKILL.md', import.meta.url), 'utf8'),
+            readFile(new URL('../skills/charlotte/SKILL.md', import.meta.url), 'utf8'),
+        ]);
+        assert.equal(atRoot, packaged, 'edit skills/charlotte/SKILL.md, then copy it to the repo root');
     });
 
     // --- override store -------------------------------------------------------
@@ -135,9 +145,12 @@ await check('root resolution unions the sources in rank order', async () => {
 
     await check('provider lists mounted skills and applies the switch', async () => {
         const listed = await provider.list({});
-        assert.equal(listed.length, 1);
+        assert.equal(listed.length, 2);
         const candidate = listed[0];
         assert.equal(candidate.name, 'demo-skill');
+        const selfSkill = listed.find(skill => skill.name === 'charlotte');
+        assert.ok(selfSkill, 'the bundled self-description skill is mounted');
+        assert.ok(selfSkill.description.includes('dsh-charlotte'), 'its catalog line names the plugin');
         assert.equal(candidate.invocation.modelInvocable, true);
         assert.equal(candidate.provider, 'charlotte');
         assert.equal(provider.candidateByPath(skillFile)?.name, 'demo-skill');
@@ -201,9 +214,11 @@ await check('root resolution unions the sources in rank order', async () => {
     await check('GET /catalog returns the mounted catalog plus source labels', async () => {
         const catalog = await callApi('GET', '/charlotte/api/catalog');
         assert.equal(catalog.status, 200);
-        assert.equal(catalog.json.skills.length, 1);
-        assert.equal(catalog.json.skills[0].name, 'demo-skill');
-        assert.deepEqual(catalog.json.skills.map(skill => skill.source), ['claude-code']);
+        assert.equal(catalog.json.skills.length, 2);
+        const demo = catalog.json.skills.find(skill => skill.name === 'demo-skill');
+        assert.ok(demo, 'the mounted demo skill is listed');
+        assert.equal(demo.source, 'claude-code');
+        assert.ok(catalog.json.skills.some(skill => skill.name === 'charlotte' && skill.source === 'charlotte'), 'the bundled self skill is listed under its own source');
         assert.deepEqual(catalog.json.sources.map(source => source.id), ['claude', 'codex', 'zcode', 'cursor', 'gemini']);
     });
 

@@ -19,6 +19,7 @@
 | `revamp/` | 客户端源切片（launcher、detail-drawer、markdown、security-center、security-review、dock、footer、CSS） | 改这里，再 `npm run build` |
 | `scripts/` | 构建与冒烟测试 | 改后跑全套测试 |
 | `locale/` | 技能中文简介目录（按源哈希失效） | 需要维护 |
+| `skills/` | 插件自述技能 `charlotte`，打包进 npm 包，最低优先级挂载 | 只改 SKILL.md 内容 |
 | `文档/` | 现行文档，从 [文档/00-文档索引.md](文档/00-文档索引.md) 起读 | 只改文档内容 |
 | `历史/` | 旧版本与历史文档的唯一副本，只读；见 [历史/00-历史索引.md](历史/00-历史索引.md) | 禁止修改 |
 | `.github/` | CI（安装、测试、构建一致性） | 改后本地跑 `npm test` |

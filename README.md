@@ -2,6 +2,10 @@
 
 [English](README.en.md) | 中文
 
+> 复制这句话给你的 agent：**帮我了解 dsh-charlotte**
+>
+> 它会读仓库根的 [SKILL.md](SKILL.md)，直接讲清这个插件是什么、怎么装、怎么用、什么时候不该用——不用你翻文档。
+
 装在 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 里的技能启动器与技能库。
 
 `dsh-charlotte` 只占一个「dsh-charlotte」入口：数据驱动的技能管理页（紧凑列表、真实功能分类、常用与收藏、居中详情弹窗）、宿主侧实时推荐，以及「授权 → 加载 → 执行」全链路状态反馈。外部 Claude Code / Codex / ZCode / Cursor / Gemini 技能目录以只读方式挂载成一个 dsh 技能来源；启用、安装、删除与回收站能力都保留。
@@ -30,6 +34,7 @@ dsh plugin --profile web add github:AlpFallen/dsh-charlotte
 - **一次点击加载** — 点击 **使用** 后先在宿主校验（是否可见、是否启用、依赖是否满足），再把官方 `/技能名` token 放进当前或新建对话的输入框。不会发送消息、不会启动 Agent 回合；只有你发送后才注入技能指令。加载中再点一次即取消，失败显示宿主给出的真实原因。
 - **如实的停用语义** — 对模型停用但用户可调用的技能仍然可用，并标记为「仅用户」；用户不可调用的技能不能使用。
 - **插件自带技能** — 由 dsh 插件或 bundled provider 注册的技能现在也会以只读的 `插件` 卡片出现在同一网格里，带 provider 标签、只读详情和同样的 **使用技能** 加载流程。技能站只负责展示与加载，不能启停或删除；文件归提供它的插件所有。列表随 `/skills.registry` 返回，详情读 `/registry-skill`。
+- **自述技能 `charlotte`** — 包内 `skills/charlotte/SKILL.md` 以最低优先级挂载，所以任何装了本插件的会话，被问到「dsh-charlotte 是什么、怎么装、为什么推了这个技能」时能直接照它回答，不用联网查，也不靠模型编。用户自己有同名技能时以用户版本为准。仓库根的 `SKILL.md` 是同一份副本（有测试守着，不许漂）；没装插件的人让 agent 读一下根目录那份，也能直接讲。
 - **挂载外部技能** — 只读 provider 把 `~/.claude/skills`、`~/.codex/skills`、`~/.zcode/skills`、`~/.cursor/skills`、`~/.gemini/skills`（含 `~/.gemini/antigravity/skills`）、各工作区的 `.claude|.codex|.zcode|.cursor|.gemini/skills` 以及自定义 `extraDirs` 注册成 dsh 技能来源。文件原地不动：frontmatter 字段映射（`disable-model-invocation`、`user-invocable`、Codex `agents/openai.yaml` 策略、原始 metadata 保真）、非 kebab 名自动 slug、缺描述自动合成、改动热更新；符号链接形式的技能条目会跟随一次（`~/.claude/skills/<name> -> ../.agents/skills/<name>` 这种也能挂载）。
 - **技能浏览** — 可写根目录（全局 `~/.dsh/skills`、共享 `~/.agents/skills`、每个工作区的 `<project>/.dsh/skills` / `.agents/skills`）与挂载目录、插件 provider 合成一个统一索引与列表。搜索覆盖名称、描述、用途、关键词与触发条件；启停对本地技能写 `disable-model-invocation` frontmatter，对挂载技能写覆盖表；删除进可恢复的回收站。
 - **拖拽安装** — 把技能文件夹或 `.zip` 拖进安装面板，或用选择器。zip 由服务端解压；先校验（SKILL.md 需含 kebab-case `name` 与 `description`）并预览，确认后才写入；写入先暂存再改名。
