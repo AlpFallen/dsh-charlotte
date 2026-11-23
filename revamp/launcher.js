@@ -174,6 +174,27 @@ var SK_STRINGS = {
     "state.model": "仅模型",
     "state.off": "不可用",
     "state.disabled": "已停用",
+    "state.fav": "收藏",
+    "batch.mode": "批量",
+    "batch.exit": "退出批量",
+    "batch.selected": "已选 {count} 个",
+    "batch.selectAll": "全选当前列表",
+    "batch.clear": "清除选择",
+    "batch.export": "导出清单",
+    "batch.delete": "删除所选",
+    "batch.confirm": "删除所选 {count} 个技能？它们会进入回收站，可恢复。",
+    "batch.confirmed": "确认删除",
+    "batch.noWritable": "所选技能都不是可写根里的本地技能，无法删除。",
+    "batch.none": "还没有选择技能。",
+    "batch.done": "已删除 {done} 个，失败 {failed} 个。",
+    "batch.exported": "已导出 {count} 个技能的清单。",
+    "activity.title": "最近操作",
+    "activity.empty": "还没有安装、删除或迁移记录。",
+    "activity.install": "安装",
+    "activity.delete": "删除",
+    "activity.migrate": "迁移",
+    "activity.ok": "成功",
+    "activity.fail": "失败",
     "action.use": "使用",
     "action.useAgain": "已加载",
     "action.cancel": "取消",
@@ -183,7 +204,11 @@ var SK_STRINGS = {
     "action.pin": "置顶",
     "action.unpin": "取消置顶",
     "action.close": "关闭",
+    "action.copy": "复制正文",
+    "action.copied": "已复制",
+    "action.migrate": "迁入共享池",
     "action.retry": "重试",
+    "action.loadFailed": "读取失败",
     "detail.purpose": "用途",
     "detail.intro": "技能简介",
     "detail.introUnavailable": "无法读取技能描述",
@@ -202,10 +227,77 @@ var SK_STRINGS = {
     "detail.risk": "高风险操作",
     "detail.riskNote": "由宿主工具权限与审批独立校验",
     "detail.version": "版本",
+    "detail.info": "技能信息",
+    "detail.files": "文件数",
+    "detail.filesUnknown": "无法获取",
+    "detail.updated": "最后修改",
+    "detail.path": "安装路径",
+    "detail.copyPath": "复制路径",
+    "detail.pathCopied": "路径已复制。",
+    "detail.pathCopyFailed": "复制路径失败：{reason}",
+    "detail.showBody": "查看正文",
+    "detail.hideBody": "收起正文",
+    "detail.bodyLoading": "正在读取正文…",
+    "detail.bodyFailed": "读取正文失败：{reason}",
+    "detail.bodyTruncated": "只显示前 {shown} 个字符，完整内容请用「复制正文」。",
+    "inspect.title": "质量与安全检查",
+    "inspect.loading": "正在检查…",
+    "inspect.failed": "检查失败：{reason}",
+    "inspect.unavailable": "这个技能没有可读的文件，无法检查。",
+    "inspect.quality": "质量",
+    "inspect.security": "安全",
+    "inspect.level.ok": "正常",
+    "inspect.level.warn": "警告",
+    "inspect.level.error": "异常",
+    "inspect.level.high": "高风险",
+    "inspect.files": "检查了 {files} 个文件",
+    "inspect.where": "{file}:{line}",
+    "inspect.dependents": "被依赖",
+    "inspect.dependentsHint": "这些技能在声明或正文里引用了它。",
+    "inspect.unknownRelation": "正文提及（不确定）",
+    "inspect.noDependents": "没有技能声明依赖它。",
+    "review.title": "使用前安全确认",
+    "review.pending": "这个技能还没有被确认。先看上面的检查结果，再决定是否允许使用。",
+    "review.accept": "我已了解风险，仍要使用",
+    "review.accepted": "已确认，可以加载",
+    "review.done": "已记录这次确认",
+    "review.saving": "正在确认…",
+    "review.badge": "待审查",
+    "review.risk.high": "高风险",
+    "review.risk.warn": "有警告",
+    "review.risk.ok": "未发现明显风险",
+    "review.riskLabel": "初步风险",
+    "related.title": "没有匹配时，这些技能可能相关",
+    "related.loading": "正在查找相关技能…",
+    "related.failed": "相关推荐加载失败：{reason}",
+    "related.empty": "没有找到相关技能。",
+    "related.use": "使用",
     "detail.source": "来源",
+    "detail.permissions": "声明权限",
+    "detail.noPermissions": "技能没有声明权限或工具。",
     "detail.path": "位置",
     "detail.updated": "更新时间",
     "detail.usage": "使用记录",
+    "detail.cost": "注入开销",
+    "detail.costValue": "≈{tokens} tokens · {chars} 字符（估算，不是分词器）",
+    "detail.audit": "正文审计",
+    "detail.auditClean": "没有发现隐藏字符。",
+    "detail.auditHigh": "高",
+    "detail.auditMedium": "中",
+    "detail.auditLow": "低",
+    "detail.audit.escape": "裸 ESC 控制符",
+    "detail.audit.tag-chars": "Unicode 标签字符（不可见）",
+    "detail.audit.bidi": "双向控制符",
+    "detail.audit.control": "其他控制字符",
+    "detail.audit.zero-width": "零宽字符",
+    "detail.tags": "标签",
+    "detail.trash": "移入回收站",
+    "detail.deleting": "正在移入…",
+    "detail.trashHint": "删除只会进入回收站，不会永久删除。",
+    "detail.trashConfirm": "把「{name}」移入回收站？之后可以在回收站恢复。",
+    "detail.trashConfirmDeps": "有 {count} 个技能声明依赖「{name}」；删除后它们可能无法正常工作。仍要移入回收站？",
+    "detail.tagsEmpty": "还没有标签。",
+    "detail.tagsPlaceholder": "输入标签后回车",
     "detail.noUsage": "暂无使用记录。",
     "detail.keywords": "关键词",
     "detail.enable": "启用",
@@ -228,16 +320,38 @@ var SK_STRINGS = {
     "usage.accepted": "已采纳推荐",
     "usage.dismissed": "已忽略推荐",
     "notice.loaded": "已放入输入框：发送后技能才会生效。",
-    "notice.loadedNext": "已填入完整下一步，检查后发送。",
     "notice.loadedSession": "已放入该会话的输入框。",
     "notice.failed": "加载失败：{reason}",
     "notice.cancelled": "已取消加载。",
     "notice.prefFailed": "收藏状态保存失败：{reason}",
     "notice.toggleFailed": "开关保存失败：{reason}",
     "notice.indexFailed": "无法读取技能列表（HTTP {status}）：{reason}",
+    "notice.indexFailedPlain": "无法读取技能列表：{reason}",
     "notice.offline": "无法连接插件服务。",
+    "notice.dismiss": "关闭提示",
+    "notice.installDone": "已导入技能「{name}」。",
+    "notice.installReplaced": "已用新版本替换「{name}」。",
+    "notice.installSkipped": "没有安装「{name}」：{reason}",
+    "notice.installExists": "同名技能已存在，按冲突策略跳过",
+    "notice.installPartial": "导入完成：{done} 个成功，{skipped} 个跳过。",
+    "notice.installMany": "已导入 {done} 个技能。",
+    "notice.installFailed": "安装失败：{reason}",
+    "notice.deleteDone": "已把「{name}」移入回收站，可在回收站恢复。",
+    "notice.deleteFailed": "删除失败：{reason}",
+    "notice.restoreDone": "已恢复「{name}」。",
+    "notice.restoreDoneGeneric": "已恢复该技能，可以在列表里重新打开它。",
+    "notice.restoreFailed": "恢复失败：{reason}",
+    "notice.trashEmptied": "回收站已清空。",
+    "notice.trashEmptyFailed": "清空回收站失败：{reason}",
     "empty.title": "没有匹配的技能",
     "empty.hint": "换个关键词，或清除分类与来源筛选。",
+    "empty.all.title": "还没有任何技能",
+    "empty.all.hint": "导入一个技能，或把本机已有的技能目录接进来。",
+    "empty.all.action": "打开安装",
+    "empty.clearSearch": "清空搜索",
+    "empty.filter.title": "当前筛选没有结果",
+    "empty.filter.hint": "清除分类、来源或状态筛选，查看全部技能。",
+    "empty.filter.action": "清除筛选",
     "empty.clear": "清除筛选",
     "loading": "正在读取技能…",
     "more.workspace": "作用域",
@@ -246,6 +360,42 @@ var SK_STRINGS = {
     "more.refresh": "刷新",
     "more.language": "语言",
     "more.sources": "来源",
+    "more.ledger": "调用台账",
+    "more.diagnostics": "诊断",
+    "more.updates": "版本与更新",
+    "updates.title": "版本与更新",
+    "updates.intro": "这里列出带版本号的技能。当前技能来源没有提供“可用新版本”信息，因此无法检查更新，也不会自动覆盖任何文件。",
+    "updates.empty": "没有带版本号的技能。",
+    "updates.noSource": "缺少更新源：请从原始仓库或安装包更新技能，更新前自行备份。",
+    "updates.version": "版本",
+    "updates.name": "技能",
+    "stats.topTitle": "常用排行",
+    "stats.topHint": "按插件记录的「加载 + 真实调用」次数排序，未调用过的不列入。",
+    "stats.neverTitle": "从未通过插件使用",
+    "stats.neverHint": "这些技能在插件记录里没有任何加载或调用；不代表宿主从未使用过它们。",
+    "stats.neverEmpty": "所有技能都有使用记录。",
+    "notice.tagsSaved": "标签已保存。",
+    "notice.tagsFailed": "标签保存失败：{reason}",
+    "notice.migrated": "已迁入共享池并留下软链接：{path}",
+    "notice.migrateRefused": "没有迁移：{reason}",
+    "notice.copyFailed": "复制失败：{reason}",
+    "ledger.title": "调用台账",
+    "ledger.intro": "只统计真实的加载、执行与失败；分母为零时不给比率。",
+    "ledger.loads": "加载",
+    "ledger.invokes": "执行",
+    "ledger.success": "成功率",
+    "ledger.adoption": "推荐采纳率",
+    "ledger.noRate": "—",
+    "ledger.trend": "近 14 天加载",
+    "ledger.empty": "还没有调用记录。",
+    "ledger.skill": "技能",
+    "ledger.lastUsed": "最近使用",
+    "diag.title": "诊断",
+    "diag.intro": "被跳过的文件、无效 frontmatter 与挂载扫描失败都在这里。",
+    "diag.empty": "没有发现问题。",
+    "diag.writable": "可写根",
+    "diag.mounted": "挂载源",
+    "diag.audit": "正文审计汇总",
     "more.note": "内置与插件技能只读；启停与安装只影响可写目录。",
     "panel.install": "安装技能",
     "panel.trash": "回收站",
@@ -255,6 +405,11 @@ var SK_STRINGS = {
     "error.invokeApi": "当前界面缺少会话服务，无法准备输入框。",
     "error.loadBlocked": "输入框正在提交，稍后再试。",
     "error.network": "请求失败，请检查插件服务是否在线。",
+    "error.denied": "没有权限执行这一步：技能可能只允许用户手动调用，或已被停用。",
+    "error.notFound": "找不到目标技能，可能已被删除或移出了当前工作区。",
+    "error.server": "插件服务返回错误（HTTP {status}）。",
+    "error.badRequest": "请求不被接受：{reason}",
+    "error.reviewRequired": "这个技能还需要完成安全审查。请打开详情，查看检查结果并确认。",
     "time.justNow": "刚刚",
     "dock.title": "技能推荐",
     "dock.count": "仅 {count} 个",
@@ -262,7 +417,6 @@ var SK_STRINGS = {
     "dock.ignore": "忽略",
     "dock.loading": "正在校验权限…",
     "dock.loaded": "已放入输入框，发送后生效。",
-    "dock.loadedNext": "已填入完整下一步，检查后发送。",
     "dock.failed": "无法加载：{reason}",
     "dock.ignored": "已忽略，本次任务不再推荐。",
     "dock.reason": "推荐原因",
@@ -322,6 +476,8 @@ var SK_STRINGS = {
     "fav.empty.hint": "在全部技能里收藏或置顶，也可以直接使用；之后会出现在这里。",
     "fav.empty.browse": "浏览全部技能",
     "skills.sub": "{count} 个技能 · {available} 个可用",
+    "skills.searchSub": "搜索「{query}」：{count} 个结果",
+    "skills.refreshing": "刷新中…",
     "state.available": "可用"
   },
   en: {
@@ -355,6 +511,27 @@ var SK_STRINGS = {
     "state.model": "Model only",
     "state.off": "Unavailable",
     "state.disabled": "Disabled",
+    "state.fav": "Favourites",
+    "batch.mode": "Select",
+    "batch.exit": "Exit select",
+    "batch.selected": "{count} selected",
+    "batch.selectAll": "Select all visible",
+    "batch.clear": "Clear selection",
+    "batch.export": "Export manifest",
+    "batch.delete": "Delete selected",
+    "batch.confirm": "Delete {count} selected skills? They move to the trash and can be restored.",
+    "batch.confirmed": "Delete now",
+    "batch.noWritable": "None of the selected skills is a local skill in a writable root; nothing can be deleted.",
+    "batch.none": "Nothing selected yet.",
+    "batch.done": "Deleted {done}, failed {failed}.",
+    "batch.exported": "Exported a manifest of {count} skills.",
+    "activity.title": "Recent operations",
+    "activity.empty": "No install, delete or migration recorded yet.",
+    "activity.install": "Install",
+    "activity.delete": "Delete",
+    "activity.migrate": "Migrate",
+    "activity.ok": "ok",
+    "activity.fail": "failed",
     "action.use": "Use",
     "action.useAgain": "Loaded",
     "action.cancel": "Cancel",
@@ -364,7 +541,11 @@ var SK_STRINGS = {
     "action.pin": "Pin",
     "action.unpin": "Unpin",
     "action.close": "Close",
+    "action.copy": "Copy body",
+    "action.copied": "Copied",
+    "action.migrate": "Move to shared pool",
     "action.retry": "Retry",
+    "action.loadFailed": "Could not load",
     "detail.purpose": "Purpose",
     "detail.intro": "Skill summary",
     "detail.introUnavailable": "Skill description unavailable",
@@ -383,10 +564,77 @@ var SK_STRINGS = {
     "detail.risk": "High-risk actions",
     "detail.riskNote": "checked independently by host tool permissions and approval",
     "detail.version": "Version",
+    "detail.info": "Skill details",
+    "detail.files": "Files",
+    "detail.filesUnknown": "Unavailable",
+    "detail.updated": "Last modified",
+    "detail.path": "Install path",
+    "detail.copyPath": "Copy path",
+    "detail.pathCopied": "Path copied.",
+    "detail.pathCopyFailed": "Could not copy the path: {reason}",
+    "detail.showBody": "Show body",
+    "detail.hideBody": "Hide body",
+    "detail.bodyLoading": "Reading body…",
+    "detail.bodyFailed": "Could not read the body: {reason}",
+    "detail.bodyTruncated": "Showing the first {shown} characters; use Copy body for the full text.",
+    "inspect.title": "Quality & security check",
+    "inspect.loading": "Checking…",
+    "inspect.failed": "Check failed: {reason}",
+    "inspect.unavailable": "This skill has no readable files, so it cannot be checked.",
+    "inspect.quality": "Quality",
+    "inspect.security": "Security",
+    "inspect.level.ok": "OK",
+    "inspect.level.warn": "Warning",
+    "inspect.level.error": "Error",
+    "inspect.level.high": "High risk",
+    "inspect.files": "Checked {files} files",
+    "inspect.where": "{file}:{line}",
+    "inspect.dependents": "Depended on by",
+    "inspect.dependentsHint": "These skills reference it in their declared dependencies or body text.",
+    "inspect.unknownRelation": "Body mention only (uncertain)",
+    "inspect.noDependents": "No skill declares a dependency on it.",
+    "review.title": "Safety confirmation",
+    "review.pending": "This skill has not been confirmed yet. Review the scan above, then decide whether to allow it.",
+    "review.accept": "I understand the risk; use it anyway",
+    "review.accepted": "Confirmed; it can be loaded",
+    "review.done": "Confirmation recorded",
+    "review.saving": "Confirming…",
+    "review.badge": "Review",
+    "review.risk.high": "High risk",
+    "review.risk.warn": "Warning",
+    "review.risk.ok": "No obvious risk",
+    "review.riskLabel": "Initial risk",
+    "related.title": "No direct match; these may be related",
+    "related.loading": "Looking for related skills…",
+    "related.failed": "Could not load related skills: {reason}",
+    "related.empty": "No related skills found.",
+    "related.use": "Use",
     "detail.source": "Source",
+    "detail.permissions": "Declared permissions",
+    "detail.noPermissions": "The skill declares no permissions or tools.",
     "detail.path": "Location",
     "detail.updated": "Updated",
     "detail.usage": "Usage",
+    "detail.cost": "Injection cost",
+    "detail.costValue": "≈{tokens} tokens · {chars} chars (estimate, not a tokenizer)",
+    "detail.audit": "Body audit",
+    "detail.auditClean": "No hidden characters found.",
+    "detail.auditHigh": "high",
+    "detail.auditMedium": "medium",
+    "detail.auditLow": "low",
+    "detail.audit.escape": "bare ESC control",
+    "detail.audit.tag-chars": "Unicode tag characters (invisible)",
+    "detail.audit.bidi": "bidirectional controls",
+    "detail.audit.control": "other control characters",
+    "detail.audit.zero-width": "zero-width characters",
+    "detail.tags": "Tags",
+    "detail.trash": "Move to trash",
+    "detail.deleting": "Moving…",
+    "detail.trashHint": "Delete only moves the skill to the trash; nothing is permanently removed.",
+    "detail.trashConfirm": "Move \u300c{name}\u300d to the trash? It can be restored from there.",
+    "detail.trashConfirmDeps": "{count} skills declare a dependency on \u300c{name}\u300d; they may stop working. Move it to the trash anyway?",
+    "detail.tagsEmpty": "No tags yet.",
+    "detail.tagsPlaceholder": "Type a tag and press Enter",
     "detail.noUsage": "No usage recorded yet.",
     "detail.keywords": "Keywords",
     "detail.enable": "Enabled",
@@ -409,16 +657,38 @@ var SK_STRINGS = {
     "usage.accepted": "Recommendation accepted",
     "usage.dismissed": "Recommendation dismissed",
     "notice.loaded": "Added to the composer: the skill takes effect when you send.",
-    "notice.loadedNext": "The next step is filled in; review it and send.",
     "notice.loadedSession": "Added to that conversation's composer.",
     "notice.failed": "Could not load: {reason}",
     "notice.cancelled": "Load cancelled.",
     "notice.prefFailed": "Could not save favourite: {reason}",
     "notice.toggleFailed": "Could not save the switch: {reason}",
     "notice.indexFailed": "Cannot read skills (HTTP {status}): {reason}",
+    "notice.indexFailedPlain": "Cannot read skills: {reason}",
     "notice.offline": "Cannot reach the plugin service.",
+    "notice.dismiss": "Dismiss",
+    "notice.installDone": "Imported \u300c{name}\u300d.",
+    "notice.installReplaced": "Replaced \u300c{name}\u300d with the new version.",
+    "notice.installSkipped": "Not installed \u300c{name}\u300d: {reason}",
+    "notice.installExists": "A skill with that name already exists; skipped by the conflict policy",
+    "notice.installPartial": "Imported {done}, skipped {skipped}.",
+    "notice.installMany": "Imported {done} skills.",
+    "notice.installFailed": "Install failed: {reason}",
+    "notice.deleteDone": "Moved \u300c{name}\u300d to the trash; it can be restored.",
+    "notice.deleteFailed": "Delete failed: {reason}",
+    "notice.restoreDone": "Restored \u300c{name}\u300d.",
+    "notice.restoreDoneGeneric": "Skill restored; it is back in the list.",
+    "notice.restoreFailed": "Restore failed: {reason}",
+    "notice.trashEmptied": "Trash emptied.",
+    "notice.trashEmptyFailed": "Could not empty the trash: {reason}",
     "empty.title": "No matching skills",
     "empty.hint": "Try another keyword, or clear the category and source filters.",
+    "empty.all.title": "No skills yet",
+    "empty.all.hint": "Import a skill, or connect a skill directory that is already on this machine.",
+    "empty.all.action": "Open install",
+    "empty.clearSearch": "Clear search",
+    "empty.filter.title": "No results with these filters",
+    "empty.filter.hint": "Clear the category, source or state filter to see every skill.",
+    "empty.filter.action": "Clear filters",
     "empty.clear": "Clear filters",
     "loading": "Reading skills…",
     "more.workspace": "Scope",
@@ -427,6 +697,42 @@ var SK_STRINGS = {
     "more.refresh": "Refresh",
     "more.language": "Language",
     "more.sources": "Sources",
+    "more.ledger": "Usage ledger",
+    "more.diagnostics": "Diagnostics",
+    "more.updates": "Versions & updates",
+    "updates.title": "Versions & updates",
+    "updates.intro": "Skills that declare a version are listed here. The installed sources expose no newer-version information, so updates cannot be checked and no file is overwritten automatically.",
+    "updates.empty": "No skill declares a version.",
+    "updates.noSource": "No update source: update a skill from its original repository or package, and back it up first.",
+    "updates.version": "Version",
+    "updates.name": "Skill",
+    "stats.topTitle": "Most used",
+    "stats.topHint": "Ranked by plugin-recorded loads plus real invocations; never-used skills are not listed.",
+    "stats.neverTitle": "Never used through the plugin",
+    "stats.neverHint": "No load or invocation recorded by this plugin; that does not mean the host never used them.",
+    "stats.neverEmpty": "Every skill has some recorded usage.",
+    "notice.tagsSaved": "Tags saved.",
+    "notice.tagsFailed": "Tags not saved: {reason}",
+    "notice.migrated": "Moved to the shared pool with a symlink: {path}",
+    "notice.migrateRefused": "Not migrated: {reason}",
+    "notice.copyFailed": "Copy failed: {reason}",
+    "ledger.title": "Usage ledger",
+    "ledger.intro": "Only real loads, runs and failures; no rate without a denominator.",
+    "ledger.loads": "Loads",
+    "ledger.invokes": "Runs",
+    "ledger.success": "Success",
+    "ledger.adoption": "Adoption",
+    "ledger.noRate": "—",
+    "ledger.trend": "Loads, last 14 days",
+    "ledger.empty": "No usage recorded yet.",
+    "ledger.skill": "Skill",
+    "ledger.lastUsed": "Last used",
+    "diag.title": "Diagnostics",
+    "diag.intro": "Skipped files, invalid frontmatter and mount-scan failures land here.",
+    "diag.empty": "Nothing to report.",
+    "diag.writable": "Writable root",
+    "diag.mounted": "Mount source",
+    "diag.audit": "Body audit summary",
     "more.note": "Built-in and plugin skills are read-only; enable and install only touch writable roots.",
     "panel.install": "Install skill",
     "panel.trash": "Recycle bin",
@@ -436,6 +742,11 @@ var SK_STRINGS = {
     "error.invokeApi": "This shell lacks the conversation services needed to stage the composer.",
     "error.loadBlocked": "The composer is submitting; try again in a moment.",
     "error.network": "Request failed; check that the plugin service is running.",
+    "error.denied": "Not allowed: the skill may be user-only or disabled.",
+    "error.notFound": "That skill no longer exists, or it left the current workspace.",
+    "error.server": "The plugin service returned an error (HTTP {status}).",
+    "error.badRequest": "Request rejected: {reason}",
+    "error.reviewRequired": "This skill still needs a safety review. Open its detail, check the scan, and confirm.",
     "time.justNow": "just now",
     "dock.title": "Skill suggestion",
     "dock.count": "{count} only",
@@ -443,7 +754,6 @@ var SK_STRINGS = {
     "dock.ignore": "Ignore",
     "dock.loading": "Checking permissions…",
     "dock.loaded": "Added to the composer; it applies when you send.",
-    "dock.loadedNext": "The next step is filled in; review and send.",
     "dock.failed": "Cannot load: {reason}",
     "dock.ignored": "Ignored; this task will not be suggested again.",
     "dock.reason": "Why",
@@ -503,6 +813,8 @@ var SK_STRINGS = {
     "fav.empty.hint": "Star or pin a skill in All skills, or use one directly; it will show up here.",
     "fav.empty.browse": "Browse all skills",
     "skills.sub": "{count} skills · {available} available",
+    "skills.searchSub": "Search \"{query}\": {count} result(s)",
+    "skills.refreshing": "refreshing…",
     "state.available": "Available"
   }
 };
@@ -612,8 +924,62 @@ function skSearchBlob(skill) {
     skill.source?.label ?? "",
     skill.source?.detail ?? "",
     skill.i18n?.simple ?? "",
-    skill.i18n?.professional ?? ""
+    skill.i18n?.professional ?? "",
+    (skill.tags ?? []).join(" ")
   ].join(" ").toLowerCase();
+}
+
+/**
+ * Split text into plain/matched segments for the current search query.
+ * Only the first occurrence of the first matching term is marked: enough to
+ * show why a row matched, without turning the list into a rainbow.
+ * @param {string} text - display text.
+ * @param {string} query - raw search box value.
+ * @returns {Array<string|{mark: string}>} segments in order.
+ */
+function skHighlightParts(text, query) {
+  var value = String(text ?? "");
+  var raw = String(query ?? "").trim();
+  if (raw === "") return [value];
+  var terms = raw.split(/\s+/).filter(function (term) { return term !== ""; }).map(function (term) { return term.toLowerCase(); });
+  var lower = value.toLowerCase();
+  for (var index = 0; index < terms.length; index += 1) {
+    var at = lower.indexOf(terms[index]);
+    if (at < 0) continue;
+    return [
+      value.slice(0, at),
+      { mark: value.slice(at, at + terms[index].length) },
+      value.slice(at + terms[index].length)
+    ];
+  }
+  return [value];
+}
+
+/**
+ * Render highlighted search text.
+ * @param {string} text - display text.
+ * @param {string} query - raw search box value.
+ * @returns {Array} React children.
+ */
+function skHighlighted(text, query) {
+  return skHighlightParts(text, query).map(function (part, index) {
+    if (typeof part === "string") return part;
+    return sk("mark", { key: "hl-" + String(index), className: "sk_mark" }, part.mark);
+  });
+}
+
+/**
+ * One reusable empty state: what is empty, why, and the action that helps.
+ * @param {{title: string, hint: string, actionLabel: string, onAction: Function, glyph?: object}} props - props.
+ * @returns {object} empty panel.
+ */
+function SkEmptyState(props) {
+  return sk("div", { className: "sk_emptyPanel" }, [
+    props.glyph === undefined || props.glyph === null ? null : sk("span", { className: "sk_emptyGlyph" }, [props.glyph]),
+    sk("h3", { className: "sk_emptyTitle" }, props.title),
+    sk("p", { className: "sk_emptyHint" }, props.hint),
+    sk("button", { className: "sk_textBtn", type: "button", onClick: props.onAction }, props.actionLabel)
+  ]);
 }
 
 /**
@@ -642,6 +1008,7 @@ function skFilterSkills(skills, filters) {
       if (state === "both" && availability !== "both") return false;
       if (state === "user" && availability !== "user") return false;
       if (state === "model" && availability !== "model") return false;
+      if (state === "fav" && skill.stats?.favorite !== true) return false;
     }
     return true;
   });
@@ -806,41 +1173,6 @@ function skHomeReason(item, lang) {
   if (typeof item.reason === "string" && item.reason !== "") return item.reason;
   if (typeof item.reasonEn === "string" && item.reasonEn !== "") return item.reasonEn;
   return skT(lang, "home.reason.history");
-}
-
-/**
- * Compose the complete next step staged in the composer when a recommendation
- * is accepted.
- *
- * The user's own latest sentence is the payload when we have it; otherwise the
- * skill's declared use case or purpose. This is deterministic — no model call,
- * no invented task — and it never sends anything: the user reviews and presses
- * send themselves.
- * @param {object} source - skill record or recommendation item.
- * @param {string} intent - the user's latest sentence, when known.
- * @param {'zh'|'en'} lang - active language.
- * @returns {string} continuation instruction.
- */
-function skContinuationPrompt(source, intent, lang) {
-  var text = String(intent ?? "").replace(/\s+/g, " ").trim();
-  if (text.length > 160) text = text.slice(0, 159) + "…";
-  if (text !== "") {
-    return lang === "zh"
-      ? "基于我上一条消息继续推进：“" + text + "”。信息不够就先问我。"
-      : "Continue from my previous message: \"" + text + "\". Ask me first if anything is missing.";
-  }
-  var useCases = Array.isArray(source?.useCases) ? source.useCases : [];
-  // Prefer a cue in the active UI language: the Chinese summary for zh, the
-  // declared use case for en.
-  var cue = lang === "zh"
-    ? useCases[0] ?? source?.i18n?.simple ?? source?.simple ?? source?.purpose ?? source?.description ?? ""
-    : useCases[0] ?? source?.purpose ?? source?.description ?? source?.i18n?.simple ?? source?.simple ?? "";
-  if (lang === "zh" && typeof source?.i18n?.simple === "string" && source.i18n.simple !== "") cue = source.i18n.simple;
-  cue = skClip(cue, 160);
-  if (cue !== "") {
-    return lang === "zh" ? "请用这个技能帮我：" + cue : "Use this skill to help me: " + cue;
-  }
-  return lang === "zh" ? "请用这个技能继续推进我手头的事。" : "Use this skill to move my current task forward.";
 }
 
 /**
@@ -1088,6 +1420,29 @@ function skCall(path, options) {
 }
 
 /**
+ * Dictionary key for one audit severity.
+ * @param {string} severity - high | medium | low.
+ * @returns {string} i18n key.
+ */
+function skSeverityKey(severity) {
+  return severity === "high" ? "detail.auditHigh" : severity === "medium" ? "detail.auditMedium" : "detail.auditLow";
+}
+
+/**
+ * Dictionary key for one secondary panel title.
+ * @param {'install'|'trash'|'ledger'|'diagnostics'} panel - panel id.
+ * @returns {string} i18n key.
+ */
+function skPanelTitleKey(panel) {
+  if (panel === "install") return "panel.install";
+  if (panel === "ledger") return "ledger.title";
+  if (panel === "diagnostics") return "diag.title";
+  if (panel === "updates") return "updates.title";
+  if (panel === "security") return "sec.title";
+  return "panel.trash";
+}
+
+/**
  * The error message of one failed API response, without inventing one.
  * @param {{status: number, body: object}} result - API result.
  * @returns {string} message.
@@ -1099,12 +1454,35 @@ function skApiError(result) {
   return skT(skGetLang(), "error.network");
 }
 
+/**
+ * User-facing text for one failed API response. Known statuses get a plain
+ * sentence; anything else keeps the server's own message, and the technical
+ * details go to the developer console instead of the interface.
+ * @param {{status: number, body: object}} result - API result.
+ * @returns {string} message safe to show.
+ */
+function skErrorText(result) {
+  var body = result === null || result === undefined ? {} : result.body ?? {};
+  var status = result === null || result === undefined ? 0 : Number(result.status) || 0;
+  var reason = typeof body.error === "string" ? body.error : "";
+  if (status === 0) return skT(skGetLang(), "error.network");
+  if (status === 403) return skT(skGetLang(), "error.denied");
+  if (status === 404) return skT(skGetLang(), "error.notFound");
+  if (status === 409 && body.code === "review-required") return skT(skGetLang(), "error.reviewRequired");
+  if (status === 400) {
+    return reason === "" ? skT(skGetLang(), "error.server", { status: String(status) }) : skT(skGetLang(), "error.badRequest", { reason: reason });
+  }
+  if (reason !== "") {
+    if (typeof console !== "undefined" && typeof console.warn === "function") console.warn("[dsh-charlotte] API error", status, reason);
+    return reason;
+  }
+  if (typeof console !== "undefined" && typeof console.warn === "function") console.warn("[dsh-charlotte] API error", status);
+  return skT(skGetLang(), "error.server", { status: String(status) });
+}
+
 var skApi = {
-  index: function (workspace) {
-    return skCall("/index" + (workspace !== "" ? "?workspace=" + encodeURIComponent(workspace) : ""));
-  },
-  config: function () {
-    return skCall("/config");
+  index: function (workspace, signal) {
+    return skCall("/index" + (workspace !== "" ? "?workspace=" + encodeURIComponent(workspace) : ""), { signal: signal });
   },
   prefs: function (body) {
     return skCall("/prefs", { method: "POST", body: body });
@@ -1118,14 +1496,11 @@ var skApi = {
   sessionState: function (sessionId) {
     return skCall("/session-state?session=" + encodeURIComponent(sessionId));
   },
-  home: function (sessionId, workspace) {
+  home: function (sessionId, workspace, signal) {
     var query = [];
     if (typeof sessionId === "string" && sessionId !== "") query.push("session=" + encodeURIComponent(sessionId));
     if (typeof workspace === "string" && workspace !== "") query.push("workspace=" + encodeURIComponent(workspace));
-    return skCall("/home" + (query.length > 0 ? "?" + query.join("&") : ""));
-  },
-  recommend: function (body, signal) {
-    return skCall("/recommend", { method: "POST", body: body, signal: signal });
+    return skCall("/home" + (query.length > 0 ? "?" + query.join("&") : ""), { signal: signal });
   },
   ignore: function (body) {
     return skCall("/recommend/ignore", { method: "POST", body: body });
@@ -1133,11 +1508,42 @@ var skApi = {
   toggle: function (body) {
     return skCall("/toggle", { method: "POST", body: body });
   },
+  delete: function (body) {
+    return skCall("/delete", { method: "POST", body: body });
+  },
   override: function (body) {
     return skCall("/override", { method: "POST", body: body });
   },
   roots: function () {
     return skCall("/roots");
+  },
+  body: function (name, workspace) {
+    var query = "name=" + encodeURIComponent(name);
+    if (typeof workspace === "string" && workspace !== "") query += "&workspace=" + encodeURIComponent(workspace);
+    return skCall("/body?" + query);
+  },
+  search: function (query, workspace, max) {
+    var params = "q=" + encodeURIComponent(query);
+    if (typeof workspace === "string" && workspace !== "") params += "&workspace=" + encodeURIComponent(workspace);
+    if (typeof max === "number") params += "&max=" + String(max);
+    return skCall("/search?" + params);
+  },
+  inspect: function (name, workspace) {
+    var params = "name=" + encodeURIComponent(name);
+    if (typeof workspace === "string" && workspace !== "") params += "&workspace=" + encodeURIComponent(workspace);
+    return skCall("/inspect?" + params);
+  },
+  ledger: function (workspace) {
+    return skCall("/ledger" + (typeof workspace === "string" && workspace !== "" ? "?workspace=" + encodeURIComponent(workspace) : ""));
+  },
+  review: function (body) {
+    return skCall("/review", { method: "POST", body: body });
+  },
+  tags: function (body) {
+    return skCall("/tags", { method: "POST", body: body });
+  },
+  migrate: function (body) {
+    return skCall("/migrate", { method: "POST", body: body, timeoutMs: 120000 });
   }
 };
 
@@ -1145,8 +1551,178 @@ var skApi = {
 // name defined against the host's real local-path installer so the existing
 // Install tab keeps working.
 var importSkills = function (body) {
-  return skCall("/import-path", { method: "POST", body: body, timeoutMs: 120000 });
+  var request = skCall("/import-path", { method: "POST", body: body, timeoutMs: 120000 });
+  request.then(skReportInstallSafe);
+  return request;
 };
+
+// One notice sink, registered by StationApp: helper-level results (install,
+// trash) are reported even though those components keep their own inline text.
+var skNoticeSink = null;
+
+/** @param {Function|null} sink - receives (kind, text). */
+function skNoticeSetSink(sink) {
+  skNoticeSink = typeof sink === "function" ? sink : null;
+}
+
+/**
+ * Push one user-facing notice. No sink means the station is not mounted.
+ * @param {string} kind - ok | info | warn | err.
+ * @param {string} text - already localized message.
+ */
+function skNotice(kind, text) {
+  if (skNoticeSink === null) return;
+  try {
+    skNoticeSink(kind, String(text ?? ''));
+  }
+  catch (error) {
+    // A notice must never break the action that produced it.
+  }
+}
+
+/**
+ * Turn one install response (`outcome` or `outcomes`) into a notice, so every
+ * install entry point reports the same way the launcher does.
+ * @param {{ok: boolean, status: number, body: object}} result - API result.
+ */
+function skReportInstall(result) {
+  if (result === null || result === undefined) return;
+  var body = result.body ?? {};
+  var rows = Array.isArray(body.outcomes) ? body.outcomes : (body.outcome !== undefined ? [body.outcome] : []);
+  var blocked = body.code === "security-blocked"
+    || (Array.isArray(body.blocked) && body.blocked.length > 0)
+    || rows.some(function (row) { return row !== null && row !== undefined && row.code === "security-blocked"; });
+  var reviewName = "";
+  if (Array.isArray(body.outcomes)) {
+    var named = body.outcomes.find(function (row) { return row !== null && row !== undefined && typeof row.name === "string" && row.name !== ""; });
+    if (named !== undefined) reviewName = named.name;
+  } else if (body.outcome !== null && body.outcome !== undefined && typeof body.outcome.name === "string") {
+    reviewName = body.outcome.name;
+  }
+  if (blocked) {
+    var blockedRow = rows.find(function (row) { return row !== null && row !== undefined && row.code === "security-blocked"; });
+    var reviewFindings = Array.isArray(body.findings) ? body.findings : (blockedRow !== undefined && Array.isArray(blockedRow.findings) ? blockedRow.findings : []);
+    var reviewSummary = body.summary !== null && typeof body.summary === "object" ? body.summary : (blockedRow !== undefined ? blockedRow.summary : undefined);
+    if (typeof skOpenSecurityReview === "function") {
+      skOpenSecurityReview(Object.assign({}, body, {
+        name: reviewName,
+        source: "install",
+        code: "security-blocked",
+        findings: reviewFindings,
+        summary: reviewSummary,
+        scanId: body.scanId ?? (blockedRow !== undefined ? blockedRow.scanId : undefined),
+        reviewable: false
+      }));
+    } else if (body.notify !== false) {
+      skOpenSecurityCenter(body);
+    }
+  }
+  if (rows.length === 0) {
+    if (!result.ok) skNotice("err", skT(skGetLang(), "notice.installFailed", { reason: skErrorText(result) }));
+    return;
+  }
+  var done = 0;
+  var skipped = 0;
+  var replaced = 0;
+  var first = null;
+  var reason = "";
+  for (var index = 0; index < rows.length; index += 1) {
+    var row = rows[index];
+    if (row === null || row === undefined) continue;
+    if (first === null) first = row;
+    if (row.status === "skipped") {
+      skipped += 1;
+      if (reason === "" && typeof row.error === "string") reason = row.error;
+      continue;
+    }
+    done += 1;
+    if (row.status === "replaced") replaced += 1;
+  }
+  var firstRow = first === null ? {} : first;
+  if (done === 0) {
+    skNotice("warn", skT(skGetLang(), "notice.installSkipped", {
+      name: typeof firstRow.name === "string" && firstRow.name !== "" ? firstRow.name : (typeof firstRow.sourcePath === "string" ? firstRow.sourcePath : ""),
+      // A successful skip (conflict policy) has no error text; falling back to
+      // skErrorText() would print "HTTP 200" as the reason.
+      reason: reason !== "" ? reason : result.ok ? skT(skGetLang(), "notice.installExists") : skErrorText(result)
+    }));
+    return;
+  }
+  if (rows.length === 1) {
+    var label = typeof firstRow.name === "string" ? firstRow.name : "";
+    skNotice("ok", skT(skGetLang(), replaced > 0 ? "notice.installReplaced" : "notice.installDone", { name: label }));
+    if (!blocked && label !== "" && typeof skOpenSecurityReview === "function") skOpenSecurityReview({ name: label, source: "install", auto: true });
+    return;
+  }
+  if (skipped === 0) {
+    skNotice("ok", skT(skGetLang(), "notice.installMany", { done: String(done) }));
+    if (!blocked && reviewName !== "" && typeof skOpenSecurityReview === "function") skOpenSecurityReview({ name: reviewName, source: "install", auto: true });
+    return;
+  }
+  skNotice("warn", skT(skGetLang(), "notice.installPartial", { done: String(done), skipped: String(skipped) }));
+  if (!blocked && reviewName !== "" && typeof skOpenSecurityReview === "function") skOpenSecurityReview({ name: reviewName, source: "install", auto: true });
+}
+
+/**
+ * Report an install result without ever letting a notice error reject the
+ * caller's promise chain.
+ * @param {object} result - API result.
+ */
+function skReportInstallSafe(result) {
+  try {
+    skReportInstall(result);
+  }
+  catch (error) {
+    // Reporting is best effort; the install itself already has its result.
+  }
+}
+
+// The install panel keeps its own inline result; these wrappers add the shared
+// notice without changing what the panel receives.
+var skBaseUploadFiles = typeof uploadFiles === "function" ? uploadFiles : null;
+var skBaseUploadZip = typeof uploadZip === "function" ? uploadZip : null;
+if (skBaseUploadFiles !== null) {
+  uploadFiles = function (body) {
+    var request = skBaseUploadFiles(body);
+    request.then(skReportInstallSafe);
+    return request;
+  };
+}
+if (skBaseUploadZip !== null) {
+  uploadZip = function (body) {
+    var request = skBaseUploadZip(body);
+    request.then(skReportInstallSafe);
+    return request;
+  };
+}
+
+// Trash actions live in the baseline panel; report them through the shared
+// notice too, so restore/empty failures are not only technical status codes.
+var skBaseRestoreTrash = typeof restoreTrash === "function" ? restoreTrash : null;
+var skBaseEmptyTrash = typeof emptyTrash === "function" ? emptyTrash : null;
+if (skBaseRestoreTrash !== null) {
+  restoreTrash = function (id) {
+    return skBaseRestoreTrash(id).then(function (result) {
+      if (result.ok) skNotice("ok", skT(skGetLang(), "notice.restoreDoneGeneric"));
+      else {
+        if (result.body !== null && result.body !== undefined && result.body.code === "security-blocked" && typeof skOpenSecurityReview === "function") {
+          skOpenSecurityReview(Object.assign({}, result.body, { name: result.body.name ?? "", source: "restore", code: "security-blocked", reviewable: false }));
+        }
+        skNotice("err", skT(skGetLang(), "notice.restoreFailed", { reason: skErrorText(result) }));
+      }
+      return result;
+    });
+  };
+}
+if (skBaseEmptyTrash !== null) {
+  emptyTrash = function () {
+    return skBaseEmptyTrash().then(function (result) {
+      if (result.ok) skNotice("ok", skT(skGetLang(), "notice.trashEmptied"));
+      else skNotice("err", skT(skGetLang(), "notice.trashEmptyFailed", { reason: skErrorText(result) }));
+      return result;
+    });
+  };
+}
 
 // #endregion
 
@@ -1279,10 +1855,8 @@ function skWorkspaceIdFor(workspacePath, currentSessionId) {
  * @param {string} name - skill name.
  * @returns {string} `/name ` with a trailing space.
  */
-function skDraftPrompt(name, continuation) {
-  var token = "/" + name + " ";
-  var text = typeof continuation === "string" ? continuation.trim() : "";
-  return text === "" ? token : token + text;
+function skDraftPrompt(name) {
+  return "/" + name + " ";
 }
 
 /**
@@ -1295,7 +1869,7 @@ function skDraftPrompt(name, continuation) {
  * @param {string} name - skill name.
  * @returns {Promise<string>} session id after staging.
  */
-function skPrepareDraft(sessionId, name, continuation) {
+function skPrepareDraft(sessionId, name) {
   var sessions = skService("sessions");
   if (sessions === undefined || sessions === null || typeof sessions.using !== "function") {
     return Promise.reject(new Error(skT(skGetLang(), "error.invokeApi")));
@@ -1312,7 +1886,7 @@ function skPrepareDraft(sessionId, name, continuation) {
       throw new Error(skT(skGetLang(), "error.invokeApi"));
     }
     var outcome = input.requestDraftInitialization(binding, {
-      prompt: skDraftPrompt(name, continuation),
+      prompt: skDraftPrompt(name),
       whenDraftExists: "append"
     });
     if (outcome === "blocked") throw new Error(skT(skGetLang(), "error.loadBlocked"));
@@ -1476,9 +2050,7 @@ function skReportEvent(name, phase, reason, workspace, sessionId) {
  * @param {string} workspacePath - browsing scope path.
  * @returns {Promise<{ok: boolean, sessionId?: string, error?: string, cancelled?: boolean}>} outcome.
  */
-function skUseSkill(name, workspacePath, options) {
-  var settings = options ?? {};
-  var continuation = typeof settings.continuation === "string" ? settings.continuation.trim() : "";
+function skUseSkill(name, workspacePath) {
   var scopePath = workspacePath !== "" ? workspacePath : skCurrentWorkspacePath();
   var current = skLoadSnapshot(name);
   if (current.phase === "loading") {
@@ -1494,8 +2066,39 @@ function skUseSkill(name, workspacePath, options) {
     sessionId = sid;
     return skApi.use({ name: name, workspace: scopePath, sessionId: sid }, controller === undefined ? undefined : controller.signal);
   }).then(function (result) {
-    if (!result.ok) throw new Error(skApiError(result));
-    return skPrepareDraft(sessionId, name, continuation);
+    if (!result.ok) {
+      // An aborted fetch comes back as a resolved result with `aborted: true`;
+      // keep it a cancellation rather than showing it as a failed load.
+      if (result.body !== null && result.body !== undefined && result.body.aborted === true) {
+        var abortError = new Error("aborted");
+        abortError.name = "AbortError";
+        throw abortError;
+      }
+      var code = result.body !== null && result.body !== undefined ? result.body.code : undefined;
+      if ((code === "security-blocked" || code === "review-required") && typeof skOpenSecurityReview === "function") {
+        var retryUse = function () {
+          var first = code === "review-required"
+            ? skApi.review({ name: name, workspace: scopePath, decision: "accepted" })
+            : Promise.resolve({ ok: true });
+          return Promise.resolve(first).then(function (reviewResult) {
+            if (reviewResult.ok !== true) return reviewResult;
+            return skUseSkill(name, workspacePath);
+          });
+        };
+        skOpenSecurityReview(Object.assign({}, result.body, {
+          name: name,
+          source: "use",
+          code: code,
+          onContinue: retryUse
+        }));
+      }
+      // Friendly text for the interface, technical reason for the load-failed
+      // event and the developer console.
+      var failure = new Error(skErrorText(result));
+      failure.cause = skApiError(result);
+      throw failure;
+    }
+    return skPrepareDraft(sessionId, name);
   }).then(function () {
     skFocusSession(sessionId);
     skLoadSet(name, { phase: "loaded", error: "", controller: null });
@@ -1505,7 +2108,7 @@ function skUseSkill(name, workspacePath, options) {
         if (skLoadSnapshot(name).phase === "loaded") skLoadSet(name, { phase: "idle" });
       }, 4000);
     }
-    return { ok: true, sessionId: sessionId, continuation: continuation !== "" };
+    return { ok: true, sessionId: sessionId };
   }).catch(function (error) {
     var aborted = error !== null && error !== undefined && (error.name === "AbortError" || String(error).indexOf("aborted") !== -1);
     if (aborted) {
@@ -1514,8 +2117,12 @@ function skUseSkill(name, workspacePath, options) {
       return { ok: false, cancelled: true };
     }
     var reason = error instanceof Error ? error.message : String(error);
+    var technical = error instanceof Error && typeof error.cause === "string" && error.cause !== "" ? error.cause : reason;
+    if (technical !== reason && typeof console !== "undefined" && typeof console.warn === "function") {
+      console.warn("[dsh-charlotte] load-failed", technical);
+    }
     skLoadSet(name, { phase: "error", error: reason, controller: null });
-    skReportEvent(name, "load-failed", reason, scopePath, sessionId);
+    skReportEvent(name, "load-failed", technical, scopePath, sessionId);
     return { ok: false, error: reason };
   });
 }
@@ -1696,6 +2303,19 @@ function SkSlidersGlyph(props) {
  * @param {{value: string, onChange: Function, lang: 'zh'|'en'}} props - props.
  * @returns {object} search box.
  */
+/**
+ * Small magnifier glyph for search empty states.
+ * @param {{size?: number}} props - pixel size.
+ * @returns {object} svg.
+ */
+function SkSearchGlyph(props) {
+  var size = props.size ?? 20;
+  return sk("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", stroke: "currentColor", strokeWidth: "1.5", "aria-hidden": "true" }, [
+    skH("circle", { cx: "7", cy: "7", r: "4.5" }, "c"),
+    skH("path", { d: "M10.5 10.5L14 14", strokeLinecap: "round" }, "l")
+  ]);
+}
+
 function SkSearch(props) {
   var lang = props.lang;
   var ref = (0, import_react.useRef)(null);
@@ -1734,6 +2354,16 @@ function SkSearch(props) {
         props.onChange(event.target.value);
       }
     }),
+    props.value !== "" ? sk("button", {
+      className: "sk_searchClear",
+      type: "button",
+      "aria-label": skT(lang, "empty.clearSearch"),
+      title: skT(lang, "empty.clearSearch"),
+      onClick: function () {
+        props.onChange("");
+        if (ref.current !== null) ref.current.focus();
+      }
+    }, "✕") : null,
     sk("kbd", { className: "sk_kbd" }, skT(lang, "search.kbd"))
   ]);
 }
@@ -1889,7 +2519,7 @@ function SkHomeHero(props) {
         type: "button",
         disabled: !state.usable && !busy,
         onClick: function () {
-          props.onUse(skill, skContinuationPrompt(skill, props.intent, lang), true);
+          props.onUse(skill, true);
         }
       }, label),
       sk("button", {
@@ -1934,7 +2564,7 @@ function SkHomeRow(props) {
         disabled: !state.usable && !busy,
         onClick: function (event) {
           event.stopPropagation();
-          props.onUse(skill, skContinuationPrompt(skill, props.intent, lang), true);
+          props.onUse(skill, true);
         }
       }, label),
       sk("button", {
@@ -2048,33 +2678,44 @@ function SkHome(props) {
 function SkRow(props) {
   var skill = props.skill;
   var lang = props.lang;
+  var query = typeof props.query === "string" ? props.query : "";
+  var selectMode = props.selectMode === true;
+  var selected = props.selected === true;
   var state = skStateOf(skill, lang);
   var load = useSkLoad(skill.name);
   var busy = load.phase === "loading";
   var label = load.phase === "loading" ? skT(lang, "action.cancel") : load.phase === "loaded" ? skT(lang, "action.useAgain") : skT(lang, "action.use");
+  var activate = function () {
+    if (selectMode) props.onSelect(skill);
+    else props.onDetail(skill);
+  };
   return sk("div", {
-    className: "sk_row",
-    role: "button",
+    className: "sk_row" + (selectMode ? " sk_rowSelect" : "") + (selected ? " sk_rowSelected" : ""),
+    role: selectMode ? "checkbox" : "button",
+    "aria-checked": selectMode ? (selected ? "true" : "false") : undefined,
     tabIndex: 0,
-    onClick: function () { props.onDetail(skill); },
+    onClick: activate,
     onKeyDown: function (event) {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        props.onDetail(skill);
+        activate();
       }
     }
   }, [
-    sk("div", { className: "sk_glyph" }, [skH(SkCatGlyph, { id: skill.category?.id })]),
+    selectMode
+      ? sk("span", { className: "sk_check" + (selected ? " sk_checkOn" : ""), "aria-hidden": "true" }, selected ? "✓" : "")
+      : sk("div", { className: "sk_glyph" }, [skH(SkCatGlyph, { id: skill.category?.id })]),
     sk("div", { className: "sk_rowMain" }, [
       sk("div", { className: "sk_rowName" }, [
-        sk("span", { className: "sk_rowNameText" }, skill.name),
+        sk("span", { className: "sk_rowNameText" }, skHighlighted(skill.name, query)),
+        skill.review?.reviewed !== true ? sk("span", { className: "sk_reviewBadge" }, skT(lang, "review.badge")) : null,
         skill.version !== null && skill.version !== undefined ? sk("span", { className: "sk_ver" }, "v" + String(skill.version)) : null
       ]),
-      sk("div", { className: "sk_rowDesc" }, skSkillIntro(skill, lang))
+      sk("div", { className: "sk_rowDesc" }, skHighlighted(skSkillIntro(skill, lang), query))
     ]),
     sk("div", { className: "sk_state" }, [sk("span", { className: "sk_dot", "data-kind": state.dot }), state.label]),
     sk("div", { className: "sk_src", title: skill.source?.detail ?? "" }, skill.source?.label ?? ""),
-    sk("div", { className: "sk_actions" }, [
+    selectMode ? null : sk("div", { className: "sk_actions" }, [
       sk("button", {
         className: "sk_iconBtn",
         type: "button",
@@ -2131,14 +2772,18 @@ function SkToolbar(props) {
   var sources = [{ id: "all", label: skT(lang, "source.all"), count: props.total }].concat(props.sourceRows.map(function (row) {
     return { id: row.type, label: row.label, count: row.count };
   }));
+  var counts = props.stateCounts ?? {};
   var states = [
     { id: "all", label: skT(lang, "state.all") },
     { id: "both", label: skT(lang, "state.both") },
     { id: "user", label: skT(lang, "state.user") },
     { id: "model", label: skT(lang, "state.model") },
     { id: "off", label: skT(lang, "state.off") },
-    { id: "disabled", label: skT(lang, "rail.disabled") }
-  ];
+    { id: "disabled", label: skT(lang, "rail.disabled") },
+    { id: "fav", label: skT(lang, "state.fav") }
+  ].map(function (row) {
+    return { id: row.id, label: row.label, count: typeof counts[row.id] === "number" ? counts[row.id] : null };
+  });
   var sourceLabel = props.source === "all" ? skT(lang, "filter.all") : (sources.find(function (row) { return row.id === props.source; }) ?? { label: props.source }).label;
   var stateLabel = props.state === "all" ? skT(lang, "filter.all") : (states.find(function (row) { return row.id === props.state; }) ?? { label: props.state }).label;
   var menu = props.menu;
@@ -2148,6 +2793,13 @@ function SkToolbar(props) {
       sk("button", { className: "sk_sort", type: "button", "data-on": props.sort === "name" ? "" : undefined, onClick: function () { props.onSort("name"); } }, skT(lang, "sort.name")),
       sk("button", { className: "sk_sort", type: "button", "data-on": props.sort === "recent" ? "" : undefined, onClick: function () { props.onSort("recent"); } }, skT(lang, "sort.recent"))
     ]),
+    sk("button", {
+      className: "sk_filter",
+      type: "button",
+      "data-act": props.selectMode ? "" : undefined,
+      "aria-pressed": props.selectMode ? "true" : "false",
+      onClick: props.onSelectMode
+    }, props.selectMode ? skT(lang, "batch.exit") : skT(lang, "batch.mode")),
     sk("div", { className: "sk_filters" }, [
       sk("button", {
         className: "sk_filter",
@@ -2189,7 +2841,7 @@ function SkToolbar(props) {
             props.onState(row.id);
             props.onMenu(null);
           }
-        }, row.label);
+        }, [sk("span", null, row.label), row.count === null ? null : sk("em", null, String(row.count))]);
       })) : null
     ])
   ]);
@@ -2197,196 +2849,73 @@ function SkToolbar(props) {
 
 // #endregion
 
-// #region detail drawer ----------------------------------------------------------
+// #region dialog focus ---------------------------------------------------------
 /**
- * Right-side detail drawer: full description, provenance, permissions,
- * dependencies, real usage history, and the controls for this skill.
- * @param {object} props - props.
- * @returns {object} drawer.
+ * Focusables a dialog may tab through, in DOM order. Hidden or disabled
+ * controls are skipped so Tab cannot land on something invisible.
+ * @param {Element} container - dialog root.
+ * @returns {HTMLElement[]} focusable elements.
  */
-function SkDetailDrawer(props) {
-  var skill = props.skill;
-  var lang = props.lang;
-  var state = skStateOf(skill, lang);
-  var load = useSkLoad(skill.name);
-  var recent = skRecentRecs[skill.name];
-  var introText = skSkillIntro(skill, lang);
-  var writable = skill.management?.kind === "writable";
-  var mounted = skill.management?.kind === "mounted";
-  var evidence = Array.isArray(skill.category?.evidence) ? skill.category.evidence : [];
-  var triggers = skill.triggers ?? { values: [], provenance: "absent" };
-  var usageRows = Array.isArray(skill.stats?.recent) ? skill.stats.recent.slice(-6).reverse() : [];
-  (0, import_react.useEffect)(function () {
-    var onKey = function (event) {
-      if (event.key !== "Escape") return;
-      event.stopImmediatePropagation();
-      props.onClose();
-    };
-    window.addEventListener("keydown", onKey, true);
-    return function () {
-      window.removeEventListener("keydown", onKey, true);
-    };
-  }, [props.onClose]);
-  var sourceDetail = skill.source?.detail !== undefined && skill.source.detail !== ""
-    ? skT(lang, "detail.sourceDetail", { label: skill.source.label, detail: skill.source.detail })
-    : skill.source?.label ?? "";
-  return sk(skF, null, [
-    sk("div", { className: "sk_drawerScrim", onClick: props.onClose }),
-    sk("aside", { className: "sk_drawer", role: "dialog", "aria-modal": "true", "aria-label": skill.name }, [
-      sk("header", { className: "sk_drawerHead" }, [
-        sk("div", { className: "sk_drawerTop" }, [
-          sk("div", { className: "sk_drawerTitle" }, [
-            sk("h2", { className: "sk_dName" }, skill.name),
-            sk("div", { className: "sk_dMeta" }, [
-              sk("span", null, skill.source?.label ?? ""),
-              skill.version !== null && skill.version !== undefined ? sk("span", null, "v" + String(skill.version)) : null,
-              sk("span", { className: state.usable ? "sk_ok" : "sk_bad" }, state.label)
-            ])
-          ]),
-          sk("button", { className: "sk_closeBtn", type: "button", "aria-label": skT(lang, "action.close"), onClick: props.onClose }, "✕")
-        ])
-      ]),
-      sk("div", { className: "sk_drawerBody" }, [
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.intro")),
-          sk("p", { className: "sk_secText" }, introText)
-        ]),
-        skill.description !== "" && skill.description !== introText ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.official")),
-          sk("p", { className: "sk_secText", "data-dim": "" }, skill.description)
-        ]) : null,
-        lang === "zh" && (skill.i18n?.professional ?? skill.i18n?.descriptionZh) !== undefined
-          && (skill.i18n?.professional ?? skill.i18n?.descriptionZh) !== null
-          && (skill.i18n?.professional ?? skill.i18n?.descriptionZh) !== ""
-          ? sk("div", { className: "sk_sec" }, [
-            sk("div", { className: "sk_secLabel" }, skT(lang, "detail.professional")),
-            sk("p", { className: "sk_secText" }, skill.i18n?.professional ?? skill.i18n?.descriptionZh)
-          ])
-          : null,
-        recent !== undefined && recent.reason !== "" ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.why")),
-          sk("div", { className: "sk_why" }, lang === "en" && typeof recent.reasonEn === "string" && recent.reasonEn !== "" ? recent.reasonEn : recent.reason),
-          sk("p", { className: "sk_secText", "data-dim": "" }, skAge(recent.at, lang))
-        ]) : null,
-        evidence.length > 0 ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.category")),
-          sk("div", { className: "sk_chipRow" }, [
-            sk("span", { className: "sk_evidence" }, (lang === "zh" ? skill.category.label : skill.category.labelEn) + " · " + skill.category.confidence)
-          ].concat(evidence.map(function (row) {
-            return sk("span", { key: "ev-" + row.term, className: "sk_evidence" }, row.term);
-          })))
-        ]) : null,
-        skill.useCases.length > 0 ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.useCases")),
-          sk("ul", { className: "sk_bullets" }, skill.useCases.map(function (row, index) {
-            return sk("li", { key: "use-" + String(index) }, row);
-          }))
-        ]) : null,
-        triggers.values.length > 0 ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.triggers")),
-          sk("ul", { className: "sk_bullets" }, triggers.values.map(function (row, index) {
-            return sk("li", { key: "tr-" + String(index) }, row);
-          })),
-          triggers.provenance === "derived" ? sk("p", { className: "sk_secText", "data-dim": "", style: { marginTop: "4px" } }, skT(lang, "detail.triggersDerived")) : null
-        ]) : null,
-        skill.avoidCases.length > 0 ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.avoid")),
-          sk("ul", { className: "sk_bullets" }, skill.avoidCases.map(function (row, index) {
-            return sk("li", { key: "av-" + String(index) }, row);
-          }))
-        ]) : null,
-        skill.keywords.length > 0 ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.keywords")),
-          sk("div", { className: "sk_chipRow" }, skill.keywords.slice(0, 10).map(function (row) {
-            return sk("span", { key: "kw-" + row, className: "sk_evidence" }, row);
-          }))
-        ]) : null,
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.perms")),
-          sk("dl", { className: "sk_kv" }, [
-            sk("dt", null, skT(lang, "detail.userInvocable")),
-            sk("dd", { className: skill.policy?.userInvocable ? "sk_ok" : "sk_bad" }, skill.policy?.userInvocable ? "✓" : "✕"),
-            sk("dt", null, skT(lang, "detail.modelInvocable")),
-            sk("dd", { className: skill.policy?.modelInvocable ? "sk_ok" : "sk_bad" }, skill.policy?.modelInvocable ? "✓" : "✕"),
-            sk("dt", null, skT(lang, "detail.deps")),
-            sk("dd", null, skill.requires.length === 0
-              ? skT(lang, "detail.noDeps")
-              : skill.requires.map(function (row) {
-                return row.name + " (" + (row.satisfied ? skT(lang, "detail.dependenciesSatisfied") : skT(lang, "detail.dependenciesMissing")) + ")";
-              }).join("，")),
-            sk("dt", null, skT(lang, "detail.risk")),
-            sk("dd", null, skT(lang, "detail.riskNote")),
-            sk("dt", null, skT(lang, "detail.introSource")),
-            sk("dd", null, skT(lang, "intro." + (skill.i18n?.source ?? "absent")))
-          ])
-        ]),
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.source")),
-          sk("dl", { className: "sk_kv" }, [
-            sk("dt", null, skT(lang, "detail.source")),
-            sk("dd", null, sourceDetail),
-            skill.management?.path !== undefined ? sk("dt", null, skT(lang, "detail.path")) : null,
-            skill.management?.path !== undefined ? sk("dd", null, skill.management.path) : null,
-            skill.updatedAt !== null && skill.updatedAt !== undefined ? sk("dt", null, skT(lang, "detail.updated")) : null,
-            skill.updatedAt !== null && skill.updatedAt !== undefined ? sk("dd", null, skTime(skill.updatedAt)) : null
-          ])
-        ]),
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.usage")),
-          usageRows.length === 0
-            ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.noUsage"))
-            : sk("table", { className: "sk_hist" }, [sk("tbody", { key: "tb" }, usageRows.map(function (row, index) {
-              return sk("tr", { key: "h-" + String(index) }, [
-                sk("td", null, skTime(row.at)),
-                sk("td", null, skT(lang, "usage." + (row.kind === "load-failed" ? "load-failed" : row.kind)))
-              ]);
-            }))])
-        ]),
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.provenance")),
-          sk("p", { className: "sk_secText", "data-dim": "" }, [
-            skT(lang, "prov.declared") + "：" + Object.keys(skill.provenance ?? {}).filter(function (key) { return skill.provenance[key] === "declared"; }).join(", "),
-            " · ",
-            skT(lang, "prov.derived") + "：" + Object.keys(skill.provenance ?? {}).filter(function (key) { return skill.provenance[key] === "derived"; }).join(", ")
-          ].join(""))
-        ])
-      ]),
-      sk("footer", { className: "sk_drawerFoot" }, [
-        sk("button", {
-          className: "sk_primary",
-          type: "button",
-          disabled: !state.usable,
-          onClick: function () { props.onUse(skill); }
-        }, load.phase === "loading" ? skT(lang, "action.cancel") : skT(lang, "action.use")),
-        writable ? sk("label", { className: "sk_toggle" }, [skT(lang, "detail.enableModel"), sk("button", {
-          className: "sk_switch",
-          type: "button",
-          role: "switch",
-          "aria-checked": skill.policy?.modelInvocable ? "true" : "false",
-          "data-on": skill.policy?.modelInvocable ? "" : undefined,
-          onClick: function () { props.onToggle(skill, "model"); }
-        })]) : null,
-        writable ? sk("label", { className: "sk_toggle" }, [skT(lang, "detail.enableUser"), sk("button", {
-          className: "sk_switch",
-          type: "button",
-          role: "switch",
-          "aria-checked": skill.policy?.userInvocable ? "true" : "false",
-          "data-on": skill.policy?.userInvocable ? "" : undefined,
-          onClick: function () { props.onToggle(skill, "user"); }
-        })]) : null,
-        mounted ? sk("label", { className: "sk_toggle" }, [skT(lang, "detail.enable"), sk("button", {
-          className: "sk_switch",
-          type: "button",
-          role: "switch",
-          "aria-checked": skill.policy?.disabled ? "false" : "true",
-          "data-on": skill.policy?.disabled ? undefined : "",
-          onClick: function () { props.onToggle(skill, "mounted"); }
-        })]) : null
-      ])
-    ])
-  ]);
+function skFocusables(container) {
+  var nodes = container.querySelectorAll("a[href],button:not([disabled]),input:not([disabled]):not([type='hidden']),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex='-1'])");
+  var items = [];
+  for (var index = 0; index < nodes.length; index += 1) {
+    var node = nodes[index];
+    if (node.getAttribute("aria-hidden") === "true") continue;
+    if (node.getClientRects().length === 0) continue;
+    items.push(node);
+  }
+  return items;
 }
 
+/**
+ * Trap Tab inside one dialog and restore focus when it closes.
+ *
+ * Plain function (not a hook), so a component can call it from its own effect
+ * and run the returned cleanup on unmount or when the dialog closes.
+ * @param {Element|null} container - dialog root.
+ * @returns {Function} cleanup: removes the listener and restores focus.
+ */
+function skTrapFocus(container) {
+  if (container === null || container === undefined || typeof document === "undefined") return function () { };
+  var previous = document.activeElement;
+  var items = skFocusables(container);
+  if (items.length > 0) {
+    items[0].focus();
+  }
+  else {
+    container.setAttribute("tabindex", "-1");
+    container.focus();
+  }
+  var onKey = function (event) {
+    if (event.key !== "Tab") return;
+    var nodes = skFocusables(container);
+    if (nodes.length === 0) {
+      event.preventDefault();
+      return;
+    }
+    var first = nodes[0];
+    var last = nodes[nodes.length - 1];
+    var active = document.activeElement;
+    var inside = container.contains(active);
+    if (event.shiftKey && (!inside || active === first)) {
+      event.preventDefault();
+      last.focus();
+      return;
+    }
+    if (!event.shiftKey && (!inside || active === last)) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+  document.addEventListener("keydown", onKey, true);
+  return function () {
+    document.removeEventListener("keydown", onKey, true);
+    if (previous !== null && previous !== undefined && typeof previous.focus === "function" && document.contains(previous)) {
+      previous.focus();
+    }
+  };
+}
 // #endregion
 
 // #region station panels ---------------------------------------------------------
@@ -2397,7 +2926,11 @@ function SkDetailDrawer(props) {
  */
 function StationPanelDialog(props) {
   var lang = props.lang;
-  var title = skT(lang, props.panel === "install" ? "panel.install" : "panel.trash");
+  var title = skT(lang, skPanelTitleKey(props.panel));
+  var panelRef = (0, import_react.useRef)(null);
+  (0, import_react.useEffect)(function () {
+    return skTrapFocus(panelRef.current);
+  }, []);
   (0, import_react.useEffect)(function () {
     var onKey = function (event) {
       if (event.key !== "Escape") return;
@@ -2410,12 +2943,16 @@ function StationPanelDialog(props) {
       window.removeEventListener("keydown", onKey);
     };
   }, [props.onClose]);
+  if (props.panel === "security") {
+    return skH(SkSecurityCenter, { lang: lang, workspace: props.workspace, onClose: props.onClose });
+  }
   return sk("div", { className: "sk_panelScrim", onClick: props.onClose }, [
     sk("div", {
       className: "sk_panel",
       role: "dialog",
       "aria-modal": "true",
       "aria-label": title,
+      ref: panelRef,
       onClick: function (event) { event.stopPropagation(); }
     }, [
       sk("header", { className: "sk_panelHead" }, [
@@ -2424,7 +2961,13 @@ function StationPanelDialog(props) {
       ]),
       sk("div", { className: "sk_panelBody" }, props.panel === "install"
         ? skH(InstallTab, { workspace: props.workspace })
-        : skH(TrashTab, {}))
+        : props.panel === "ledger"
+          ? skH(SkLedgerPanel, { lang: lang, workspace: props.workspace })
+          : props.panel === "diagnostics"
+            ? skH(SkDiagPanel, { lang: lang, workspace: props.workspace })
+            : props.panel === "updates"
+              ? skH(SkUpdatesPanel, { lang: lang, workspace: props.workspace })
+              : skH(TrashTab, {}))
     ])
   ]);
 }
@@ -2485,6 +3028,11 @@ function SkMoreMenu(props) {
       sk("div", { className: "sk_moreSep" }),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("install"); setOpen(false); } }, skT(lang, "more.install")),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("trash"); setOpen(false); } }, skT(lang, "more.trash")),
+      sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("security"); setOpen(false); } }, skT(lang, "more.security")),
+      sk("button", { className: "sk_moreItem", type: "button", onClick: function () { if (typeof skOpenSecurityReview === "function") skOpenSecurityReview({ global: true, manual: true, source: "manual" }); setOpen(false); } }, skT(lang, "more.securityReview")),
+      sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("ledger"); setOpen(false); } }, skT(lang, "more.ledger")),
+      sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("diagnostics"); setOpen(false); } }, skT(lang, "more.diagnostics")),
+      sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("updates"); setOpen(false); } }, skT(lang, "more.updates")),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onRefresh(); setOpen(false); } }, skT(lang, "more.refresh")),
       sk("div", { className: "sk_moreSep" }),
       sk("div", { className: "sk_moreLabel" }, skT(lang, "more.language")),
@@ -2509,6 +3057,300 @@ function SkMoreMenu(props) {
 }
 
 // #endregion
+
+// #region ledger + diagnostics ---------------------------------------------------
+/**
+ * Fetch one read-only panel payload with a live guard and a retry counter.
+ * @param {Function} request - returns the skCall promise.
+ * @param {Array} deps - values that should refetch when changed.
+ * @returns {{data: object|null, error: string, retry: number, setRetry: Function}} panel state.
+ */
+function useSkFetch(request, deps) {
+  var dataState = (0, import_react.useState)(null);
+  var data = dataState[0];
+  var setData = dataState[1];
+  var errorState = (0, import_react.useState)("");
+  var error = errorState[0];
+  var setError = errorState[1];
+  var retryState = (0, import_react.useState)(0);
+  var retry = retryState[0];
+  var setRetry = retryState[1];
+  (0, import_react.useEffect)(function () {
+    var live = true;
+    setError("");
+    void request().then(function (result) {
+      if (!live) return;
+      if (!result.ok) {
+        setError(skErrorText(result));
+        return;
+      }
+      setData(result.body);
+    }).catch(function (thrown) {
+      if (live) setError(String(thrown));
+    });
+    return function () { live = false; };
+  }, deps.concat([retry]));
+  return { data: data, error: error, retry: retry, setRetry: setRetry };
+}
+
+/**
+ * One failure surface for the secondary panels: what failed, plus a retry that
+ * re-runs the request instead of leaving a dead loading label on screen.
+ * @param {{lang: 'zh'|'en', message: string, onRetry: Function}} props - props.
+ * @returns {object} failure panel.
+ */
+function SkLoadFailure(props) {
+  var lang = props.lang;
+  return sk("div", { className: "sk_emptyPanel" }, [
+    sk("div", { className: "sk_emptyTitle" }, skT(lang, "action.loadFailed")),
+    sk("p", { className: "sk_emptyHint" }, props.message),
+    sk("button", { className: "sk_textBtn", type: "button", onClick: props.onRetry }, skT(lang, "action.retry"))
+  ]);
+}
+
+/**
+ * Usage ledger panel: totals, a real 14-day trend and per-skill rows.
+ * Every ratio is null-safe: no denominator means an em dash, never 0% or 100%.
+ * @param {{lang: 'zh'|'en', workspace: string}} props - props.
+ * @returns {object} panel body.
+ */
+function SkLedgerPanel(props) {
+  var lang = props.lang;
+  var fetched = useSkFetch(function () {
+    return skApi.ledger(props.workspace ?? "");
+  }, [props.workspace]);
+  var data = fetched.data;
+  var error = fetched.error;
+  var retry = fetched.retry;
+  var setRetry = fetched.setRetry;
+  if (data === null && error !== "") {
+    return skH(SkLoadFailure, { lang: lang, message: error, onRetry: function () { setRetry(retry + 1); } });
+  }
+  if (data === null) return sk("div", { className: "sk_loading" }, skT(lang, "loading"));
+  var totals = data.totals ?? {};
+  var trend = Array.isArray(data.trend) ? data.trend : [];
+  var peak = 1;
+  trend.forEach(function (row) { if (row.value > peak) peak = row.value; });
+  var rate = function (value) {
+    return value === null || value === undefined ? skT(lang, "ledger.noRate") : String(Math.round(value * 100)) + "%";
+  };
+  var rows = Array.isArray(data.skills) ? data.skills.slice(0, 50) : [];
+  var ranked = rows.filter(function (row) { return row.loads + row.invokes > 0; })
+    .sort(function (left, right) { return (right.loads + right.invokes) - (left.loads + left.invokes) || left.name.localeCompare(right.name); })
+    .slice(0, 5);
+  var neverUsed = rows.filter(function (row) { return row.loads + row.invokes === 0; }).slice(0, 8);
+  return sk("div", { className: "sk_ledger" }, [
+    sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "ledger.intro")),
+    sk("div", { className: "sk_ledgerTotals" }, [
+      sk("div", { key: "t-loads", className: "sk_ledgerStat" }, [sk("span", null, skT(lang, "ledger.loads")), sk("strong", null, String(totals.loads ?? 0))]),
+      sk("div", { key: "t-invokes", className: "sk_ledgerStat" }, [sk("span", null, skT(lang, "ledger.invokes")), sk("strong", null, String(totals.invokes ?? 0))]),
+      sk("div", { key: "t-success", className: "sk_ledgerStat" }, [sk("span", null, skT(lang, "ledger.success")), sk("strong", null, rate(totals.successRate))]),
+      sk("div", { key: "t-adoption", className: "sk_ledgerStat" }, [sk("span", null, skT(lang, "ledger.adoption")), sk("strong", null, rate(totals.adoptionRate))])
+    ]),
+    sk("div", { className: "sk_secLabel" }, skT(lang, "ledger.trend")),
+    sk("div", { className: "sk_trend" }, trend.map(function (row) {
+      return sk("div", {
+        key: "td-" + row.date,
+        className: "sk_trendBar",
+        title: row.date + " · " + String(row.value),
+        style: { height: String(Math.max(2, Math.round(row.value / peak * 100))) + "%" }
+      });
+    })),
+    Array.isArray(data.activity) ? sk("div", { className: "sk_sec" }, [
+      sk("div", { className: "sk_secLabel" }, skT(lang, "activity.title")),
+      data.activity.length === 0
+        ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "activity.empty"))
+        : sk("ul", { className: "sk_bullets" }, data.activity.slice(0, 20).map(function (row, index) {
+          var kind = row.kind === "install" || row.kind === "delete" || row.kind === "migrate" ? skT(lang, "activity." + row.kind) : String(row.kind);
+          var mark = row.ok === true ? skT(lang, "activity.ok") : skT(lang, "activity.fail");
+          return sk("li", { key: "act-" + String(index) }, skTime(row.at) + " · " + kind + " · " + String(row.name ?? "") + " · " + mark + (row.detail === "" || row.detail === undefined ? "" : " · " + String(row.detail)));
+        }))
+    ]) : null,
+    rows.length === 0
+      ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "ledger.empty"))
+      : sk("table", { className: "sk_hist sk_ledgerTable" }, [
+        sk("thead", { key: "th" }, [sk("tr", null, [
+          sk("th", null, skT(lang, "ledger.skill")),
+          sk("th", null, skT(lang, "ledger.loads")),
+          sk("th", null, skT(lang, "ledger.invokes")),
+          sk("th", null, skT(lang, "ledger.success")),
+          sk("th", null, skT(lang, "ledger.adoption")),
+          sk("th", null, skT(lang, "ledger.lastUsed"))
+        ])]),
+        sk("tbody", { key: "tb" }, rows.map(function (row) {
+          return sk("tr", { key: "lg-" + row.name }, [
+            sk("td", null, row.name),
+            sk("td", null, String(row.loads)),
+            sk("td", null, String(row.invokes)),
+            sk("td", null, rate(row.successRate)),
+            sk("td", null, rate(row.adoptionRate)),
+            sk("td", null, row.lastUsedAt > 0 ? skTime(row.lastUsedAt) : skT(lang, "ledger.noRate"))
+          ]);
+        }))
+      ]),
+    sk("div", { className: "sk_sec" }, [
+      sk("div", { className: "sk_secLabel" }, skT(lang, "stats.topTitle")),
+      sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "stats.topHint")),
+      ranked.length === 0
+        ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "ledger.empty"))
+        : sk("ul", { className: "sk_bullets" }, ranked.map(function (row) {
+          return sk("li", { key: "top-" + row.name }, row.name + " · " + String(row.loads) + "/" + String(row.invokes));
+        }))
+    ]),
+    sk("div", { className: "sk_sec" }, [
+      sk("div", { className: "sk_secLabel" }, skT(lang, "stats.neverTitle")),
+      sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "stats.neverHint")),
+      neverUsed.length === 0
+        ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "stats.neverEmpty"))
+        : sk("ul", { className: "sk_bullets" }, neverUsed.map(function (row) {
+          return sk("li", { key: "never-" + row.name }, row.name);
+        }))
+    ])
+  ]);
+}
+
+/**
+ * Version & update panel. It lists real declared versions and states plainly
+ * that no update source exists, instead of offering a button that cannot work.
+ * @param {{lang: 'zh'|'en', workspace: string}} props - props.
+ * @returns {object} panel body.
+ */
+function SkUpdatesPanel(props) {
+  var lang = props.lang;
+  var fetched = useSkFetch(function () {
+    return skApi.index(props.workspace ?? "");
+  }, [props.workspace]);
+  var data = fetched.data;
+  var error = fetched.error;
+  var retry = fetched.retry;
+  var setRetry = fetched.setRetry;
+  if (data === null && error !== "") {
+    return skH(SkLoadFailure, { lang: lang, message: error, onRetry: function () { setRetry(retry + 1); } });
+  }
+  if (data === null) return sk("div", { className: "sk_loading" }, skT(lang, "loading"));
+  var rows = (Array.isArray(data.skills) ? data.skills : []).filter(function (skill) {
+    return skill.version !== null && skill.version !== undefined && String(skill.version) !== "";
+  });
+  return sk("div", null, [
+    sk("p", { className: "sk_secText", "data-dim": "", style: { padding: "14px 18px 0" } }, skT(lang, "updates.intro")),
+    rows.length === 0
+      ? sk("p", { className: "sk_secText", "data-dim": "", style: { padding: "14px 18px" } }, skT(lang, "updates.empty"))
+      : sk("table", { className: "sk_hist", style: { margin: "14px 18px 0" } }, [
+        sk("thead", { key: "th" }, [sk("tr", null, [
+          sk("th", null, skT(lang, "updates.name")),
+          sk("th", null, skT(lang, "updates.version"))
+        ])]),
+        sk("tbody", { key: "tb" }, rows.map(function (skill) {
+          return sk("tr", { key: "up-" + skill.name }, [
+            sk("td", null, skill.name),
+            sk("td", null, String(skill.version))
+          ]);
+        }))
+      ]),
+    sk("p", { className: "sk_secText", "data-dim": "", style: { padding: "18px" } }, skT(lang, "updates.noSource"))
+  ]);
+}
+
+/**
+ * Diagnostics panel: skipped files, invalid frontmatter and mount-scan
+ * failures, plus the aggregate body-audit summary.
+ * @param {{lang: 'zh'|'en', workspace: string}} props - props.
+ * @returns {object} panel body.
+ */
+function SkDiagPanel(props) {
+  var lang = props.lang;
+  var fetched = useSkFetch(function () {
+    return skApi.index(props.workspace ?? "");
+  }, [props.workspace]);
+  var data = fetched.data;
+  var error = fetched.error;
+  var retry = fetched.retry;
+  var setRetry = fetched.setRetry;
+  if (data === null && error !== "") {
+    return skH(SkLoadFailure, { lang: lang, message: error, onRetry: function () { setRetry(retry + 1); } });
+  }
+  if (data === null) return sk("div", { className: "sk_loading" }, skT(lang, "loading"));
+  var diagnostics = Array.isArray(data.diagnostics) ? data.diagnostics : [];
+  var audit = data.audit ?? null;
+  var level = function (severity) {
+    return skSeverityKey(severity);
+  };
+  return sk("div", { className: "sk_diag" }, [
+    sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "diag.intro")),
+    sk("div", { className: "sk_sec" }, [
+      sk("div", { className: "sk_secLabel" }, skT(lang, "diag.audit")),
+      audit === null || audit.clean === true
+        ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.auditClean"))
+        : sk("ul", { className: "sk_bullets" }, audit.findings.map(function (row) {
+          return sk("li", { key: "da-" + row.id }, "[" + skT(lang, level(row.severity)) + "] " + skT(lang, "detail.audit." + row.id) + " × " + String(row.count) + " · " + String(row.skills) + " skills");
+        }))
+    ]),
+    sk("div", { className: "sk_sec" }, [
+      sk("div", { className: "sk_secLabel" }, skT(lang, "diag.title")),
+      diagnostics.length === 0
+        ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "diag.empty"))
+        : sk("ul", { className: "sk_bullets" }, diagnostics.slice(0, 80).map(function (row, index) {
+          var prefix = row.area === "mounted" ? skT(lang, "diag.mounted") : skT(lang, "diag.writable");
+          return sk("li", { key: "dg-" + String(index) }, "[" + prefix + "] " + row.message);
+        }))
+    ])
+  ]);
+}
+
+/**
+ * Placeholder rows for the first list load; no spinner overlay, the page stays
+ * interactive and the shape matches the real rows.
+ * @param {{rows?: number}} props - props.
+ * @returns {object} skeleton list.
+ */
+function SkListSkeleton(props) {
+  var rows = typeof props.rows === "number" ? props.rows : 4;
+  var items = [];
+  for (var index = 0; index < rows; index += 1) {
+    items.push(sk("div", { key: "skrow-" + String(index), className: "sk_skeletonRow" }, [
+      sk("span", { className: "sk_skeletonGlyph" }),
+      sk("span", { className: "sk_skeletonMain" }, [
+        sk("span", { className: "sk_skeletonLine sk_skeletonTitle" }),
+        sk("span", { className: "sk_skeletonLine" })
+      ]),
+      sk("span", { className: "sk_skeletonLine sk_skeletonAction" })
+    ]));
+  }
+  return sk("div", { className: "sk_skeletonList", "aria-hidden": "true" }, items);
+}
+
+/**
+ * Related skills shown when a search has no direct hit. Items come from the
+ * host's deterministic matcher over the live index; the block states its own
+ * loading/error/empty state instead of leaving a blank area.
+ * @param {{lang: 'zh'|'en', state: object|null, onDetail: Function, onUse: Function}} props - props.
+ * @returns {object|null} related block.
+ */
+function SkRelatedSearch(props) {
+  var lang = props.lang;
+  var state = props.state;
+  if (state === null) return null;
+  var rows;
+  if (state.status === "loading") rows = sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "related.loading"));
+  else if (state.status === "error") rows = sk("p", { className: "sk_secText sk_bad" }, skT(lang, "related.failed", { reason: state.error }));
+  else if (state.items.length === 0) rows = sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "related.empty"));
+  else {
+    rows = sk("div", { className: "sk_related" }, state.items.map(function (item) {
+      return sk("div", { key: "related-" + item.name, className: "sk_relatedRow" }, [
+        sk("div", { className: "sk_relatedMain" }, [
+          sk("div", { className: "sk_relatedName" }, item.name),
+          sk("div", { className: "sk_relatedWhy" }, lang === "en" && typeof item.reasonEn === "string" && item.reasonEn !== "" ? item.reasonEn : item.reason)
+        ]),
+        sk("button", { className: "sk_textBtn", type: "button", onClick: function () { props.onDetail(item.name); } }, skT(lang, "action.detail")),
+        sk("button", { className: "sk_textBtn", type: "button", onClick: function () { props.onUse(item.name); } }, skT(lang, "related.use"))
+      ]);
+    }));
+  }
+  return sk("div", { className: "sk_relatedWrap" }, [
+    sk("div", { className: "sk_secLabel" }, skT(lang, "related.title")),
+    rows
+  ]);
+}
 
 // #region browse -----------------------------------------------------------------
 /**
@@ -2547,6 +3389,18 @@ function SkillBrowse(props) {
   var sortState = (0, import_react.useState)("freq");
   var sort = sortState[0];
   var setSort = sortState[1];
+  var selectModeState = (0, import_react.useState)(false);
+  var selectMode = selectModeState[0];
+  var setSelectMode = selectModeState[1];
+  var selectedState = (0, import_react.useState)({});
+  var selected = selectedState[0];
+  var setSelected = selectedState[1];
+  var batchConfirmState = (0, import_react.useState)(false);
+  var batchConfirm = batchConfirmState[0];
+  var setBatchConfirm = batchConfirmState[1];
+  var batchBusyState = (0, import_react.useState)(false);
+  var batchBusy = batchBusyState[0];
+  var setBatchBusy = batchBusyState[1];
   var menuState = (0, import_react.useState)(null);
   var menu = menuState[0];
   var setMenu = menuState[1];
@@ -2569,21 +3423,58 @@ function SkillBrowse(props) {
   var homeRefresh = homeRefreshState[0];
   var setHomeRefresh = homeRefreshState[1];
 
-  var load = (0, import_react.useCallback)(function () {
-    setLoading(true);
-    void skApi.index(props.workspace).then(function (result) {
+  // Request identity for /index and /home. A newer request always wins: an
+  // older answer (success, error or abort) may not write page state any more,
+  // and every controller is aborted on workspace change or unmount.
+  var indexSeq = (0, import_react.useRef)(0);
+  var indexAbort = (0, import_react.useRef)(null);
+  var homeSeq = (0, import_react.useRef)(0);
+  var homeAbort = (0, import_react.useRef)(null);
+  var alive = (0, import_react.useRef)(true);
+
+  (0, import_react.useEffect)(function () {
+    alive.current = true;
+    return function () {
+      alive.current = false;
+      indexSeq.current += 1;
+      homeSeq.current += 1;
+      if (indexAbort.current !== null) indexAbort.current.abort();
+      if (homeAbort.current !== null) homeAbort.current.abort();
+    };
+  }, []);
+
+  var requestIndex = (0, import_react.useCallback)(function (options) {
+    var settings = options ?? {};
+    var showLoading = settings.showLoading !== false;
+    indexSeq.current += 1;
+    var seq = indexSeq.current;
+    if (indexAbort.current !== null) indexAbort.current.abort();
+    var controller = typeof AbortController === "function" ? new AbortController() : null;
+    indexAbort.current = controller;
+    setLoading(showLoading);
+    return skApi.index(props.workspace, controller === null ? undefined : controller.signal).then(function (result) {
+      if (seq !== indexSeq.current || !alive.current) return null;
       if (!result.ok) {
-        setError(skT(skGetLang(), "notice.indexFailed", { status: String(result.status), reason: skApiError(result) }));
-        return;
+        if (showLoading) setError(skT(skGetLang(), "notice.indexFailedPlain", { reason: skErrorText(result) }));
+        return null;
       }
       setError("");
       setIndex(result.body);
+      return result.body;
     }).catch(function (thrown) {
-      setError(String(thrown));
+      if (seq !== indexSeq.current || !alive.current) return null;
+      if (showLoading) setError(String(thrown));
+      return null;
     }).finally(function () {
+      if (seq !== indexSeq.current || !alive.current) return;
+      if (indexAbort.current === controller) indexAbort.current = null;
       setLoading(false);
     });
   }, [props.workspace]);
+
+  var load = (0, import_react.useCallback)(function () {
+    void requestIndex({});
+  }, [requestIndex]);
 
   (0, import_react.useEffect)(function () {
     load();
@@ -2595,12 +3486,17 @@ function SkillBrowse(props) {
   // fall back to its parked recommendation / this page's real usage history on
   // an older host. Every entry is re-resolved against the live index, so a
   // disabled or removed skill can never survive on screen.
-  var loadHome = (0, import_react.useCallback)(function () {
+  var requestHome = (0, import_react.useCallback)(function () {
     if (index === null) return;
     var records = Array.isArray(index.skills) ? index.skills : [];
+    homeSeq.current += 1;
+    var seq = homeSeq.current;
+    if (homeAbort.current !== null) homeAbort.current.abort();
+    var controller = typeof AbortController === "function" ? new AbortController() : null;
+    homeAbort.current = controller;
     setHomeLoading(true);
     setHomeError("");
-    void skApi.home(sessionId, props.workspace).then(function (result) {
+    void skApi.home(sessionId, props.workspace, controller === null ? undefined : controller.signal).then(function (result) {
       if (result.ok && result.body !== null && result.body !== undefined
         && (result.body.source === undefined || Array.isArray(result.body.items))) {
         var raw = Array.isArray(result.body.items) ? result.body.items : [];
@@ -2614,8 +3510,9 @@ function SkillBrowse(props) {
         };
       }
       if (result.status === 404 || result.status === 503) return skFallbackHome(records, sessionId);
-      return { source: "none", intent: "", at: Date.now(), items: [], error: skApiError(result) };
+      return { source: "none", intent: "", at: Date.now(), items: [], error: skErrorText(result) };
     }).then(function (data) {
+      if (seq !== homeSeq.current || !alive.current) return;
       if (data.error !== undefined) {
         setHomeError(skT(skGetLang(), "home.error", { reason: data.error }));
         setHomeData({ source: "none", intent: "", at: Date.now(), items: [] });
@@ -2633,20 +3530,32 @@ function SkillBrowse(props) {
         });
       }
     }).catch(function (thrown) {
+      if (seq !== homeSeq.current || !alive.current) return;
       setHomeError(skT(skGetLang(), "home.error", { reason: String(thrown) }));
       setHomeData({ source: "none", intent: "", at: Date.now(), items: [] });
     }).finally(function () {
+      if (seq !== homeSeq.current || !alive.current) return;
+      if (homeAbort.current === controller) homeAbort.current = null;
       setHomeLoading(false);
     });
   }, [index, sessionId, props.workspace]);
 
   (0, import_react.useEffect)(function () {
-    loadHome();
-  }, [loadHome, homeRefresh]);
+    requestHome();
+  }, [requestHome, homeRefresh]);
 
   (0, import_react.useEffect)(function () {
     var onKey = function (event) {
       if (event.key !== "Escape") return;
+      if (batchConfirm === true) {
+        setBatchConfirm(false);
+        return;
+      }
+      if (selectMode === true) {
+        setSelectMode(false);
+        setSelected({});
+        return;
+      }
       if (menu !== null) {
         setMenu(null);
         return;
@@ -2661,7 +3570,7 @@ function SkillBrowse(props) {
     return function () {
       window.removeEventListener("keydown", onKey);
     };
-  }, [menu, detail, props.onRequestClose]);
+  }, [menu, detail, batchConfirm, selectMode, props.onRequestClose]);
 
   (0, import_react.useEffect)(function () {
     if (menu === null) return undefined;
@@ -2673,62 +3582,117 @@ function SkillBrowse(props) {
   }, [menu]);
 
   // Re-read one record after a write, so the UI never shows state the host did
-  // not persist.
+  // not persist. It shares the index request identity: a delayed initial load
+  // may not overwrite this newer answer, and this refresh cannot leave a
+  // spinner behind.
   var refreshRecord = (0, import_react.useCallback)(function (name) {
-    void skApi.index(props.workspace).then(function (result) {
-      if (!result.ok) return;
-      setIndex(result.body);
+    void requestIndex({ showLoading: false }).then(function (body) {
+      if (body === null) return;
       if (detail !== null && detail.name === name) {
-        var next = (result.body.skills ?? []).find(function (row) { return row.name === name; });
+        var next = (body.skills ?? []).find(function (row) { return row.name === name; });
         if (next !== undefined) setDetail(next);
       }
     });
-  }, [props.workspace, detail]);
+  }, [requestIndex, detail]);
 
+  // A disabled button is not enough for a fast double click: keep one write in
+  // flight per skill so two toggles cannot race each other.
+  var prefBusy = (0, import_react.useRef)({});
+  var toggleBusy = (0, import_react.useRef)({});
   var updatePref = function (skill, patch) {
     var body = { name: skill.name, ...props.workspace !== "" ? { workspace: props.workspace } : {} };
     if (patch.favorite !== undefined) body.favorite = patch.favorite;
     if (patch.pinned !== undefined) body.pinned = patch.pinned;
+    if (prefBusy.current[skill.name] === true) return;
+    prefBusy.current[skill.name] = true;
     void skApi.prefs(body).then(function (result) {
       if (!result.ok) {
-        props.onNotice("err", skT(skGetLang(), "notice.prefFailed", { reason: skApiError(result) }));
+        props.onNotice("err", skT(skGetLang(), "notice.prefFailed", { reason: skErrorText(result) }));
         return;
       }
       refreshRecord(skill.name);
+    }).finally(function () {
+      delete prefBusy.current[skill.name];
+    });
+  };
+
+  var deleteBusyState = (0, import_react.useState)("");
+  var deleteBusy = deleteBusyState[0];
+  var setDeleteBusy = deleteBusyState[1];
+  var removeSkill = function (skill) {
+    if (deleteBusy !== "") return;
+    setDeleteBusy(skill.name);
+    void skApi.delete({
+      workspace: props.workspace,
+      rootId: skill.management?.rootId ?? "",
+      name: skill.name
+    }).then(function (result) {
+      if (!result.ok) {
+        props.onNotice("err", skT(skGetLang(), "notice.deleteFailed", { reason: skErrorText(result) }));
+        return;
+      }
+      props.onNotice("ok", skT(skGetLang(), "notice.deleteDone", { name: skill.name }));
+      setDetail(null);
+      setReload(reload + 1);
+    }).catch(function (thrown) {
+      props.onNotice("err", skT(skGetLang(), "notice.deleteFailed", { reason: String(thrown) }));
+    }).finally(function () {
+      setDeleteBusy("");
     });
   };
 
   var toggleSkill = function (skill, kind) {
+    if (toggleBusy.current[skill.name] === true) return;
+    toggleBusy.current[skill.name] = true;
     var request;
     if (kind === "mounted") {
       request = skApi.override({ workspace: props.workspace, path: skill.management?.path ?? "", disabled: skill.policy?.disabled !== true });
     } else {
-      request = skApi.toggle({
+      // Send only the flag that was clicked. Sending both made the host's
+      // `flagForToggle` pick modelInvocable first, so the user-invocable
+      // switch silently toggled model invocation instead.
+      var flagBody = {
         workspace: props.workspace,
         rootId: skill.management?.rootId ?? "",
-        name: skill.name,
-        modelInvocable: kind === "user" ? skill.policy?.modelInvocable : skill.policy?.modelInvocable !== true,
-        userInvocable: kind === "user" ? skill.policy?.userInvocable !== true : skill.policy?.userInvocable
-      });
+        name: skill.name
+      };
+      if (kind === "user") flagBody.userInvocable = skill.policy?.userInvocable !== true;
+      else flagBody.modelInvocable = skill.policy?.modelInvocable !== true;
+      request = skApi.toggle(flagBody);
     }
+    var enabling = kind === "mounted"
+      ? skill.policy?.disabled === true
+      : kind === "user"
+        ? skill.policy?.userInvocable !== true
+        : skill.policy?.modelInvocable !== true;
     void Promise.resolve(request).then(function (result) {
       if (!result.ok) {
-        props.onNotice("err", skT(skGetLang(), "notice.toggleFailed", { reason: skApiError(result) }));
+        if (result.body !== null && result.body !== undefined && result.body.code === "security-blocked" && typeof skOpenSecurityReview === "function") {
+          skOpenSecurityReview(Object.assign({}, result.body, {
+            name: skill.name,
+            source: skill.source ?? null,
+            code: "security-blocked",
+            onContinue: function () { return toggleSkill(skill, kind); }
+          }));
+        }
+        props.onNotice("err", skT(skGetLang(), "notice.toggleFailed", { reason: skErrorText(result) }));
         return;
       }
       refreshRecord(skill.name);
+      if (enabling && typeof skOpenSecurityReview === "function") skOpenSecurityReview({ name: skill.name, source: "enable", skill: skill, auto: true });
+    }).finally(function () {
+      delete toggleBusy.current[skill.name];
     });
   };
 
-  var useSkill = function (skill, continuation, recommendation) {
-    var stage = typeof continuation === "string" ? continuation : "";
+  var useSkill = function (skill, recommendation) {
     if (recommendation === true) {
       var acceptedSession = skCurrentSessionId();
       if (acceptedSession !== "") skReportEvent(skill.name, "accepted", "", props.workspace, acceptedSession);
     }
-    void skUseSkill(skill.name, props.workspace, { continuation: stage }).then(function (outcome) {
+    void skUseSkill(skill.name, props.workspace).then(function (outcome) {
       if (outcome.ok) {
-        props.onNotice("ok", skT(skGetLang(), outcome.continuation === true ? "notice.loadedNext" : "notice.loaded"));
+        props.onNotice("ok", skT(skGetLang(), "notice.loaded"));
         return;
       }
       if (outcome.cancelled === true) {
@@ -2751,6 +3715,45 @@ function SkillBrowse(props) {
   var favourites = (0, import_react.useMemo)(function () {
     return skPickFavourites(skills, 9999);
   }, [skills]);
+  var stateCounts = (0, import_react.useMemo)(function () {
+    var result = { all: skills.length, both: 0, user: 0, model: 0, off: 0, disabled: 0, fav: 0 };
+    skills.forEach(function (skill) {
+      var availability = skill.policy?.availability ?? "unavailable";
+      if (availability === "both") result.both += 1;
+      else if (availability === "user") result.user += 1;
+      else if (availability === "model") result.model += 1;
+      else if (availability === "disabled") result.disabled += 1;
+      else result.off += 1;
+      if (skill.stats?.favorite === true) result.fav += 1;
+    });
+    return result;
+  }, [skills]);
+  var relatedState = (0, import_react.useState)(null);
+  var related = relatedState[0];
+  var setRelated = relatedState[1];
+  var relatedSeq = (0, import_react.useRef)(0);
+  var indexMissing = index === null;
+  (0, import_react.useEffect)(function () {
+    var trimmed = query.trim();
+    if (trimmed === "" || filtered.length > 0 || indexMissing === true) {
+      relatedSeq.current += 1;
+      setRelated(null);
+      return;
+    }
+    var seq = relatedSeq.current + 1;
+    relatedSeq.current = seq;
+    setRelated({ status: "loading", items: [], error: "" });
+    void skApi.search(trimmed, props.workspace, 4).then(function (result) {
+      if (seq !== relatedSeq.current) return;
+      if (!result.ok) {
+        setRelated({ status: "error", items: [], error: skErrorText(result) });
+        return;
+      }
+      setRelated({ status: "ready", items: Array.isArray(result.body.items) ? result.body.items : [], error: "" });
+    }).catch(function (thrown) {
+      if (seq === relatedSeq.current) setRelated({ status: "error", items: [], error: String(thrown) });
+    });
+  }, [query, filtered.length, indexMissing, props.workspace]);
 
   var categories = index === null || !Array.isArray(index.categories) ? [] : index.categories;
   var sourceRows = index === null || !Array.isArray(index.sources) ? [] : index.sources;
@@ -2774,7 +3777,10 @@ function SkillBrowse(props) {
           : skT(lang, "home.sub.none")
     : view === "favorites"
       ? skT(lang, "fav.pageHint")
-      : skT(lang, "skills.sub", { count: filtered.length, available: totals.available ?? 0 });
+      : (query !== ""
+        ? skT(lang, "skills.searchSub", { query: query, count: filtered.length })
+        : skT(lang, "skills.sub", { count: filtered.length, available: totals.available ?? 0 }))
+        + (loading && index !== null ? " · " + skT(lang, "skills.refreshing") : "");
 
   var openView = function (next) {
     setView(next);
@@ -2792,6 +3798,147 @@ function SkillBrowse(props) {
       setCategory("");
       setView("all");
     }
+  };
+
+  var clearAllFilters = function () {
+    setQuery("");
+    setCategory("");
+    setSource("all");
+    setStateFilter("all");
+  };
+  // The empty state says which kind of empty this is: no skills at all, a
+  // search with no hit, or filters that exclude everything.
+  var emptyState = (totals.all ?? 0) === 0
+    ? {
+      glyph: skH(SkGridGlyph, { size: 22 }),
+      title: skT(lang, "empty.all.title"),
+      hint: skT(lang, "empty.all.hint"),
+      actionLabel: skT(lang, "empty.all.action"),
+      onAction: function () { props.onPanel("install"); }
+    }
+    : query !== ""
+      ? {
+        glyph: skH(SkSearchGlyph, {}),
+        title: skT(lang, "empty.title"),
+        hint: skT(lang, "empty.hint"),
+        actionLabel: skT(lang, "empty.clearSearch"),
+        onAction: function () { setQuery(""); }
+      }
+      : {
+        glyph: skH(SkSlidersGlyph, { size: 22 }),
+        title: skT(lang, "empty.filter.title"),
+        hint: skT(lang, "empty.filter.hint"),
+        actionLabel: skT(lang, "empty.filter.action"),
+        onAction: clearAllFilters
+      };
+
+  var dependentsBySkill = (0, import_react.useMemo)(function () {
+    var map = {};
+    skills.forEach(function (record) {
+      (record.requires ?? []).forEach(function (requirement) {
+        if (typeof requirement?.name !== "string") return;
+        if (!map[requirement.name]) map[requirement.name] = [];
+        map[requirement.name].push({ name: record.name, kind: requirement.kind === "mention" ? "mention" : "declared" });
+      });
+    });
+    return map;
+  }, [skills]);
+  var openRelated = function (name) {
+    var record = skills.find(function (row) { return row.name === name; });
+    if (record !== undefined) setDetail(record);
+  };
+  var useRelated = function (name) {
+    var record = skills.find(function (row) { return row.name === name; });
+    if (record !== undefined) useSkill(record);
+  };
+
+  var selectedNames = Object.keys(selected);
+  var selectedCount = selectedNames.length;
+  var toggleSelect = function (skill) {
+    setSelected(function (previous) {
+      var next = { ...previous };
+      if (next[skill.name] === true) delete next[skill.name];
+      else next[skill.name] = true;
+      return next;
+    });
+  };
+  var exitSelect = function () {
+    setSelectMode(false);
+    setSelected({});
+    setBatchConfirm(false);
+  };
+  var selectAllVisible = function () {
+    var next = {};
+    filtered.forEach(function (skill) { next[skill.name] = true; });
+    setSelected(next);
+  };
+  var exportSelection = function () {
+    if (selectedCount === 0) {
+      props.onNotice("warn", skT(skGetLang(), "batch.none"));
+      return;
+    }
+    var rows = skills.filter(function (skill) { return selected[skill.name] === true; }).map(function (skill) {
+      return {
+        name: skill.name,
+        version: skill.version ?? null,
+        source: skill.source?.type ?? null,
+        category: skill.category?.id ?? null,
+        availability: skill.policy?.availability ?? null,
+        path: skill.management?.path ?? null
+      };
+    });
+    try {
+      var payload = JSON.stringify({ exportedAt: new Date().toISOString(), skills: rows }, null, 2);
+      var blob = new Blob([payload], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = "dsh-charlotte-skills.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(function () { URL.revokeObjectURL(url); }, 0);
+      props.onNotice("ok", skT(skGetLang(), "batch.exported", { count: String(rows.length) }));
+    }
+    catch (thrown) {
+      props.onNotice("err", String(thrown));
+    }
+  };
+  var runBatchDelete = function () {
+    if (batchBusy) return;
+    var targets = skills.filter(function (skill) {
+      return selected[skill.name] === true && skill.management?.kind === "writable";
+    });
+    if (targets.length === 0) {
+      props.onNotice("err", skT(skGetLang(), "batch.noWritable"));
+      setBatchConfirm(false);
+      return;
+    }
+    setBatchBusy(true);
+    var done = 0;
+    var failed = 0;
+    var chain = Promise.resolve();
+    targets.forEach(function (skill) {
+      chain = chain.then(function () {
+        return skApi.delete({ workspace: props.workspace, rootId: skill.management?.rootId ?? "", name: skill.name })
+          .then(function (result) {
+            if (result.ok) done += 1;
+            else failed += 1;
+          })
+          .catch(function () { failed += 1; });
+      });
+    });
+    void chain.then(function () {
+      var text = skT(skGetLang(), "batch.done", { done: String(done), failed: String(failed) });
+      if (failed === 0) props.onNotice("ok", text);
+      else props.onNotice("err", text);
+      setSelected({});
+      setBatchConfirm(false);
+      setSelectMode(false);
+      setReload(reload + 1);
+    }).finally(function () {
+      setBatchBusy(false);
+    });
   };
 
   return sk(skF, null, [
@@ -2869,6 +4016,18 @@ function SkillBrowse(props) {
                 sort: sort,
                 source: source,
                 state: stateFilter,
+                stateCounts: stateCounts,
+                selectMode: selectMode,
+                onSelectMode: function () {
+                  if (selectMode) {
+                    setSelectMode(false);
+                    setSelected({});
+                    setBatchConfirm(false);
+                    return;
+                  }
+                  setSelectMode(true);
+                  setSelected({});
+                },
                 menu: menu,
                 total: totals.all ?? 0,
                 sourceRows: sourceRows,
@@ -2877,29 +4036,35 @@ function SkillBrowse(props) {
                 onState: setStateFilter,
                 onMenu: setMenu
               }),
-              loading
-                ? sk("div", { className: "sk_loading" }, skT(lang, "loading"))
+              !selectMode ? null : sk("div", { className: "sk_batchBar", role: "region", "aria-label": skT(lang, "batch.mode") }, batchConfirm
+                ? [
+                  sk("span", { className: "sk_batchText" }, skT(lang, "batch.confirm", { count: String(selectedCount) })),
+                  sk("button", { className: "sk_textBtn", type: "button", disabled: batchBusy, onClick: function () { setBatchConfirm(false); } }, skT(lang, "action.cancel")),
+                  sk("button", { className: "sk_textBtn sk_danger", type: "button", disabled: batchBusy, onClick: runBatchDelete }, batchBusy ? skT(lang, "detail.deleting") : skT(lang, "batch.confirmed"))
+                ]
+                : [
+                  sk("span", { className: "sk_batchCount" }, selectedCount === 0 ? skT(lang, "batch.none") : skT(lang, "batch.selected", { count: String(selectedCount) })),
+                  sk("button", { className: "sk_textBtn", type: "button", onClick: selectAllVisible }, skT(lang, "batch.selectAll")),
+                  sk("button", { className: "sk_textBtn", type: "button", disabled: selectedCount === 0, onClick: function () { setSelected({}); } }, skT(lang, "batch.clear")),
+                  sk("button", { className: "sk_textBtn", type: "button", disabled: selectedCount === 0, onClick: exportSelection }, skT(lang, "batch.export")),
+                  sk("button", { className: "sk_textBtn sk_danger", type: "button", disabled: selectedCount === 0, onClick: function () { setBatchConfirm(true); } }, skT(lang, "batch.delete")),
+                  sk("button", { className: "sk_textBtn", type: "button", onClick: exitSelect }, skT(lang, "batch.exit"))
+                ]),
+              loading && index === null
+                ? skH(SkListSkeleton, {})
                 : filtered.length === 0
-                  ? sk("div", { className: "sk_empty" }, [
-                    sk("strong", null, skT(lang, "empty.title")),
-                    sk("span", null, skT(lang, "empty.hint")),
-                    sk("div", { style: { marginTop: "10px" } }, [
-                      sk("button", {
-                        className: "sk_textBtn",
-                        type: "button",
-                        onClick: function () {
-                          setQuery("");
-                          setCategory("");
-                          setSource("all");
-                          setStateFilter("all");
-                        }
-                      }, skT(lang, "empty.clear"))
-                    ])
+                  ? sk("div", null, [
+                    skH(SkEmptyState, emptyState),
+                    query !== "" ? skH(SkRelatedSearch, { lang: lang, state: related, onDetail: openRelated, onUse: useRelated }) : null
                   ])
                   : sk("div", { className: "sk_list" }, filtered.map(function (skill) {
                     return skH(SkRow, {
                       skill: skill,
                       lang: lang,
+                      query: query,
+                      selectMode: selectMode,
+                      selected: selected[skill.name] === true,
+                      onSelect: toggleSelect,
                       onUse: useSkill,
                       onDetail: setDetail,
                       onPref: updatePref
@@ -2912,9 +4077,14 @@ function SkillBrowse(props) {
     detail !== null ? skH(SkDetailDrawer, {
       skill: detail,
       lang: lang,
+      workspace: props.workspace,
+      onNotice: props.onNotice,
       onClose: function () { setDetail(null); },
       onUse: useSkill,
-      onToggle: toggleSkill
+      onToggle: toggleSkill,
+      onDelete: removeSkill,
+      deleting: deleteBusy,
+      dependents: dependentsBySkill[detail.name] ?? []
     }) : null
   ]);
 }
@@ -2968,6 +4138,36 @@ function TargetSelector(props) {
  * @param {{embedded?: boolean, onRequestClose?: Function}} props - props.
  * @returns {object} station.
  */
+/**
+ * One notice row. Success/info/warn auto-dismiss; errors stay until the user
+ * closes them, so a failure is never silently lost.
+ * @param {{notice: {id: number, kind: string, text: string}, onDismiss: Function, lang: 'zh'|'en'}} props - props.
+ * @returns {object} notice row.
+ */
+function SkNoticeRow(props) {
+  var notice = props.notice;
+  var lang = props.lang;
+  (0, import_react.useEffect)(function () {
+    if (notice.kind === "err" || typeof window === "undefined") return undefined;
+    var ttl = notice.kind === "ok" ? 4000 : notice.kind === "warn" ? 8000 : 5000;
+    var timer = window.setTimeout(function () {
+      props.onDismiss(notice.id);
+    }, ttl);
+    return function () {
+      window.clearTimeout(timer);
+    };
+  }, [notice.id, notice.kind, props.onDismiss]);
+  return sk("div", { className: "sk_notice", "data-kind": notice.kind, role: notice.kind === "err" ? "alert" : "status" }, [
+    sk("span", { className: "sk_noticeText" }, notice.text),
+    sk("button", {
+      className: "sk_noticeAction",
+      type: "button",
+      "aria-label": skT(lang, "notice.dismiss"),
+      onClick: function () { props.onDismiss(notice.id); }
+    }, "✕")
+  ]);
+}
+
 function StationApp(props) {
   var workspacesState = (0, import_react.useState)([]);
   var workspaces = workspacesState[0];
@@ -2978,44 +4178,101 @@ function StationApp(props) {
   var panelState = (0, import_react.useState)(null);
   var panel = panelState[0];
   var setPanel = panelState[1];
-  var noticeState = (0, import_react.useState)(null);
-  var notice = noticeState[0];
-  var setNotice = noticeState[1];
+  var securityOpenState = (0, import_react.useState)(false);
+  var securityOpen = securityOpenState[0];
+  var setSecurityOpen = securityOpenState[1];
+  var securityReviewState = (0, import_react.useState)(null);
+  var securityReview = securityReviewState[0];
+  var setSecurityReview = securityReviewState[1];
+  var securityReviewKey = (0, import_react.useRef)(0);
+  var openSecurityReview = (0, import_react.useCallback)(function (detail) {
+    securityReviewKey.current += 1;
+    setSecurityReview(Object.assign({}, detail ?? {}, { key: "review-" + String(securityReviewKey.current) }));
+  }, []);
+  var openPanel = (0, import_react.useCallback)(function (name) {
+    if (name === "security") {
+      setSecurityOpen(true);
+      return;
+    }
+    setPanel(name);
+  }, []);
+  var noticesState = (0, import_react.useState)([]);
+  var notices = noticesState[0];
+  var setNotices = noticesState[1];
+  var noticeIdRef = (0, import_react.useRef)(0);
   var reloadState = (0, import_react.useState)(0);
   var reload = reloadState[0];
   var setReload = reloadState[1];
+  var pushNotice = (0, import_react.useCallback)(function (kind, text) {
+    var normalized = kind === "error" ? "err" : kind === "success" ? "ok" : kind === "warning" ? "warn" : kind;
+    var allowed = normalized === "ok" || normalized === "warn" || normalized === "err" ? normalized : "info";
+    noticeIdRef.current += 1;
+    var item = { id: noticeIdRef.current, kind: allowed, text: String(text ?? "") };
+    setNotices(function (previous) {
+      var next = previous.concat([item]);
+      return next.length > 3 ? next.slice(next.length - 3) : next;
+    });
+  }, []);
+  var dismissNotice = (0, import_react.useCallback)(function (id) {
+    setNotices(function (previous) {
+      return previous.filter(function (row) { return row.id !== id; });
+    });
+  }, []);
+  (0, import_react.useEffect)(function () {
+    skNoticeSetSink(pushNotice);
+    return function () {
+      skNoticeSetSink(null);
+    };
+  }, [pushNotice]);
+  (0, import_react.useEffect)(function () {
+    var offCenter = skSecurityPromptSubscribe(function () {
+      setSecurityOpen(true);
+    });
+    var offReview = typeof skSecurityReviewSubscribe === "function"
+      ? skSecurityReviewSubscribe(function (detail) { openSecurityReview(detail); })
+      : function () {};
+    return function () {
+      offCenter();
+      offReview();
+    };
+  }, [openSecurityReview]);
+  // A background scan after a body/external-directory change publishes a
+  // notification for the changed skill; open the review once, not on every poll.
+  (0, import_react.useEffect)(function () {
+    var alive = true;
+    var timer = window.setInterval(function () {
+      if (securityReview !== null || securityOpen === true) return;
+      var query = workspace !== "" ? "?workspace=" + encodeURIComponent(workspace) : "";
+      void skCall("/security/status" + query).then(function (result) {
+        if (!alive || !result.ok) return;
+        var notes = Array.isArray(result.body.notifications) ? result.body.notifications : [];
+        var hit = notes.find(function (row) { return typeof row.target === "string" && row.target.indexOf("skill:") === 0; });
+        if (hit !== undefined) openSecurityReview({ name: hit.target.slice("skill:".length), source: "change", findings: [] });
+      }).catch(function () {
+        // Background review polling is best effort.
+      });
+    }, 30000);
+    return function () {
+      alive = false;
+      window.clearInterval(timer);
+    };
+  }, [workspace, securityReview, securityOpen, openSecurityReview]);
   (0, import_react.useEffect)(function () {
     void skApi.roots().then(function (result) {
       if (result.ok && Array.isArray(result.body.workspaces)) setWorkspaces(result.body.workspaces);
     });
   }, []);
-  (0, import_react.useEffect)(function () {
-    if (notice === null) return undefined;
-    var timer = window.setTimeout(function () {
-      setNotice(null);
-    }, 6000);
-    return function () {
-      window.clearTimeout(timer);
-    };
-  }, [notice]);
   return sk("div", { className: "sk_station" + (props.embedded === true ? " sk_stationEmbedded" : "") }, [
-    notice === null ? null : sk("div", { className: "sk_notice", "data-kind": notice.kind, role: "status", style: { marginTop: "12px" } }, [
-      sk("span", null, notice.text),
-      sk("button", {
-        className: "sk_noticeAction",
-        type: "button",
-        onClick: function () { setNotice(null); }
-      }, "✕")
-    ]),
+    sk("div", { className: "sk_notices", "aria-live": "polite" }, notices.map(function (row) {
+      return skH(SkNoticeRow, { notice: row, onDismiss: dismissNotice, lang: skGetLang() }, "notice-" + row.id);
+    })),
     skH(SkillBrowse, {
       workspace: workspace,
       workspaces: workspaces,
       onWorkspace: setWorkspace,
-      onPanel: setPanel,
+      onPanel: openPanel,
       reloadToken: reload,
-      onNotice: function (kind, text) {
-        setNotice({ kind: kind, text: text });
-      },
+      onNotice: pushNotice,
       onRequestClose: typeof props.onRequestClose === "function" ? props.onRequestClose : null
     }),
     panel === null ? null : skH(StationPanelDialog, {
@@ -3026,7 +4283,26 @@ function StationApp(props) {
         setPanel(null);
         setReload(reload + 1);
       }
-    })
+    }),
+    securityOpen ? skH(SkSecurityCenter, {
+      lang: skGetLang(),
+      workspace: workspace,
+      onClose: function () {
+        setSecurityOpen(false);
+        setReload(reload + 1);
+      }
+    }) : null,
+    securityReview !== null ? skH(SkSecurityReview, {
+      key: securityReview.key,
+      initial: securityReview,
+      lang: skGetLang(),
+      workspace: workspace,
+      onContinue: securityReview.onContinue,
+      onClose: function () {
+        setSecurityReview(null);
+        setReload(reload + 1);
+      }
+    }) : null
   ]);
 }
 
@@ -3039,6 +4315,8 @@ function StationApp(props) {
 if (typeof window !== "undefined" && window.__DSH_CHARLOTTE_TEST__ === true) {
   window.__skTest = {
     skT: skT,
+    skErrorText: skErrorText,
+    skHighlightParts: skHighlightParts,
     skStateOf: skStateOf,
     skFilterSkills: skFilterSkills,
     skSortSkills: skSortSkills,
@@ -3056,7 +4334,6 @@ if (typeof window !== "undefined" && window.__DSH_CHARLOTTE_TEST__ === true) {
     skHomePendingEntries: skHomePendingEntries,
     skHomeReason: skHomeReason,
     skSkillIntro: skSkillIntro,
-    skContinuationPrompt: skContinuationPrompt,
     skFallbackHome: skFallbackHome,
     skFavGroups: skFavGroups,
     strings: SK_STRINGS,

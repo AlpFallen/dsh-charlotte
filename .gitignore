@@ -1,9 +1,8 @@
 node_modules/
 .DS_Store
 *.log
-*.bak
-*.before-publish
 .gh-token
-backups/
-README.revamp.md
-dsh-charlotte.md
+
+# Self-contained snapshot for a separate GitHub push. It is generated from the
+# working tree and must not be committed back into this checkout.
+/publish/

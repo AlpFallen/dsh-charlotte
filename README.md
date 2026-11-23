@@ -2,9 +2,13 @@
 
 [English](README.en.md) | 中文
 
+> 复制这句话给你的 agent：**帮我了解 dsh-charlotte**
+>
+> 它会读仓库根的 [SKILL.md](SKILL.md)，直接讲清这个插件是什么、怎么装、怎么用、什么时候不该用——不用你翻文档。
+
 装在 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 里的技能启动器与技能库。
 
-`dsh-charlotte` 只占一个「dsh-charlotte」入口：数据驱动的技能管理页（紧凑列表、真实功能分类、常用与收藏、右侧详情抽屉）、宿主侧实时推荐，以及「授权 → 加载 → 执行」全链路状态反馈。外部 Claude Code / Codex / ZCode / Cursor / Gemini 技能目录以只读方式挂载成一个 dsh 技能来源；启用、安装、删除与回收站能力都保留。
+`dsh-charlotte` 只占一个「dsh-charlotte」入口：数据驱动的技能管理页（紧凑列表、真实功能分类、常用与收藏、居中详情弹窗）、宿主侧实时推荐，以及「授权 → 加载 → 执行」全链路状态反馈。外部 Claude Code / Codex / ZCode / Cursor / Gemini 技能目录以只读方式挂载成一个 dsh 技能来源；启用、安装、删除与回收站能力都保留。
 
 ## 安装
 
@@ -25,16 +29,28 @@ dsh plugin --profile web add github:AlpFallen/dsh-charlotte
 - **单一入口** — 侧栏只有「dsh-charlotte」一个入口。作用域、拖拽安装、回收站、刷新和语言收进 **更多** 菜单。
 - **常用与收藏** — 首页顶部先给置顶、再给收藏、最后按真实调用频率补足（最多 4 条）；没有数据时整块不渲染，不编造示例。
 - **真实功能分类** — 开发工作、代码质量、项目理解、文档与知识、任务协作、设计与创作、办公文档、邮件沟通、学习教练；每个技能归到哪一类由它自己的名称/描述/触发条件计算，详情里给出命中依据；没有「其他」类，零计数类不显示。
-- **紧凑列表 + 侧边详情** — 行内是名称与版本、完整描述、可用状态、来源、收藏/置顶、使用、详情；详情走右侧抽屉，含推荐理由、适用/排除场景、触发条件、权限、依赖、版本、来源路径、真实使用记录与字段来源。
+- **标签式详情 + 技能文档优先** — 行内是名称与版本、完整描述、可用状态、来源、收藏/置顶、使用、详情；打开详情默认进入「技能介绍」，按顺序显示名称、短描述、主要能力、适用场景和真实 SKILL.md（Markdown 渲染，含标题/列表/代码块/表格/链接）。头部、四个标签（介绍 / 安全检查 / 技能信息 / 使用记录）和底部操作固定，只有内容区滚动；其余元数据、权限、依赖、成本与来源路径移入「技能信息」。
 - **搜索、筛选、排序** — 搜索覆盖名称、描述、用途、关键词、触发条件与分类；可按分类、来源（项目级/用户专属/插件提供/系统内置）、状态筛选；排序只有调用频率、名称、最近使用——没有真实下载时间，所以不提供下载时间排序。
 - **一次点击加载** — 点击 **使用** 后先在宿主校验（是否可见、是否启用、依赖是否满足），再把官方 `/技能名` token 放进当前或新建对话的输入框。不会发送消息、不会启动 Agent 回合；只有你发送后才注入技能指令。加载中再点一次即取消，失败显示宿主给出的真实原因。
 - **如实的停用语义** — 对模型停用但用户可调用的技能仍然可用，并标记为「仅用户」；用户不可调用的技能不能使用。
 - **插件自带技能** — 由 dsh 插件或 bundled provider 注册的技能现在也会以只读的 `插件` 卡片出现在同一网格里，带 provider 标签、只读详情和同样的 **使用技能** 加载流程。技能站只负责展示与加载，不能启停或删除；文件归提供它的插件所有。列表随 `/skills.registry` 返回，详情读 `/registry-skill`。
+- **自述技能 `charlotte`** — 包内 `skills/charlotte/SKILL.md` 以最低优先级挂载，所以任何装了本插件的会话，被问到「dsh-charlotte 是什么、怎么装、为什么推了这个技能」时能直接照它回答，不用联网查，也不靠模型编。用户自己有同名技能时以用户版本为准。仓库根的 `SKILL.md` 是同一份副本（有测试守着，不许漂）；没装插件的人让 agent 读一下根目录那份，也能直接讲。
 - **挂载外部技能** — 只读 provider 把 `~/.claude/skills`、`~/.codex/skills`、`~/.zcode/skills`、`~/.cursor/skills`、`~/.gemini/skills`（含 `~/.gemini/antigravity/skills`）、各工作区的 `.claude|.codex|.zcode|.cursor|.gemini/skills` 以及自定义 `extraDirs` 注册成 dsh 技能来源。文件原地不动：frontmatter 字段映射（`disable-model-invocation`、`user-invocable`、Codex `agents/openai.yaml` 策略、原始 metadata 保真）、非 kebab 名自动 slug、缺描述自动合成、改动热更新；符号链接形式的技能条目会跟随一次（`~/.claude/skills/<name> -> ../.agents/skills/<name>` 这种也能挂载）。
 - **技能浏览** — 可写根目录（全局 `~/.dsh/skills`、共享 `~/.agents/skills`、每个工作区的 `<project>/.dsh/skills` / `.agents/skills`）与挂载目录、插件 provider 合成一个统一索引与列表。搜索覆盖名称、描述、用途、关键词与触发条件；启停对本地技能写 `disable-model-invocation` frontmatter，对挂载技能写覆盖表；删除进可恢复的回收站。
 - **拖拽安装** — 把技能文件夹或 `.zip` 拖进安装面板，或用选择器。zip 由服务端解压；先校验（SKILL.md 需含 kebab-case `name` 与 `description`）并预览，确认后才写入；写入先暂存再改名。
 - **回收站** — 删除的技能移入 `~/.dsh/charlotte/trash` 并记录来源，可在面板中恢复或清空。
 - **中文界面：一句大白话 + 官方描述 + 专业版** — 技能名保持原文；列表里是一句高中生能看懂的中文简介；详情页依次展示技能官方描述（原文中文就放中文，没有中文就放英文原文）和一段中文专业版概述。两段中文优先用技能自己声明的 `simple-zh` / `professional-zh`，其次用与原文哈希严格匹配的目录（`locale/skills.zh.json`），原文变动后旧文案自动失效。
+- **安全审查弹窗（独立于技能详情）** — 安装/导入成功、安装/启用/使用/恢复被阻止、技能正文或外部目录变化时打开；顶部显示技能、来源、状态与内容哈希，列出 9 项真实检查、风险总览、可展开证据与修复建议。PASSED/WARNING 可继续，BLOCKED 默认阻止，HIGH 可一键接受并记录操作者、目标与时间，不强制填写原因，CRITICAL 只能返回修改；关闭弹窗不会放行被宿主阻止的操作。更多菜单的「安全审查」还提供常驻的「全部技能审查」：运行一次全面审计后逐个显示通过/警告/阻断/未覆盖，并明确报告是否全部通过。
+- **安全中心** — 更多菜单里的「安全中心」打开真实扫描结果：Critical / High / Medium / Low / Info、已阻止、未解决计数，Quick Scan / Full Audit / Rescan / Cancel / Export Report，扫描阶段、当前对象、完成数与耗时，按级别/类别/状态/规则 ID/路径筛选，展开查看证据、影响、攻击场景、修复建议与参考。安装、导入、启用、恢复与使用之前会在宿主侧自动扫描；CRITICAL/HIGH 默认阻止，HIGH 可由用户直接接受并记录操作者、目标与时间（不强制原因，绝不记为已修复），CRITICAL 没有普通确认绕过路径。
+- **正文审计** — 每条技能读入的正文都会检查裸 ESC、Unicode 标签字符、双向控制符、零宽字符；详情页按条列出命中类型与数量，聚合结果在「诊断」里。安全中心对同一类字符给出 HIGH 级 finding，并提供经过预览与哈希校验的安全修复（仅可写根内的技能）。
+- **首次使用安全审查** — 安装时扫描一次；技能首次使用前要在详情里确认检查结果（列表显示「待审查」）。接受后按正文、描述与版本哈希记住；内容或版本变化后重新审查。自称「绝对安全 / 无风险」会按最高风险规则命中。
+- **声明权限** — 详情页展示技能自己声明的 `permissions` / `allowed-tools`；没写就显示「未声明」，不替技能猜。
+- **注入开销** — 每条技能给出 ≈token / 字符估算，CJK 与拉丁字符分开计数；标注为启发式估算，不是分词器。
+- **调用台账** — 真实加载、执行、成功、失败的汇总，近 14 天加载趋势，每技能的 Success 与推荐采纳率；分母为零时显示「—」，不伪造比率。
+- **标签** — 任意技能可加标签（回车添加、点标签删除），搜索覆盖标签。
+- **共享池迁移** — 一键把可写根里的技能迁入共享池 `~/.agents/skills`，原位置留下相对软链；迁移先复制再验证再换链，失败自动还原。
+- **诊断** — 被跳过的文件、无效 frontmatter、挂载扫描失败的原因集中展示，不再只进日志。
+- **大尺寸详情弹窗 + 复制正文** — 居中弹窗约占视口 82%、最大 1100px，头部/标签/底部固定，文档区独立滚动；支持遮罩、Esc、关闭按钮，未完成操作会先确认，可一键复制技能正文。
 - **中英双语界面** — 启动器表面（标题、搜索、筛选、列表、弹窗、推荐卡、更多菜单）可切换中英文并记住选择；中文模式下推荐理由也用中文。复用的安装与回收站主体保留现有中文文案。
 
 ## 实时推荐
@@ -87,26 +103,35 @@ plugins:
 
 - 技能写入只落在上述可写根目录，以及 dsh-charlotte 自己的状态目录 `~/.dsh/charlotte/`；每个路径在规范化后做包含性检查，复制不跟随 symlink，上传拒绝路径穿越。
 - 外部 agent 目录只读挂载；开关状态存在 dsh-charlotte 的覆盖表里，不写回它们的 `SKILL.md`。
-- 变更类 HTTP 接口拒绝跨源请求；API 与 GUI 同一本地服务。
+- 变更类 HTTP 接口拒绝跨源请求，包括 `Origin: null` 的沙箱 iframe 与 `file://` 页面；只有完全不带 Origin 的本机调用者（网页无法伪造）被视为可信。API 与 GUI 同一本地服务。
+- 客户端传来的 `workspace` 必须是已打开的工作区；只有完全没有 workspace registry 的无头组合才信任原样路径。
+- API 只接受 loopback Host（`127.0.0.1` / `localhost` / `::1`）的请求，挡住 DNS rebinding；监听范围、鉴权现状与复现命令见 [文档/01-安全模型.md](文档/01-安全模型.md)。
 - 加载/启停/收藏都在服务端复核：`/use` 重新检查可见性、启用状态与依赖；`loaded` 事件只接受刚被授权的会话；前端展示不替代权限检查。
+- 安全扫描在宿主侧执行，UI 只读结果：安装在写入任何文件之前扫描上传内容与 ZIP 中央目录（Zip Slip、symlink 条目、重复条目、解压炸弹、超限、可执行文件），启用/恢复/使用前按内容哈希重扫；扫描超时或异常按 fail-closed 阻止，不会默认视为安全。CRITICAL 没有普通确认绕过路径；HIGH 的例外授权会记录操作者、目标与时间，不强制填写原因。
+- 安全历史与报告在 `~/.dsh/charlotte/security-history.json`；报告导出会脱敏证据中的密钥/令牌/密码，并明确标注 complete / partial / failed / cancelled。扫描器只做静态规则审计，不执行技能代码。
+- 可选的本机调用方令牌：设置 `CHARLOTTE_API_TOKEN`（≥16 字符）后，变更类请求必须带 `x-charlotte-token`；未设置时维持 loopback + 同源边界，并在安全报告里记录这条残余风险。捆绑 UI 不会自动带这个头，令牌模式用于无头/集成调用（或由本地代理注入）。
 - 技能使用授权不等于具体操作授权：删除文件、发送消息、提交数据等高风险动作仍由 DSH 工具权限与审批独立校验。
 - 挂载与上传的技能都是第三方内容，启用前请先审阅。
 
 ## 状态
 
-0.7.3。改宿主（`lib/`）要完全退出 App（含托盘）再重开；改客户端（`revamp/`、CSS）只需 `npm run build` 后刷新页面。运行状态（`state.json`、`overrides.json`、`enrich-cache.json`、`trash/`）在 `~/.dsh/charlotte/`，不进仓库。
+0.8.0。改宿主（`lib/`）要完全退出 App（含托盘）再重开；改客户端（`revamp/`、CSS）只需 `npm run build` 后刷新页面。运行状态（`state.json`、`overrides.json`、`enrich-cache.json`、`security-history.json`、`trash/`）在 `~/.dsh/charlotte/`，不进仓库。
 
 ## 开发
 
 ```sh
 npm install
 npm run build                  # 从 client.baseline.js + revamp/ 重建 client/client.js
-npm test                       # 19 客户端 + 16 宿主契约 + 30 索引/推荐/中文化集成
+npm test                       # 43 客户端 + 17 宿主契约 + 58 索引/推荐/中文化 + 67 安全
+npm run test:security          # 只跑安全规则、API 边界、ZIP 与安全历史
 DSH_WEB_URL=http://127.0.0.1:<当前端口> npm run check:zh   # 两段中文的覆盖与哈希校验
 node scripts/host-smoke.mjs    # 只测宿主契约：配置、根目录、provider、旧 API
 node scripts/host-index-smoke.mjs  # 索引、分类、推荐、权限、依赖、目录安装
+node scripts/security-smoke.mjs    # 路径穿越、symlink、Zip Slip、扫描取消、修复、报告
 node scripts/render-probe.mjs  # 可选：真 React 渲染探针
 ```
+
+CI（`.github/workflows/ci.yml`）在 push 与 PR 上跑 `npm test`、渲染探针，并在 `npm run build` 后校验 `client/client.js` 与 `revamp/` 源一致。
 
 客户端是已检入的编译基线（`client/client.baseline.js`）上的切片补丁，由 `scripts/build-client.mjs` 拼装，源片段在 `revamp/`；宿主是 `lib/` 下的普通 ESM。
 

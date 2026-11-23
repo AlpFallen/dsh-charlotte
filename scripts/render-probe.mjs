@@ -74,7 +74,7 @@ const exported = [
     'StationApp', 'SkillBrowse', 'SkRow', 'SkDetailDrawer', 'SkFavourites', 'SkSide',
     'SkHome', 'SkHomeHero', 'SkHomeRow', 'SkToolbar', 'SkSearch',
     'SkMoreMenu', 'StationPanelDialog', 'SkRecommendDock', 'skRegisterRecommendDock',
-    'skStateOf',
+    'SkSecurityCenter', 'SkSecurityReview', 'SkMarkdown', 'skStateOf',
 ].join(', ');
 const injectable = bundle.replace(
     '    return module.exports;',
@@ -161,6 +161,8 @@ const disabledSkill = {
 };
 
 const cases = [
+    // Tab-content assertions live below; keep the elements in one list so the
+    // SSR probe renders exactly what the browser would for each active tab.
     ['station app', React.createElement(t.StationApp, {})],
     ['station app with close', React.createElement(t.StationApp, { onRequestClose() {} })],
     ['skill browse', React.createElement(t.SkillBrowse, {
@@ -327,6 +329,138 @@ const cases = [
         onClose() {},
     })],
     ['dock without candidate', React.createElement(t.SkRecommendDock, { sessionId: 'session-1' })],
+    ['security center', React.createElement(t.SkSecurityCenter, {
+        lang: 'zh',
+        workspace: '',
+        onClose() {},
+    })],
+    ['security review blocked', React.createElement(t.SkSecurityReview, {
+        lang: 'zh',
+        workspace: '',
+        initial: {
+            name: 'demo-review',
+            source: { type: 'user', label: '用户专属', detail: '全局 · 用户根' },
+            code: 'security-blocked',
+            summary: { critical: 0, high: 1, medium: 0, low: 0, info: 0, total: 1, blocked: 1, unresolved: 1 },
+            findings: [{
+                id: 'sec_demo',
+                ruleId: 'SEC-SKILL-001',
+                target: 'skill:demo-review',
+                title: 'Prompt injection',
+                titleZh: '提示注入',
+                severity: 'HIGH',
+                category: 'content',
+                status: 'blocked',
+                filePath: 'SKILL.md',
+                line: 3,
+                description: 'The skill asks the model to override earlier instructions.',
+                descriptionZh: '技能要求模型覆盖之前的指令。',
+                impact: 'Instructions can be replaced.',
+                impactZh: '模型指令可能被替换。',
+                attackScenario: 'A malicious body tells the model to ignore policy.',
+                attackScenarioZh: '恶意正文要求模型忽略策略。',
+                remediation: 'Remove the override.',
+                remediationZh: '删除覆盖指令。',
+                evidence: { snippet: 'Ignore all previous instructions' },
+            }],
+        },
+        onClose() {},
+    })],
+    ['security review passed', React.createElement(t.SkSecurityReview, {
+        lang: 'en',
+        workspace: '',
+        initial: {
+            name: 'demo-clean',
+            source: { type: 'user', label: '用户专属', detail: '全局 · 用户根' },
+            review: {
+                state: 'PASSED',
+                risk: 'INFO',
+                complete: true,
+                hash: 'abc',
+                reviewHash: 'def',
+                scanId: 'scan-1',
+                checkedAt: Date.UTC(2026, 9, 28, 3, 0),
+                summary: { critical: 0, high: 0, medium: 0, low: 0, info: 0, total: 0, blocked: 0, unresolved: 0, accepted: 0 },
+                findings: [],
+                checks: [{ id: 'body', status: 'passed', findings: [], count: 0 }],
+                blocking: [],
+                acceptable: [],
+                action: 'allow',
+                critical: false,
+            },
+        },
+        onClose() {},
+    })],
+    ['security review partial', React.createElement(t.SkSecurityReview, {
+        lang: 'zh',
+        workspace: '',
+        initial: {
+            name: 'demo-partial',
+            source: { type: 'user', label: '用户专属', detail: '全局 · 用户根' },
+            review: {
+                state: 'PARTIAL',
+                risk: 'INFO',
+                complete: false,
+                hash: 'abc',
+                reviewHash: 'def',
+                scanId: 'scan-2',
+                checkedAt: Date.UTC(2026, 9, 28, 3, 0),
+                summary: { critical: 0, high: 0, medium: 0, low: 0, info: 0, total: 0, blocked: 0, unresolved: 0, accepted: 0 },
+                findings: [],
+                checks: [{ id: 'body', status: 'partial', findings: [], count: 0 }],
+                blocking: [],
+                acceptable: [],
+                action: 'block',
+                critical: false,
+            },
+        },
+        onClose() {},
+    })],
+    ['security review all', React.createElement(t.SkSecurityReview, {
+        lang: 'zh',
+        workspace: '',
+        initial: { global: true, source: 'manual' },
+        onClose() {},
+    })],
+    ['detail security tab', React.createElement(t.SkDetailDrawer, {
+        skill,
+        lang: 'zh',
+        workspace: '',
+        initialTab: 'security',
+        onClose() {},
+        onUse() {},
+        onToggle() {},
+        onDelete() {},
+        onNotice() {},
+        dependents: [],
+    })],
+    ['detail info tab', React.createElement(t.SkDetailDrawer, {
+        skill,
+        lang: 'zh',
+        workspace: '',
+        initialTab: 'info',
+        onClose() {},
+        onUse() {},
+        onToggle() {},
+        onDelete() {},
+        onNotice() {},
+        dependents: [],
+    })],
+    ['detail usage tab', React.createElement(t.SkDetailDrawer, {
+        skill,
+        lang: 'zh',
+        workspace: '',
+        initialTab: 'usage',
+        onClose() {},
+        onUse() {},
+        onToggle() {},
+        onDelete() {},
+        onNotice() {},
+        dependents: [],
+    })],
+    ['markdown document', React.createElement(t.SkMarkdown, {
+        text: '# Heading\n\nA **bold** [link](https://example.com).\n\n- one\n- two\n\n| a | b |\n| --- | --- |\n| 1 | 2 |\n\n~~~js\nconst x = 1;\n~~~\n',
+    })],
 ];
 
 // The Chinese interface must render the Chinese summary, and the English
@@ -378,6 +512,47 @@ if (!zhHome.includes('这是一条推荐原因。') || !zhDetail.includes(intro)
 }
 else {
     console.log('OK   recommendation reason stays separate from the intro');
+}
+if (!zhDetail.includes('技能介绍') || !zhDetail.includes('技能文档')) {
+    console.log('FAIL detail does not land on the Skill Introduction tab');
+    process.exitCode = 1;
+}
+else {
+    console.log('OK   detail defaults to Skill Introduction with the documentation section');
+}
+if (!zhDetail.includes('sk_detailModal') || !zhDetail.includes('role="dialog"') || !zhDetail.includes('aria-modal="true"')) {
+    console.log('FAIL detail is not rendered as a modal dialog');
+    process.exitCode = 1;
+}
+else {
+    console.log('OK   detail renders as a centered modal dialog');
+}
+
+// Each tab must render its own content, not the default Introduction.
+const tabCase = (label) => cases.find(row => row[0] === label)[1];
+const securityTabHtml = renderToString(tabCase('detail security tab'));
+const infoTabHtml = renderToString(tabCase('detail info tab'));
+const usageTabHtml = renderToString(tabCase('detail usage tab'));
+if (!securityTabHtml.includes('尚未扫描') || !securityTabHtml.includes('快速扫描')) {
+    console.log('FAIL security tab does not render its real unscanned state');
+    process.exitCode = 1;
+}
+else {
+    console.log('OK   security tab renders the real unscanned state and scan actions');
+}
+if (!infoTabHtml.includes('技能 ID') || !infoTabHtml.includes('依赖') || !infoTabHtml.includes('技术信息')) {
+    console.log('FAIL information tab is missing required sections');
+    process.exitCode = 1;
+}
+else {
+    console.log('OK   information tab renders basic, dependency and technical sections');
+}
+if (!usageTabHtml.includes('使用事件总数') || !usageTabHtml.includes('最近记录')) {
+    console.log('FAIL usage tab is missing counters or recent records');
+    process.exitCode = 1;
+}
+else {
+    console.log('OK   usage tab renders counters and recent records');
 }
 
 let failures = 0;

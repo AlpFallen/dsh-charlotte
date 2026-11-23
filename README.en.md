@@ -2,9 +2,13 @@
 
 [中文](README.md) | English
 
+> Copy this to your agent: **tell me about dsh-charlotte**
+>
+> It reads the repo-root [SKILL.md](SKILL.md) and explains what this plugin is, how to install it, how to use it and when not to — no doc reading on your side.
+
 A skill launcher and skill hub inside [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
 
-`dsh-charlotte` gives the Harness one focused launcher entry: an index-driven management page (compact list, evidence-based functional categories, pinned/frequent strip, right-side detail drawer), host-side live recommendations, and a full authorize -> load -> execute state chain. External Claude Code / Codex / ZCode / Cursor / Gemini skill directories are mounted read-only as one dsh skill source, and enable, install, delete and trash management stay available.
+`dsh-charlotte` gives the Harness one focused launcher entry: an index-driven management page (compact list, evidence-based functional categories, pinned/frequent strip, centered detail modal), host-side live recommendations, and a full authorize -> load -> execute state chain. External Claude Code / Codex / ZCode / Cursor / Gemini skill directories are mounted read-only as one dsh skill source, and enable, install, delete and trash management stay available.
 
 ## Install
 
@@ -25,16 +29,28 @@ The repository ships the compiled client bundle (`client/client.js`), so a GitHu
 - **One dsh-charlotte entry** — the sidebar button opens the launcher. Secondary administration lives under **More**: scope, drag-and-drop install, recycle bin, refresh and language.
 - **Pinned & frequent** — the top strip shows pinned skills first, then favourites, then the most-used skills (real counters, at most four). With no data the strip is not rendered at all; no sample rows are invented.
 - **Evidence-based categories** — Development, Code Quality, Project Understanding, Docs & Knowledge, Task Collaboration, Design & Creation, Office Documents, Mail & Communication, Learning & Coaching. Which category a skill lands in is computed from its own name, description and triggers, and the matching terms are shown in the detail panel. There is no "other" bucket, and empty categories are not rendered.
-- **Compact list + side panel** — each row carries name and real version, the full description, availability, source, favourite/pin controls, Use and Details. Details open in a right-side drawer: why it was recommended, use/avoid cases, triggers, permissions, dependencies, version, source path, real usage history and field provenance.
+- **Tabbed detail + documentation first** — rows keep name, real version, description, availability, source and favourite/pin/Use/Details controls. The centered modal now opens on **Skill Introduction**: name, short description, capabilities, use cases and the real SKILL.md rendered as Markdown (headings, lists, code blocks, tables, links). The header, four tabs (Introduction / Security Check / Skill Information / Usage History) and footer stay fixed; only the content scrolls. Metadata, permissions, dependencies, cost and source paths live under Skill Information.
 - **Search, filters, sort** — search covers name, description, purpose, keywords, triggers and category labels; filters cover category, source (project / yours / plugin / built-in) and availability. Sorting offers usage, name and recency only: there is no real download timestamp, so there is no download-time sort.
 - **One-click load** — Use first authorizes on the host (visibility, enablement, dependencies), then stages the official `/name` token in the current or a new conversation's composer. No message is submitted and no Agent turn starts; the instructions are injected when you send your own message. Clicking again while loading cancels; failures show the host's real reason.
 - **Honest disabled state** — a Skill disabled for the model stays user-invocable (the host's explicit user path) and is labelled user-only; a Skill that is not user-invocable cannot be used.
 - **Plugin-provided skills** — skills registered by any dsh plugin or bundled provider now appear in the same grid as read-only `Plugin` cards, with their provider label, a read-only Details view and the same **Use Skill** loading flow. The station can display and load them but cannot enable/disable or delete them; their source plugin owns the files. Registry summaries ride on `/skills.registry`, and details come from `/registry-skill`.
+- **Self-describing `charlotte` skill** — `skills/charlotte/SKILL.md` ships inside the package and mounts at the lowest priority, so any session that has this plugin installed can answer "what is dsh-charlotte / how do I install it / why was this skill recommended" straight from it — no web lookup, no guessing. A user skill with the same name always wins. The repo-root `SKILL.md` is the same copy (a test keeps it from drifting); anyone without the plugin can have their agent read that one and explain it too.
 - **Mounted external skills** — the read-only provider registers `~/.claude/skills`, `~/.codex/skills`, `~/.zcode/skills`, `~/.cursor/skills`, `~/.gemini/skills` (plus `~/.gemini/antigravity/skills`), each workspace's `.claude|.codex|.zcode|.cursor|.gemini/skills`, and any `extraDirs`. Files stay where they are: frontmatter is mapped (`disable-model-invocation`, `user-invocable`, Codex `agents/openai.yaml` policy, raw metadata preserved), non-kebab names are slugged, a missing description is synthesized, and edits hot-reload. Symlinked skill entries are followed once, so `~/.claude/skills/<name> -> ../.agents/skills/<name>` still mounts.
 - **Skill browsing** — writable roots (global `~/.dsh/skills`, shared `~/.agents/skills`, per-workspace `<project>/.dsh/skills` / `.agents/skills`), the mounted catalog and plugin providers merge into one unified index and list. Search covers name, description, purpose, keywords and triggers; enable/disable writes the `disable-model-invocation` frontmatter flag for local skills and the override file for mounted ones; delete moves into a restorable trash.
 - **Drag-and-drop install** — drop a skill folder or a `.zip` archive into the install panel, or pick them. Zip archives are decompressed server-side. Files are validated (SKILL.md with kebab-case `name` and `description`) and previewed before anything is written; every install is staged and renamed into place.
 - **Trash** — deletions move to `~/.dsh/charlotte/trash` with an origin manifest; restore or empty from the panel.
 - **Chinese UI: plain-language line, official text, professional summary** — skill names stay in their original form; the list shows one Chinese sentence a high-school student can follow; Details shows the skill's official description (Chinese when the skill wrote Chinese, otherwise the English original) followed by a Chinese professional paragraph. Both Chinese fields prefer the skill's own `simple-zh` / `professional-zh`, then a hash-guarded catalogue (`locale/skills.zh.json`) whose entries are ignored as soon as the source text changes. Recommendation reasons are localized too.
+- **Security Review modal (separate from Skill Detail)** — opens after install/import, on a blocked install/enable/use/restore, and when a skill body or external directory changes; shows the skill, source, state and content hash, nine real checks, a risk overview and expandable evidence. PASSED/WARNING can continue, BLOCKED is denied by default, HIGH can be accepted in one click with actor, target and time recorded (no reason required), and CRITICAL can only be fixed; closing the dialog never bypasses a host block. The More menu's **Security review** also keeps an **All skills review**: one full audit reports each skill as passed / warning / blocked / uncovered and states whether every skill passed.
+- **Security Center** — the More menu opens a real audit surface: Critical / High / Medium / Low / Info, blocked and unresolved counts; Quick Scan / Full Audit / Rescan / Cancel / Export; phase, current object, completed/total and elapsed time; filters for severity, category, status, rule id and path; expandable evidence, impact, attack scenario, remediation and references. Install, import, enable, restore and use are scanned host-side first; CRITICAL/HIGH block by default, HIGH can be accepted directly with actor, target and time recorded (no reason required), and CRITICAL has no ordinary confirmation path.
+- **Body audit** — every skill body is checked for bare ESC, Unicode tag characters, bidi controls and zero-width characters; the detail modal lists each finding and count, and the aggregate lives in Diagnostics. The Security Center reports the same character classes as HIGH findings and offers a previewed, hash-checked safe fix for writable skills.
+- **First-use safety review** — a new install is scanned once; before a skill's first use you confirm the scan in its detail modal (the list shows **Review**). Acceptance is remembered against the body, description and version hash, so changed content is reviewed again. A self-declared "absolutely safe / no risk" claim is reported as the highest-risk finding.
+- **Declared permissions** — the detail modal shows the skill's own `permissions` / `allowed-tools`; when it declares none, it says so instead of guessing.
+- **Injection cost** — every skill shows an ≈token/char estimate with CJK counted separately; labelled as a heuristic, not a tokenizer.
+- **Usage ledger** — real loads, runs, successes and failures, a 14-day load trend, per-skill success and recommendation adoption; a zero denominator renders as "—" instead of an invented rate.
+- **Tags** — free-form tags per skill (Enter adds, clicking a tag removes); search covers tags.
+- **Shared-pool migration** — move a skill from a writable root into the shared pool `~/.agents/skills` and leave a relative symlink behind; copy, verify, then swap, with automatic restore on failure.
+- **Diagnostics** — skipped files, invalid frontmatter and mount-scan failures are shown in the UI instead of only in the log.
+- **Large detail modal + copy body** — the centered modal takes about 82% of the viewport (max 1100px), keeps its header, tabs and footer fixed, scrolls the document pane independently, closes on the overlay/Escape/close button with a pending-action confirmation, and copies the full skill body in one click.
 - **Bilingual UI** — the launcher surface (title, search, filters, list, dialogs, recommendation card, More menu) switches between Chinese and English and remembers the choice; the reused install and recycle-bin bodies keep their existing Chinese copy.
 
 ## Live recommendations
@@ -87,26 +103,34 @@ plugins:
 
 - Skill writes only ever land inside the writable roots above plus the station's own state (`~/.dsh/charlotte/`); every path is containment-checked after normalization, symlinks are never followed during copies, and uploads reject traversal segments.
 - External agent directories are mounted read-only; the switch state lives in the station's override file, not in their `SKILL.md`.
-- Mutating HTTP endpoints reject cross-origin requests; the API is served on the same local server as the GUI.
+- Mutating HTTP endpoints reject cross-origin requests, including `Origin: null` from sandboxed iframes and `file://` pages; only a caller that sends no Origin at all (which a web page cannot forge) is trusted. The API is served on the same local server as the GUI.
+- A client-supplied `workspace` must be an open workspace; only a headless composition with no workspace registry trusts the raw path.
+- The API only accepts requests whose Host is loopback (`127.0.0.1` / `localhost` / `::1`), which blocks DNS rebinding; listen scope, auth facts and reproduction commands live in [文档/01-安全模型.md](文档/01-安全模型.md).
 - Load, enable and favourite are re-checked server-side: `/use` re-validates visibility, enablement and dependencies; a `loaded` event is only accepted for a session that was just authorized. Front-end display never replaces a permission check.
+- Security scanning runs host-side and the UI only reads results: installs scan the uploaded files and the ZIP central directory before writing (Zip Slip, symlink entries, duplicates, decompression bombs, size/count caps, executables), and enable/restore/use rescan by content hash. A scan timeout or error fails closed. CRITICAL has no ordinary bypass; a HIGH exception requires a reason and is recorded in the security history.
+- Security history and reports live in `~/.dsh/charlotte/security-history.json`; exported reports redact keys, tokens and passwords and are explicitly labelled complete / partial / failed / cancelled. The scanner is static analysis only and never executes skill code.
+- Optional caller token: with `CHARLOTTE_API_TOKEN` (16+ characters) every mutation must send `x-charlotte-token`; without it the loopback + same-origin boundary applies and the residual risk is listed in the report. The bundled UI does not send the header, so token mode is for headless/integration callers (or a local proxy that injects it).
 - Skill usage authorization is not operation authorization: deleting files, sending messages or submitting data still go through DSH tool permissions and approval independently.
 - Mounted and uploaded skills are third-party content — review them before enabling.
 
 ## Status
 
-0.7.3. Host changes (`lib/`) need the app fully quit and reopened; client changes (`revamp/`, CSS) need `npm run build` plus a page refresh. Runtime state (`state.json`, `overrides.json`, `enrich-cache.json`, `trash/`) lives in `~/.dsh/charlotte/`, never in this repository.
+0.8.0. Host changes (`lib/`) need the app fully quit and reopened; client changes (`revamp/`, CSS) need `npm run build` plus a page refresh. Runtime state (`state.json`, `overrides.json`, `enrich-cache.json`, `security-history.json`, `trash/`) lives in `~/.dsh/charlotte/`, never in this repository.
 
 ## Development
 
 ```sh
 npm install
 npm run build                  # rebuild client/client.js from client.baseline.js + revamp/
-npm test                       # 19 client + 16 host-contract + 30 index/recommend/i18n checks
+npm test                       # 43 client + 17 host-contract + 58 index/recommend/i18n + 67 security checks
 npm run check:zh               # simple + professional coverage and hash check for every skill
 node scripts/host-smoke.mjs    # host contract only: config, roots, provider, legacy API
 node scripts/host-index-smoke.mjs  # index, categories, recommendations, permissions, dependencies, path install
-node scripts/render-probe.mjs  # optional real-React render probe (18 components)
+node scripts/security-smoke.mjs    # traversal, symlinks, Zip Slip, cancel, safe fix, report
+node scripts/render-probe.mjs  # optional real-React render probe (28 components)
 ```
+
+CI (`.github/workflows/ci.yml`) runs `npm test` and the render probe on pushes and pull requests, then rebuilds the client and fails if `client/client.js` differs from its `revamp/` sources.
 
 The client half is a patch over the checked-in compiled baseline (`client/client.baseline.js`), sliced by `scripts/build-client.mjs`; the source fragments live in `revamp/`. The host half is plain ESM under `lib/`.
 
