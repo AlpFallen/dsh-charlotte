@@ -2,3 +2,7 @@ node_modules/
 .DS_Store
 *.log
 .gh-token
+
+# Self-contained snapshot for a separate GitHub push. It is generated from the
+# working tree and must not be committed back into this checkout.
+/publish/

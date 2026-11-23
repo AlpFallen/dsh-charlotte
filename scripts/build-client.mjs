@@ -7,9 +7,13 @@
  *
  * Slices : `revamp/launcher.js` replaces StationApp + TargetSelector + LibraryTab
  *          with the v0.7 surface (smart-picks home, left navigation, favourites
- *          page, index-driven all-skills page, detail drawer, load chain);
- *          `revamp/recommend-dock.js`
- *          adds the inline recommendation card and its slot registration;
+ *          page, index-driven all-skills page, load chain);
+ *          `revamp/detail-drawer.js` provides the centered tabbed Skill Detail
+ *          modal (Introduction / Security Audit / Skill Information / Usage History);
+ *          `revamp/security-center.js` provides the global audit surface;
+ *          `revamp/security-review.js` provides the independent Security Review modal;
+ *          `revamp/markdown.js` renders real SKILL.md content safely;
+ *          `revamp/recommend-dock.js` adds the inline recommendation card;
  *          `revamp/footer.js` replaces StationFooterButton (single sidebar
  *          entry, no drawer title bar); `revamp/market.css` is appended to the
  *          bundle's CSS string. The retired copy-import tab (ImportTab) and its
@@ -29,7 +33,11 @@ const read = (relative) => readFile(join(root, relative), 'utf8');
 
 const baseline = await read('client/client.baseline.js');
 const launcher = await read('revamp/launcher.js');
+const markdown = await read('revamp/markdown.js');
+const detailDrawer = await read('revamp/detail-drawer.js');
 const recommendDock = await read('revamp/recommend-dock.js');
+const securityCenter = await read('revamp/security-center.js');
+const securityReview = await read('revamp/security-review.js');
 const footer = await read('revamp/footer.js');
 const marketCss = await read('revamp/market.css');
 
@@ -55,8 +63,8 @@ let bundle = splice(
     baseline,
     'function StationApp(props) {',
     'function ImportTab(props) {',
-    `${launcher}\n\n${recommendDock}`,
-    'launcher + recommendation dock',
+    `${markdown}\n\n${launcher}\n\n${detailDrawer}\n\n${recommendDock}\n\n${securityCenter}\n\n${securityReview}`,
+    'launcher + detail drawer + recommendation dock + security center + security review',
 );
 
 // Importing was replaced by read-only mounting, so the import tab and its two
@@ -132,6 +140,17 @@ for (const anchor of [
     'function skApi',
     'var skApi = {',
     'function SkDetailDrawer(',
+    'function SkDetailIntroTab(',
+    'function SkDetailSecurityTab(',
+    'function SkDetailInfoTab(',
+    'function SkDetailUsageTab(',
+    'function SkMarkdown(',
+    'function skParseMarkdown(',
+    'function SkSecurityCenter(',
+    'function SkSecurityReview(',
+    'function skOpenSecurityReview(',
+    'function skSecurityReviewSubscribe(',
+    'function skSecurityCounts(',
     'function SkFavourites(',
     'function SkSide(',
     'function SkHome(',

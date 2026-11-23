@@ -499,6 +499,8 @@ await check('a non-loopback Host is refused even with a matching Origin', async 
     assert.equal(rebinding.status, 403);
     const matched = await api('POST', '/prefs', {}, { host: 'evil.example:51996', origin: 'http://evil.example:51996' });
     assert.equal(matched.status, 403, 'a rebound host cannot pass the same-origin check');
+    const userinfo = await api('GET', '/roots', undefined, { host: 'evil.example@127.0.0.1:51996' });
+    assert.equal(userinfo.status, 403, 'a Host header cannot smuggle userinfo past the loopback check');
     const local = await api('GET', '/roots', undefined, { host: '127.0.0.1:51996' });
     assert.equal(local.status, 200);
 });
@@ -1041,6 +1043,12 @@ await check('the mutation routes reject non-POST methods', async () => {
     assert.equal(malformed.status, 405, 'a malformed non-POST body is rejected before parsing');
 });
 
+await check('malformed JSON is a caller error, not a server error', async () => {
+    const response = await api('POST', '/tags', undefined, {}, handler, '{');
+    assert.equal(response.status, 400, 'a parse failure is 400');
+    assert.ok(String(response.body.error ?? '').length > 0);
+});
+
 await check('funnel counters refuse a skill that does not exist', async () => {
     const response = await api('POST', '/event', { sessionId: 'rec-unknown', name: 'no-such-skill', phase: 'accepted' });
     assert.equal(response.status, 404, 'an unknown name is not counted');
@@ -1056,6 +1064,14 @@ await check('management writes are visible on the next index read', async () => 
         'a toggle is visible without waiting for the index cache to expire');
     // Leave the fixture as the rest of the suite expects it.
     await api('POST', '/toggle', { name: 'demo-mail', rootId: 'user-dsh', userInvocable: true });
+});
+
+await check('prototype keys are rejected as skill names', async () => {
+    const pref = await api('POST', '/prefs', { name: '__proto__', favorite: true });
+    assert.equal(pref.status, 400, 'a prototype key is not a skill name');
+    const event = await api('POST', '/event', { sessionId: 's1', name: 'constructor', phase: 'loaded' });
+    assert.equal(event.status, 400, 'a constructor key is not a skill name');
+    assert.equal(Object.prototype.favorite, undefined, 'Object.prototype was not mutated');
 });
 
 await check('a client-supplied workspace is only trusted without a registry', async () => {

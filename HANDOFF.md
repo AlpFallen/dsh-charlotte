@@ -1,5 +1,7 @@
 # dsh-charlotte 交接记录
 
+> 本文件记录 2026-11-15 的阶段状态；当前测试计数、标签式详情与安全审计见 [PROJECT.md](PROJECT.md) 与 [README.md](README.md)。
+
 日期：2026-11-15
 插件版本：0.8.0（未升版）
 分支：`feat/0.8.0-skill-parity`，基线提交 `1bd1179`

@@ -11,7 +11,7 @@
  */
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
 
@@ -46,6 +46,10 @@ Body line.
 `;
 
 const workRoot = await mkdtemp(join(tmpdir(), 'dsh-charlotte-smoke-'));
+// The security subsystem persists scan history under DSH_HOME; keep the real
+// home untouched by pointing every state store at this temporary root.
+process.env.DSH_HOME = join(workRoot, 'dsh-home');
+process.env.DSH_AGENTS_HOME = join(workRoot, 'agents-home');
 try {
     const claudeRoot = join(workRoot, 'claude-skills');
     const codexRoot = join(workRoot, 'codex-skills');
@@ -91,7 +95,16 @@ try {
     });
 
     // --- roots ----------------------------------------------------------------
-    await check('root resolution unions the sources in rank order', async () => {
+    await check('config paths expand the ~/ home shorthand', () => {
+    const expanded = resolveConfig({
+        sources: { claude: { root: '~/claude-skills' } },
+        extraDirs: [{ path: '~/extra-skills', label: 'home' }],
+    });
+    assert.equal(expanded.sources.claude.root, join(homedir(), 'claude-skills'));
+    assert.equal(expanded.extraDirs[0].path, join(homedir(), 'extra-skills'));
+});
+
+await check('root resolution unions the sources in rank order', async () => {
         const roots = await resolveRoots(config, undefined);
         const paths = roots.map(root => root.path);
         assert.deepEqual([...paths].sort(), [claudeRoot, codexRoot, cursorRoot, extraRoot, geminiRoot, zcodeRoot].sort());

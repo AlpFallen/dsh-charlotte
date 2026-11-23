@@ -332,6 +332,7 @@ var SK_STRINGS = {
     "notice.installDone": "已导入技能「{name}」。",
     "notice.installReplaced": "已用新版本替换「{name}」。",
     "notice.installSkipped": "没有安装「{name}」：{reason}",
+    "notice.installExists": "同名技能已存在，按冲突策略跳过",
     "notice.installPartial": "导入完成：{done} 个成功，{skipped} 个跳过。",
     "notice.installMany": "已导入 {done} 个技能。",
     "notice.installFailed": "安装失败：{reason}",
@@ -475,6 +476,8 @@ var SK_STRINGS = {
     "fav.empty.hint": "在全部技能里收藏或置顶，也可以直接使用；之后会出现在这里。",
     "fav.empty.browse": "浏览全部技能",
     "skills.sub": "{count} 个技能 · {available} 个可用",
+    "skills.searchSub": "搜索「{query}」：{count} 个结果",
+    "skills.refreshing": "刷新中…",
     "state.available": "可用"
   },
   en: {
@@ -666,6 +669,7 @@ var SK_STRINGS = {
     "notice.installDone": "Imported \u300c{name}\u300d.",
     "notice.installReplaced": "Replaced \u300c{name}\u300d with the new version.",
     "notice.installSkipped": "Not installed \u300c{name}\u300d: {reason}",
+    "notice.installExists": "A skill with that name already exists; skipped by the conflict policy",
     "notice.installPartial": "Imported {done}, skipped {skipped}.",
     "notice.installMany": "Imported {done} skills.",
     "notice.installFailed": "Install failed: {reason}",
@@ -809,6 +813,8 @@ var SK_STRINGS = {
     "fav.empty.hint": "Star or pin a skill in All skills, or use one directly; it will show up here.",
     "fav.empty.browse": "Browse all skills",
     "skills.sub": "{count} skills · {available} available",
+    "skills.searchSub": "Search \"{query}\": {count} result(s)",
+    "skills.refreshing": "refreshing…",
     "state.available": "Available"
   }
 };
@@ -1432,6 +1438,7 @@ function skPanelTitleKey(panel) {
   if (panel === "ledger") return "ledger.title";
   if (panel === "diagnostics") return "diag.title";
   if (panel === "updates") return "updates.title";
+  if (panel === "security") return "sec.title";
   return "panel.trash";
 }
 
@@ -1582,6 +1589,34 @@ function skReportInstall(result) {
   if (result === null || result === undefined) return;
   var body = result.body ?? {};
   var rows = Array.isArray(body.outcomes) ? body.outcomes : (body.outcome !== undefined ? [body.outcome] : []);
+  var blocked = body.code === "security-blocked"
+    || (Array.isArray(body.blocked) && body.blocked.length > 0)
+    || rows.some(function (row) { return row !== null && row !== undefined && row.code === "security-blocked"; });
+  var reviewName = "";
+  if (Array.isArray(body.outcomes)) {
+    var named = body.outcomes.find(function (row) { return row !== null && row !== undefined && typeof row.name === "string" && row.name !== ""; });
+    if (named !== undefined) reviewName = named.name;
+  } else if (body.outcome !== null && body.outcome !== undefined && typeof body.outcome.name === "string") {
+    reviewName = body.outcome.name;
+  }
+  if (blocked) {
+    var blockedRow = rows.find(function (row) { return row !== null && row !== undefined && row.code === "security-blocked"; });
+    var reviewFindings = Array.isArray(body.findings) ? body.findings : (blockedRow !== undefined && Array.isArray(blockedRow.findings) ? blockedRow.findings : []);
+    var reviewSummary = body.summary !== null && typeof body.summary === "object" ? body.summary : (blockedRow !== undefined ? blockedRow.summary : undefined);
+    if (typeof skOpenSecurityReview === "function") {
+      skOpenSecurityReview(Object.assign({}, body, {
+        name: reviewName,
+        source: "install",
+        code: "security-blocked",
+        findings: reviewFindings,
+        summary: reviewSummary,
+        scanId: body.scanId ?? (blockedRow !== undefined ? blockedRow.scanId : undefined),
+        reviewable: false
+      }));
+    } else if (body.notify !== false) {
+      skOpenSecurityCenter(body);
+    }
+  }
   if (rows.length === 0) {
     if (!result.ok) skNotice("err", skT(skGetLang(), "notice.installFailed", { reason: skErrorText(result) }));
     return;
@@ -1607,20 +1642,25 @@ function skReportInstall(result) {
   if (done === 0) {
     skNotice("warn", skT(skGetLang(), "notice.installSkipped", {
       name: typeof firstRow.name === "string" && firstRow.name !== "" ? firstRow.name : (typeof firstRow.sourcePath === "string" ? firstRow.sourcePath : ""),
-      reason: reason === "" ? skErrorText(result) : reason
+      // A successful skip (conflict policy) has no error text; falling back to
+      // skErrorText() would print "HTTP 200" as the reason.
+      reason: reason !== "" ? reason : result.ok ? skT(skGetLang(), "notice.installExists") : skErrorText(result)
     }));
     return;
   }
   if (rows.length === 1) {
     var label = typeof firstRow.name === "string" ? firstRow.name : "";
     skNotice("ok", skT(skGetLang(), replaced > 0 ? "notice.installReplaced" : "notice.installDone", { name: label }));
+    if (!blocked && label !== "" && typeof skOpenSecurityReview === "function") skOpenSecurityReview({ name: label, source: "install", auto: true });
     return;
   }
   if (skipped === 0) {
     skNotice("ok", skT(skGetLang(), "notice.installMany", { done: String(done) }));
+    if (!blocked && reviewName !== "" && typeof skOpenSecurityReview === "function") skOpenSecurityReview({ name: reviewName, source: "install", auto: true });
     return;
   }
   skNotice("warn", skT(skGetLang(), "notice.installPartial", { done: String(done), skipped: String(skipped) }));
+  if (!blocked && reviewName !== "" && typeof skOpenSecurityReview === "function") skOpenSecurityReview({ name: reviewName, source: "install", auto: true });
 }
 
 /**
@@ -1664,7 +1704,12 @@ if (skBaseRestoreTrash !== null) {
   restoreTrash = function (id) {
     return skBaseRestoreTrash(id).then(function (result) {
       if (result.ok) skNotice("ok", skT(skGetLang(), "notice.restoreDoneGeneric"));
-      else skNotice("err", skT(skGetLang(), "notice.restoreFailed", { reason: skErrorText(result) }));
+      else {
+        if (result.body !== null && result.body !== undefined && result.body.code === "security-blocked" && typeof skOpenSecurityReview === "function") {
+          skOpenSecurityReview(Object.assign({}, result.body, { name: result.body.name ?? "", source: "restore", code: "security-blocked", reviewable: false }));
+        }
+        skNotice("err", skT(skGetLang(), "notice.restoreFailed", { reason: skErrorText(result) }));
+      }
       return result;
     });
   };
@@ -2028,6 +2073,24 @@ function skUseSkill(name, workspacePath) {
         var abortError = new Error("aborted");
         abortError.name = "AbortError";
         throw abortError;
+      }
+      var code = result.body !== null && result.body !== undefined ? result.body.code : undefined;
+      if ((code === "security-blocked" || code === "review-required") && typeof skOpenSecurityReview === "function") {
+        var retryUse = function () {
+          var first = code === "review-required"
+            ? skApi.review({ name: name, workspace: scopePath, decision: "accepted" })
+            : Promise.resolve({ ok: true });
+          return Promise.resolve(first).then(function (reviewResult) {
+            if (reviewResult.ok !== true) return reviewResult;
+            return skUseSkill(name, workspacePath);
+          });
+        };
+        skOpenSecurityReview(Object.assign({}, result.body, {
+          name: name,
+          source: "use",
+          code: code,
+          onContinue: retryUse
+        }));
       }
       // Friendly text for the interface, technical reason for the load-failed
       // event and the developer console.
@@ -2855,547 +2918,6 @@ function skTrapFocus(container) {
 }
 // #endregion
 
-// #region detail drawer ----------------------------------------------------------
-/**
- * Right-side detail drawer: full description, provenance, permissions,
- * dependencies, real usage history, and the controls for this skill.
- * @param {object} props - props.
- * @returns {object} drawer.
- */
-function SkDetailDrawer(props) {
-  var skill = props.skill;
-  var lang = props.lang;
-  var state = skStateOf(skill, lang);
-  var load = useSkLoad(skill.name);
-  var recent = skRecentRecs[skill.name];
-  var introText = skSkillIntro(skill, lang);
-  var writable = skill.management?.kind === "writable";
-  var mounted = skill.management?.kind === "mounted";
-  var evidence = Array.isArray(skill.category?.evidence) ? skill.category.evidence : [];
-  var declaredPermissions = Array.isArray(skill.declaredPermissions) ? skill.declaredPermissions : [];
-  var triggers = skill.triggers ?? { values: [], provenance: "absent" };
-  var usageRows = Array.isArray(skill.stats?.recent) ? skill.stats.recent.slice(-6).reverse() : [];
-  var tagState = (0, import_react.useState)(Array.isArray(skill.tags) ? skill.tags : []);
-  var tags = tagState[0];
-  var setTags = tagState[1];
-  var tagDraftState = (0, import_react.useState)("");
-  var tagDraft = tagDraftState[0];
-  var setTagDraft = tagDraftState[1];
-  var copiedState = (0, import_react.useState)(false);
-  var copied = copiedState[0];
-  var setCopied = copiedState[1];
-  var busyState = (0, import_react.useState)("");
-  var busy = busyState[0];
-  var setBusy = busyState[1];
-  var inspectState = (0, import_react.useState)(null);
-  var inspect = inspectState[0];
-  var setInspect = inspectState[1];
-  var reviewState = (0, import_react.useState)(skill.review ?? { reviewed: false, risk: null, at: 0 });
-  var review = reviewState[0];
-  var setReview = reviewState[1];
-  var bodyState = (0, import_react.useState)(null);
-  var bodyPreview = bodyState[0];
-  var setBodyPreview = bodyState[1];
-  var pathCopiedState = (0, import_react.useState)(false);
-  var pathCopied = pathCopiedState[0];
-  var setPathCopied = pathCopiedState[1];
-  (0, import_react.useEffect)(function () {
-    setBodyPreview(null);
-    setPathCopied(false);
-  }, [skill.name, props.workspace]);
-  (0, import_react.useEffect)(function () {
-    setReview(skill.review ?? { reviewed: false, risk: null, at: 0 });
-  }, [skill.name, skill.review?.reviewed, skill.review?.at]);
-  (0, import_react.useEffect)(function () {
-    var live = true;
-    setInspect({ status: "loading", report: null, error: "" });
-    void skApi.inspect(skill.name, props.workspace).then(function (result) {
-      if (!live) return;
-      if (!result.ok) {
-        setInspect({ status: "error", report: null, error: skErrorText(result) });
-        return;
-      }
-      if (result.body.available === false) {
-        setInspect({ status: "unavailable", report: null, error: "" });
-        return;
-      }
-      setInspect({ status: "ready", report: result.body, error: "" });
-    }).catch(function (thrown) {
-      if (live) setInspect({ status: "error", report: null, error: String(thrown) });
-    });
-    return function () {
-      live = false;
-    };
-  }, [skill.name, props.workspace]);
-  // The inspection report already lists the readable files; a flat .md skill
-  // has exactly one. No second /skill request is needed just for the count.
-  var fileCount = inspect !== null && inspect.status === "ready" && inspect.report !== null && Array.isArray(inspect.report.files)
-    ? inspect.report.files.length
-    : null;
-  var copySkillPath = function () {
-    var target = typeof skill.management?.path === "string" ? skill.management.path : "";
-    if (target === "") return;
-    if (typeof navigator === "undefined" || navigator.clipboard === undefined || typeof navigator.clipboard.writeText !== "function") {
-      props.onNotice("err", skT(lang, "detail.pathCopyFailed", { reason: "clipboard unavailable" }));
-      return;
-    }
-    void navigator.clipboard.writeText(target).then(function () {
-      setPathCopied(true);
-      props.onNotice("ok", skT(lang, "detail.pathCopied"));
-      if (typeof window !== "undefined") window.setTimeout(function () { setPathCopied(false); }, 2000);
-    }).catch(function (thrown) {
-      props.onNotice("err", skT(lang, "detail.pathCopyFailed", { reason: String(thrown) }));
-    });
-  };
-  var toggleBodyPreview = function () {
-    if (bodyPreview !== null && bodyPreview.status === "ready") {
-      setBodyPreview(null);
-      return;
-    }
-    setBodyPreview({ status: "loading", text: "", error: "" });
-    void skApi.body(skill.name, props.workspace).then(function (result) {
-      if (!result.ok) {
-        setBodyPreview({ status: "error", text: "", error: skErrorText(result) });
-        return;
-      }
-      var text = typeof result.body.content === "string" ? result.body.content : "";
-      setBodyPreview({ status: "ready", text: text, error: "" });
-    }).catch(function (thrown) {
-      setBodyPreview({ status: "error", text: "", error: String(thrown) });
-    });
-  };
-  var confirmDeleteState = (0, import_react.useState)(false);
-  var confirmDelete = confirmDeleteState[0];
-  var setConfirmDelete = confirmDeleteState[1];
-  var drawerRef = (0, import_react.useRef)(null);
-  var cancelDeleteRef = (0, import_react.useRef)(null);
-  var deleteButtonRef = (0, import_react.useRef)(null);
-  (0, import_react.useEffect)(function () {
-    // Destructive step: focus the safe choice first (Cancel), never the delete
-    // button itself. Keyboard users get an in-page confirmation, not a native
-    // window.confirm that blocks the whole app and ignores the theme.
-    if (confirmDelete === true && cancelDeleteRef.current !== null) cancelDeleteRef.current.focus();
-  }, [confirmDelete]);
-  (0, import_react.useEffect)(function () {
-    return skTrapFocus(drawerRef.current);
-  }, []);
-  (0, import_react.useEffect)(function () {
-    setTags(Array.isArray(skill.tags) ? skill.tags : []);
-    setTagDraft("");
-  }, [skill.name]);
-  var saveTags = function (next) {
-    var value = Array.isArray(next) ? next : [];
-    var previous = tags;
-    setTags(value);
-    void skApi.tags({ name: skill.name, tags: value, workspace: props.workspace }).then(function (result) {
-      if (!result.ok) {
-        // The list was updated optimistically; put it back so the screen
-        // never claims a save that failed.
-        setTags(previous);
-        props.onNotice("err", skT(lang, "notice.tagsFailed", { reason: skErrorText(result) }));
-        return;
-      }
-      setTags(Array.isArray(result.body.tags) ? result.body.tags : value);
-      props.onNotice("ok", skT(lang, "notice.tagsSaved"));
-    });
-  };
-  var commitTag = function () {
-    var value = tagDraft.trim();
-    if (value === "") return;
-    setTagDraft("");
-    if (tags.indexOf(value) !== -1) return;
-    saveTags(tags.concat([value]));
-  };
-  var copyBody = function () {
-    setBusy("copy");
-    void skApi.body(skill.name, props.workspace).then(function (result) {
-      if (!result.ok) {
-        props.onNotice("err", skT(lang, "notice.copyFailed", { reason: skErrorText(result) }));
-        return;
-      }
-      var text = typeof result.body.content === "string" ? result.body.content : "";
-      if (navigator.clipboard === undefined || typeof navigator.clipboard.writeText !== "function") {
-        props.onNotice("err", skT(lang, "notice.copyFailed", { reason: "clipboard unavailable" }));
-        return;
-      }
-      return navigator.clipboard.writeText(text).then(function () {
-        setCopied(true);
-        window.setTimeout(function () { setCopied(false); }, 2000);
-      });
-    }).finally(function () { setBusy(""); });
-  };
-  var migrateSkill = function () {
-    setBusy("migrate");
-    void skApi.migrate({ name: skill.name, rootId: skill.management?.rootId, workspace: props.workspace }).then(function (result) {
-      if (!result.ok) {
-        props.onNotice("err", skT(lang, "notice.migrateRefused", { reason: skErrorText(result) }));
-        return;
-      }
-      props.onNotice("ok", skT(lang, "notice.migrated", { path: result.body.link ?? "" }));
-      props.onClose();
-    }).finally(function () { setBusy(""); });
-  };
-  var acceptReview = function () {
-    setBusy("review");
-    void skApi.review({ name: skill.name, workspace: props.workspace, decision: "accepted" }).then(function (result) {
-      if (!result.ok) {
-        props.onNotice("err", skErrorText(result));
-        return;
-      }
-      setReview({ reviewed: true, risk: review?.risk ?? null, at: Date.now() });
-      props.onNotice("ok", skT(lang, "review.done"));
-    }).catch(function (thrown) {
-      props.onNotice("err", String(thrown));
-    }).finally(function () {
-      setBusy("");
-    });
-  };
-  (0, import_react.useEffect)(function () {
-    var onKey = function (event) {
-      if (event.key !== "Escape") return;
-      event.stopImmediatePropagation();
-      if (confirmDelete === true) {
-        setConfirmDelete(false);
-        return;
-      }
-      props.onClose();
-    };
-    window.addEventListener("keydown", onKey, true);
-    return function () {
-      window.removeEventListener("keydown", onKey, true);
-    };
-  }, [confirmDelete, props.onClose]);
-  var sourceDetail = skill.source?.detail !== undefined && skill.source.detail !== ""
-    ? skT(lang, "detail.sourceDetail", { label: skill.source.label, detail: skill.source.detail })
-    : skill.source?.label ?? "";
-  return sk(skF, null, [
-    sk("div", { className: "sk_drawerScrim", onClick: props.onClose }),
-    sk("aside", { className: "sk_drawer", role: "dialog", "aria-modal": "true", "aria-label": skill.name, ref: drawerRef }, [
-      sk("header", { className: "sk_drawerHead" }, [
-        sk("div", { className: "sk_drawerTop" }, [
-          sk("div", { className: "sk_drawerTitle" }, [
-            sk("h2", { className: "sk_dName" }, skill.name),
-            sk("div", { className: "sk_dMeta" }, [
-              sk("span", null, skill.source?.label ?? ""),
-              skill.version !== null && skill.version !== undefined ? sk("span", null, "v" + String(skill.version)) : null,
-              sk("span", { className: state.usable ? "sk_ok" : "sk_bad" }, state.label)
-            ])
-          ]),
-          sk("button", { className: "sk_closeBtn", type: "button", "aria-label": skT(lang, "action.close"), onClick: props.onClose }, "✕")
-        ])
-      ]),
-      sk("div", { className: "sk_drawerBody" }, [
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.intro")),
-          sk("p", { className: "sk_secText" }, introText)
-        ]),
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.info")),
-          sk("dl", { className: "sk_kv" }, [
-            sk("dt", { key: "i-files" }, skT(lang, "detail.files")),
-            sk("dd", { key: "i-files-v" }, fileCount === null ? skT(lang, "detail.filesUnknown") : String(fileCount)),
-            skill.updatedAt !== null && skill.updatedAt !== undefined && skill.updatedAt > 0 ? sk("dt", { key: "i-upd" }, skT(lang, "detail.updated")) : null,
-            skill.updatedAt !== null && skill.updatedAt !== undefined && skill.updatedAt > 0
-              ? sk("dd", { key: "i-upd-v" }, skTime(skill.updatedAt) + " · " + skAge(skill.updatedAt, lang))
-              : null
-          ]),
-          typeof skill.management?.path === "string" && skill.management.path !== "" ? sk("div", { className: "sk_pathRow" }, [
-            sk("span", { className: "sk_secLabel", style: { margin: "0" } }, skT(lang, "detail.path")),
-            sk("code", { className: "sk_pathText", title: skill.management.path }, skill.management.path)
-          ]) : null,
-          sk("div", { className: "sk_infoActions" }, [
-            typeof skill.management?.path === "string" && skill.management.path !== "" ? sk("button", {
-              className: "sk_textBtn",
-              type: "button",
-              onClick: copySkillPath
-            }, pathCopied ? skT(lang, "detail.pathCopied") : skT(lang, "detail.copyPath")) : null,
-            typeof skill.management?.path === "string" && skill.management.path !== "" ? sk("button", {
-              className: "sk_textBtn",
-              type: "button",
-              "aria-expanded": bodyPreview !== null && bodyPreview.status === "ready" ? "true" : "false",
-              onClick: toggleBodyPreview
-            }, bodyPreview !== null && bodyPreview.status === "ready" ? skT(lang, "detail.hideBody") : skT(lang, "detail.showBody")) : null
-          ]),
-          bodyPreview === null ? null : bodyPreview.status === "loading"
-            ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.bodyLoading"))
-            : bodyPreview.status === "error"
-              ? sk("p", { className: "sk_secText sk_bad" }, skT(lang, "detail.bodyFailed", { reason: bodyPreview.error }))
-              : sk("div", { className: "sk_bodyPreview" }, [
-                sk("pre", { className: "sk_pre" }, bodyPreview.text.slice(0, 4000)),
-                bodyPreview.text.length > 4000
-                  ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.bodyTruncated", { shown: String(4000) }))
-                  : null
-              ])
-        ]),
-        skill.description !== "" && skill.description !== introText ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.official")),
-          sk("p", { className: "sk_secText", "data-dim": "" }, skill.description)
-        ]) : null,
-        lang === "zh" && (skill.i18n?.professional ?? skill.i18n?.descriptionZh) !== undefined
-          && (skill.i18n?.professional ?? skill.i18n?.descriptionZh) !== null
-          && (skill.i18n?.professional ?? skill.i18n?.descriptionZh) !== ""
-          ? sk("div", { className: "sk_sec" }, [
-            sk("div", { className: "sk_secLabel" }, skT(lang, "detail.professional")),
-            sk("p", { className: "sk_secText" }, skill.i18n?.professional ?? skill.i18n?.descriptionZh)
-          ])
-          : null,
-        recent !== undefined && recent.reason !== "" ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.why")),
-          sk("div", { className: "sk_why" }, lang === "en" && typeof recent.reasonEn === "string" && recent.reasonEn !== "" ? recent.reasonEn : recent.reason),
-          sk("p", { className: "sk_secText", "data-dim": "" }, skAge(recent.at, lang))
-        ]) : null,
-        evidence.length > 0 ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.category")),
-          sk("div", { className: "sk_chipRow" }, [
-            sk("span", { className: "sk_evidence" }, (lang === "zh" ? skill.category.label : skill.category.labelEn) + " · " + skill.category.confidence)
-          ].concat(evidence.map(function (row) {
-            return sk("span", { key: "ev-" + row.term, className: "sk_evidence" }, row.term);
-          })))
-        ]) : null,
-        skill.useCases.length > 0 ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.useCases")),
-          sk("ul", { className: "sk_bullets" }, skill.useCases.map(function (row, index) {
-            return sk("li", { key: "use-" + String(index) }, row);
-          }))
-        ]) : null,
-        triggers.values.length > 0 ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.triggers")),
-          sk("ul", { className: "sk_bullets" }, triggers.values.map(function (row, index) {
-            return sk("li", { key: "tr-" + String(index) }, row);
-          })),
-          triggers.provenance === "derived" ? sk("p", { className: "sk_secText", "data-dim": "", style: { marginTop: "4px" } }, skT(lang, "detail.triggersDerived")) : null
-        ]) : null,
-        skill.avoidCases.length > 0 ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.avoid")),
-          sk("ul", { className: "sk_bullets" }, skill.avoidCases.map(function (row, index) {
-            return sk("li", { key: "av-" + String(index) }, row);
-          }))
-        ]) : null,
-        skill.keywords.length > 0 ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.keywords")),
-          sk("div", { className: "sk_chipRow" }, skill.keywords.slice(0, 10).map(function (row) {
-            return sk("span", { key: "kw-" + row, className: "sk_evidence" }, row);
-          }))
-        ]) : null,
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.perms")),
-          sk("dl", { className: "sk_kv" }, [
-            sk("dt", null, skT(lang, "detail.userInvocable")),
-            sk("dd", { className: skill.policy?.userInvocable ? "sk_ok" : "sk_bad" }, skill.policy?.userInvocable ? "✓" : "✕"),
-            sk("dt", null, skT(lang, "detail.modelInvocable")),
-            sk("dd", { className: skill.policy?.modelInvocable ? "sk_ok" : "sk_bad" }, skill.policy?.modelInvocable ? "✓" : "✕"),
-            sk("dt", null, skT(lang, "detail.deps")),
-            sk("dd", null, skill.requires.length === 0
-              ? skT(lang, "detail.noDeps")
-              : skill.requires.map(function (row) {
-                return row.name + " (" + (row.satisfied ? skT(lang, "detail.dependenciesSatisfied") : skT(lang, "detail.dependenciesMissing")) + ")";
-              }).join("，")),
-            sk("dt", null, skT(lang, "inspect.dependents")),
-            sk("dd", null, Array.isArray(props.dependents) && props.dependents.length > 0
-              ? props.dependents.map(function (row) { return row.name + (row.kind === "mention" ? " (" + skT(lang, "inspect.unknownRelation") + ")" : ""); }).join("，")
-              : skT(lang, "inspect.noDependents")),
-            sk("dt", null, skT(lang, "detail.risk")),
-            sk("dd", null, skT(lang, "detail.riskNote")),
-            sk("dt", null, skT(lang, "detail.introSource")),
-            sk("dd", null, skT(lang, "intro." + (skill.i18n?.source ?? "absent")))
-          ])
-        ]),
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.source")),
-          sk("dl", { className: "sk_kv" }, [
-            sk("dt", null, skT(lang, "detail.source")),
-            sk("dd", null, sourceDetail),
-            skill.version !== null && skill.version !== undefined ? sk("dt", null, skT(lang, "detail.version")) : null,
-            skill.version !== null && skill.version !== undefined ? sk("dd", null, String(skill.version)) : null
-          ])
-        ]),
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.permissions")),
-          declaredPermissions.length === 0
-            ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.noPermissions"))
-            : sk("div", { className: "sk_chipRow" }, declaredPermissions.map(function (row, index) {
-              return sk("span", { key: "perm-" + String(index), className: "sk_evidence" }, row);
-            }))
-        ]),
-        skill.cost !== undefined && skill.cost !== null ? sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.cost")),
-          sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.costValue", { tokens: String(skill.cost.tokens), chars: String(skill.cost.chars) }))
-        ]) : null,
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.audit")),
-          skill.audit === undefined || skill.audit === null || skill.audit.clean === true
-            ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.auditClean"))
-            : sk("ul", { className: "sk_bullets" }, skill.audit.findings.map(function (row) {
-              return sk("li", { key: "au-" + row.id }, "[" + skT(lang, skSeverityKey(row.severity)) + "] " + skT(lang, "detail.audit." + row.id) + " × " + String(row.count));
-            }))
-        ]),
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "inspect.title")),
-          inspect === null || inspect.status === "loading"
-            ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "inspect.loading"))
-            : inspect.status === "error"
-              ? sk("p", { className: "sk_secText sk_bad" }, skT(lang, "inspect.failed", { reason: inspect.error }))
-              : inspect.status === "unavailable"
-                ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "inspect.unavailable"))
-                : sk("div", null, [
-                  sk("dl", { className: "sk_kv" }, [
-                    sk("dt", null, skT(lang, "inspect.quality")),
-                    sk("dd", null, sk("span", { className: "sk_level", "data-level": inspect.report.quality.level }, skT(lang, "inspect.level." + inspect.report.quality.level))),
-                    sk("dt", null, skT(lang, "inspect.security")),
-                    sk("dd", null, sk("span", { className: "sk_level", "data-level": inspect.report.security.level }, skT(lang, "inspect.level." + inspect.report.security.level)))
-                  ]),
-                  inspect.report.quality.findings.length > 0 ? sk("ul", { className: "sk_bullets" }, inspect.report.quality.findings.map(function (row, index) {
-                    return sk("li", { key: "qf-" + String(index), className: row.severity === "error" ? "sk_bad" : undefined }, lang === "en" ? row.en : row.zh);
-                  })) : null,
-                  inspect.report.security.findings.length > 0 ? sk("ul", { className: "sk_bullets" }, inspect.report.security.findings.map(function (row, index) {
-                    return sk("li", { key: "sf-" + String(index) }, [
-                      sk("span", { className: "sk_level", "data-level": row.severity }, skT(lang, "inspect.level." + row.severity)),
-                      " · " + (typeof row.file === "string" ? skT(lang, "inspect.where", { file: row.file, line: String(row.line ?? 1) }) : ""),
-                      " — " + (lang === "en" ? row.messageEn : row.messageZh),
-                      sk("div", { className: "sk_secText", "data-dim": "" }, (lang === "en" ? row.whyEn : row.whyZh) + " " + (lang === "en" ? row.adviceEn : row.adviceZh))
-                    ]);
-                  })) : null,
-                  sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "inspect.files", { files: String(inspect.report.security.scanned ?? 0) }) + " · " + (lang === "en" ? inspect.report.security.disclaimer.en : inspect.report.security.disclaimer.zh))
-                ]),
-          sk("div", { className: "sk_sec" }, [
-            sk("div", { className: "sk_secLabel" }, skT(lang, "review.title")),
-            review.reviewed === true
-              ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "review.accepted") + (review.at > 0 ? " · " + skTime(review.at) : ""))
-              : sk("div", null, [
-                sk("p", { className: "sk_secText" }, skT(lang, "review.pending")),
-                review.risk !== null && review.risk !== undefined
-                  ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "review.riskLabel") + "：" + skT(lang, "review.risk." + review.risk))
-                  : null,
-                sk("button", {
-                  className: "sk_primary",
-                  type: "button",
-                  disabled: busy === "review" || inspect === null || inspect.status === "loading",
-                  onClick: acceptReview
-                }, busy === "review" ? skT(lang, "review.saving") : skT(lang, "review.accept"))
-              ])
-          ]),
-          sk("div", { className: "sk_sec" }, [
-            sk("div", { className: "sk_secLabel" }, skT(lang, "detail.tags")),
-          tags.length === 0
-            ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.tagsEmpty"))
-            : sk("div", { className: "sk_tagRow" }, tags.map(function (tag) {
-              return sk("button", {
-                key: "tg-" + tag,
-                className: "sk_tagChip",
-                type: "button",
-                title: skT(lang, "detail.tags"),
-                onClick: function () { saveTags(tags.filter(function (row) { return row !== tag; })); }
-              }, tag + " ✕");
-            })),
-          sk("div", { className: "sk_tagRow" }, [
-            sk("input", {
-              className: "sk_tagInput",
-              type: "text",
-              value: tagDraft,
-              placeholder: skT(lang, "detail.tagsPlaceholder"),
-              onChange: function (event) { setTagDraft(event.target.value); },
-              onKeyDown: function (event) {
-                // A confirming Enter during IME composition must not commit.
-                if (event.isComposing || event.keyCode === 229) return;
-                if (event.key !== "Enter") return;
-                event.preventDefault();
-                commitTag();
-              }
-            })
-          ])
-        ]),
-        ]),
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.usage")),
-          usageRows.length === 0
-            ? sk("p", { className: "sk_secText", "data-dim": "" }, skT(lang, "detail.noUsage"))
-            : sk("table", { className: "sk_hist" }, [sk("tbody", { key: "tb" }, usageRows.map(function (row, index) {
-              return sk("tr", { key: "h-" + String(index) }, [
-                sk("td", null, skTime(row.at)),
-                sk("td", null, skT(lang, "usage." + (row.kind === "load-failed" ? "load-failed" : row.kind)))
-              ]);
-            }))])
-        ]),
-        sk("div", { className: "sk_sec" }, [
-          sk("div", { className: "sk_secLabel" }, skT(lang, "detail.provenance")),
-          sk("p", { className: "sk_secText", "data-dim": "" }, [
-            skT(lang, "prov.declared") + "：" + Object.keys(skill.provenance ?? {}).filter(function (key) { return skill.provenance[key] === "declared"; }).join(", "),
-            " · ",
-            skT(lang, "prov.derived") + "：" + Object.keys(skill.provenance ?? {}).filter(function (key) { return skill.provenance[key] === "derived"; }).join(", ")
-          ].join(""))
-        ])
-      ]),
-      sk("footer", { className: "sk_drawerFoot" }, confirmDelete === true ? [
-        sk("span", { className: "sk_confirmText" }, Array.isArray(props.dependents) && props.dependents.length > 0
-          ? skT(lang, "detail.trashConfirmDeps", { name: skill.name, count: String(props.dependents.length) })
-          : skT(lang, "detail.trashConfirm", { name: skill.name })),
-        sk("button", {
-          className: "sk_textBtn",
-          type: "button",
-          ref: cancelDeleteRef,
-          onClick: function () {
-            setConfirmDelete(false);
-            if (typeof window !== "undefined") {
-              window.setTimeout(function () {
-                if (deleteButtonRef.current !== null) deleteButtonRef.current.focus();
-              }, 0);
-            }
-          }
-        }, skT(lang, "action.cancel")),
-        sk("button", {
-          className: "sk_textBtn sk_danger",
-          type: "button",
-          disabled: props.deleting === skill.name,
-          onClick: function () { props.onDelete(skill); }
-        }, props.deleting === skill.name ? skT(lang, "detail.deleting") : skT(lang, "detail.trash"))
-      ] : [
-        sk("button", {
-          className: "sk_primary",
-          type: "button",
-          disabled: !state.usable,
-          onClick: function () { props.onUse(skill); }
-        }, load.phase === "loading" ? skT(lang, "action.cancel") : skT(lang, "action.use")),
-        sk("button", { className: "sk_detailBtn", type: "button", disabled: busy === "copy", onClick: copyBody }, copied ? skT(lang, "action.copied") : skT(lang, "action.copy")),
-        writable && !/\.md$/.test(String(skill.management?.path ?? "")) ? sk("button", { className: "sk_detailBtn", type: "button", disabled: busy === "migrate", onClick: migrateSkill }, skT(lang, "action.migrate")) : null,
-        writable ? sk("button", {
-          className: "sk_detailBtn sk_danger",
-          type: "button",
-          ref: deleteButtonRef,
-          title: skT(lang, "detail.trashHint"),
-          disabled: props.deleting === skill.name,
-          onClick: function () { setConfirmDelete(true); }
-        }, skT(lang, "detail.trash")) : null,
-        writable ? sk("label", { className: "sk_toggle" }, [skT(lang, "detail.enableModel"), sk("button", {
-          className: "sk_switch",
-          type: "button",
-          role: "switch",
-          "aria-checked": skill.policy?.modelInvocable ? "true" : "false",
-          "data-on": skill.policy?.modelInvocable ? "" : undefined,
-          onClick: function () { props.onToggle(skill, "model"); }
-        })]) : null,
-        writable ? sk("label", { className: "sk_toggle" }, [skT(lang, "detail.enableUser"), sk("button", {
-          className: "sk_switch",
-          type: "button",
-          role: "switch",
-          "aria-checked": skill.policy?.userInvocable ? "true" : "false",
-          "data-on": skill.policy?.userInvocable ? "" : undefined,
-          onClick: function () { props.onToggle(skill, "user"); }
-        })]) : null,
-        mounted ? sk("label", { className: "sk_toggle" }, [skT(lang, "detail.enable"), sk("button", {
-          className: "sk_switch",
-          type: "button",
-          role: "switch",
-          "aria-checked": skill.policy?.disabled ? "false" : "true",
-          "data-on": skill.policy?.disabled ? undefined : "",
-          onClick: function () { props.onToggle(skill, "mounted"); }
-        })]) : null
-      ])
-    ])
-  ]);
-}
-
-// #endregion
-
 // #region station panels ---------------------------------------------------------
 /**
  * Secondary panel hosting the baseline install / trash views.
@@ -3421,6 +2943,9 @@ function StationPanelDialog(props) {
       window.removeEventListener("keydown", onKey);
     };
   }, [props.onClose]);
+  if (props.panel === "security") {
+    return skH(SkSecurityCenter, { lang: lang, workspace: props.workspace, onClose: props.onClose });
+  }
   return sk("div", { className: "sk_panelScrim", onClick: props.onClose }, [
     sk("div", {
       className: "sk_panel",
@@ -3503,6 +3028,8 @@ function SkMoreMenu(props) {
       sk("div", { className: "sk_moreSep" }),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("install"); setOpen(false); } }, skT(lang, "more.install")),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("trash"); setOpen(false); } }, skT(lang, "more.trash")),
+      sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("security"); setOpen(false); } }, skT(lang, "more.security")),
+      sk("button", { className: "sk_moreItem", type: "button", onClick: function () { if (typeof skOpenSecurityReview === "function") skOpenSecurityReview({ global: true, manual: true, source: "manual" }); setOpen(false); } }, skT(lang, "more.securityReview")),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("ledger"); setOpen(false); } }, skT(lang, "more.ledger")),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("diagnostics"); setOpen(false); } }, skT(lang, "more.diagnostics")),
       sk("button", { className: "sk_moreItem", type: "button", onClick: function () { props.onPanel("updates"); setOpen(false); } }, skT(lang, "more.updates")),
@@ -4121,20 +3648,38 @@ function SkillBrowse(props) {
     if (kind === "mounted") {
       request = skApi.override({ workspace: props.workspace, path: skill.management?.path ?? "", disabled: skill.policy?.disabled !== true });
     } else {
-      request = skApi.toggle({
+      // Send only the flag that was clicked. Sending both made the host's
+      // `flagForToggle` pick modelInvocable first, so the user-invocable
+      // switch silently toggled model invocation instead.
+      var flagBody = {
         workspace: props.workspace,
         rootId: skill.management?.rootId ?? "",
-        name: skill.name,
-        modelInvocable: kind === "user" ? skill.policy?.modelInvocable : skill.policy?.modelInvocable !== true,
-        userInvocable: kind === "user" ? skill.policy?.userInvocable !== true : skill.policy?.userInvocable
-      });
+        name: skill.name
+      };
+      if (kind === "user") flagBody.userInvocable = skill.policy?.userInvocable !== true;
+      else flagBody.modelInvocable = skill.policy?.modelInvocable !== true;
+      request = skApi.toggle(flagBody);
     }
+    var enabling = kind === "mounted"
+      ? skill.policy?.disabled === true
+      : kind === "user"
+        ? skill.policy?.userInvocable !== true
+        : skill.policy?.modelInvocable !== true;
     void Promise.resolve(request).then(function (result) {
       if (!result.ok) {
+        if (result.body !== null && result.body !== undefined && result.body.code === "security-blocked" && typeof skOpenSecurityReview === "function") {
+          skOpenSecurityReview(Object.assign({}, result.body, {
+            name: skill.name,
+            source: skill.source ?? null,
+            code: "security-blocked",
+            onContinue: function () { return toggleSkill(skill, kind); }
+          }));
+        }
         props.onNotice("err", skT(skGetLang(), "notice.toggleFailed", { reason: skErrorText(result) }));
         return;
       }
       refreshRecord(skill.name);
+      if (enabling && typeof skOpenSecurityReview === "function") skOpenSecurityReview({ name: skill.name, source: "enable", skill: skill, auto: true });
     }).finally(function () {
       delete toggleBusy.current[skill.name];
     });
@@ -4633,6 +4178,24 @@ function StationApp(props) {
   var panelState = (0, import_react.useState)(null);
   var panel = panelState[0];
   var setPanel = panelState[1];
+  var securityOpenState = (0, import_react.useState)(false);
+  var securityOpen = securityOpenState[0];
+  var setSecurityOpen = securityOpenState[1];
+  var securityReviewState = (0, import_react.useState)(null);
+  var securityReview = securityReviewState[0];
+  var setSecurityReview = securityReviewState[1];
+  var securityReviewKey = (0, import_react.useRef)(0);
+  var openSecurityReview = (0, import_react.useCallback)(function (detail) {
+    securityReviewKey.current += 1;
+    setSecurityReview(Object.assign({}, detail ?? {}, { key: "review-" + String(securityReviewKey.current) }));
+  }, []);
+  var openPanel = (0, import_react.useCallback)(function (name) {
+    if (name === "security") {
+      setSecurityOpen(true);
+      return;
+    }
+    setPanel(name);
+  }, []);
   var noticesState = (0, import_react.useState)([]);
   var notices = noticesState[0];
   var setNotices = noticesState[1];
@@ -4662,6 +4225,39 @@ function StationApp(props) {
     };
   }, [pushNotice]);
   (0, import_react.useEffect)(function () {
+    var offCenter = skSecurityPromptSubscribe(function () {
+      setSecurityOpen(true);
+    });
+    var offReview = typeof skSecurityReviewSubscribe === "function"
+      ? skSecurityReviewSubscribe(function (detail) { openSecurityReview(detail); })
+      : function () {};
+    return function () {
+      offCenter();
+      offReview();
+    };
+  }, [openSecurityReview]);
+  // A background scan after a body/external-directory change publishes a
+  // notification for the changed skill; open the review once, not on every poll.
+  (0, import_react.useEffect)(function () {
+    var alive = true;
+    var timer = window.setInterval(function () {
+      if (securityReview !== null || securityOpen === true) return;
+      var query = workspace !== "" ? "?workspace=" + encodeURIComponent(workspace) : "";
+      void skCall("/security/status" + query).then(function (result) {
+        if (!alive || !result.ok) return;
+        var notes = Array.isArray(result.body.notifications) ? result.body.notifications : [];
+        var hit = notes.find(function (row) { return typeof row.target === "string" && row.target.indexOf("skill:") === 0; });
+        if (hit !== undefined) openSecurityReview({ name: hit.target.slice("skill:".length), source: "change", findings: [] });
+      }).catch(function () {
+        // Background review polling is best effort.
+      });
+    }, 30000);
+    return function () {
+      alive = false;
+      window.clearInterval(timer);
+    };
+  }, [workspace, securityReview, securityOpen, openSecurityReview]);
+  (0, import_react.useEffect)(function () {
     void skApi.roots().then(function (result) {
       if (result.ok && Array.isArray(result.body.workspaces)) setWorkspaces(result.body.workspaces);
     });
@@ -4674,7 +4270,7 @@ function StationApp(props) {
       workspace: workspace,
       workspaces: workspaces,
       onWorkspace: setWorkspace,
-      onPanel: setPanel,
+      onPanel: openPanel,
       reloadToken: reload,
       onNotice: pushNotice,
       onRequestClose: typeof props.onRequestClose === "function" ? props.onRequestClose : null
@@ -4687,7 +4283,26 @@ function StationApp(props) {
         setPanel(null);
         setReload(reload + 1);
       }
-    })
+    }),
+    securityOpen ? skH(SkSecurityCenter, {
+      lang: skGetLang(),
+      workspace: workspace,
+      onClose: function () {
+        setSecurityOpen(false);
+        setReload(reload + 1);
+      }
+    }) : null,
+    securityReview !== null ? skH(SkSecurityReview, {
+      key: securityReview.key,
+      initial: securityReview,
+      lang: skGetLang(),
+      workspace: workspace,
+      onContinue: securityReview.onContinue,
+      onClose: function () {
+        setSecurityReview(null);
+        setReload(reload + 1);
+      }
+    }) : null
   ]);
 }
 

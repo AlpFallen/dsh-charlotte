@@ -692,5 +692,120 @@ check('phase-4 UI ships inspection, related search, updates and statistics', () 
     }
 });
 
+// --- security center -----------------------------------------------------------
+check('security counts come from the payload, never from demo data', () => {
+    const counts = internals.skSecurityCounts({
+        summary: { critical: 1, high: 2, medium: 3, low: 4, info: 5, blocked: 6, unresolved: 7 }
+    });
+    assert.equal(counts.critical, 1);
+    assert.equal(counts.high, 2);
+    assert.equal(counts.medium, 3);
+    assert.equal(counts.low, 4);
+    assert.equal(counts.info, 5);
+    assert.equal(counts.blocked, 6);
+    assert.equal(counts.unresolved, 7);
+    assert.equal(counts.worst, 'CRITICAL');
+    const empty = internals.skSecurityCounts({});
+    assert.equal(empty.critical, 0);
+    assert.equal(empty.worst, 'CLEAN');
+    assert.equal(internals.skSecurityCounts(null).high, 0);
+});
+
+check('security findings filter by severity, category, status and query', () => {
+    const findings = [
+        { id: 'a', ruleId: 'SEC-SKILL-001', severity: 'HIGH', category: 'skill-content', status: 'detected', title: 'Prompt injection', filePath: 'SKILL.md', target: 'skill:a' },
+        { id: 'b', ruleId: 'SEC-ZIP-001', severity: 'CRITICAL', category: 'archive', status: 'blocked', title: 'Zip Slip', filePath: 'archive.zip', target: 'archive' }
+    ];
+    assert.deepEqual(Array.from(internals.skSecurityFilter(findings, { severity: 'HIGH' })).map(row => row.id), ['a']);
+    assert.deepEqual(Array.from(internals.skSecurityFilter(findings, { category: 'archive' })).map(row => row.id), ['b']);
+    assert.deepEqual(Array.from(internals.skSecurityFilter(findings, { status: 'blocked' })).map(row => row.id), ['b']);
+    assert.deepEqual(Array.from(internals.skSecurityFilter(findings, { query: 'zip' })).map(row => row.id), ['b']);
+    assert.equal(internals.skSecurityFilter(findings, {}).length, 2);
+});
+
+check('security center ships real endpoints and no static findings', () => {
+    for (const marker of ['SkSecurityCenter', 'SkSecurityReview', '/security/status', '/security/scan', '/security/cancel', '/security/report', '/security/review', '/security/review-all', '/security/fix/preview', 'more.security', 'more.securityReview', 'skOpenSecurityCenter', 'skSecurityPromptSubscribe', 'skOpenSecurityReview', 'skSecurityReviewSubscribe']) {
+        assert.ok(bundle.includes(marker), `bundle ships ${marker}`);
+    }
+    assert.equal(/const\s+DEMO_FINDINGS/.test(bundle), false, 'no demo finding table ships');
+});
+
+check('security review starts blocked from a real block and never marks unchecked as passed', () => {
+    assert.equal(internals.skReviewInitialPhase({ code: 'security-blocked' }), 'BLOCKED');
+    assert.equal(internals.skReviewInitialPhase({ findings: [{ severity: 'MEDIUM' }] }), 'WARNING');
+    assert.equal(internals.skReviewCheck(null, 'body').status, 'unchecked');
+    const summary = internals.skReviewSummary({ summary: { critical: 0, high: 1, medium: 2, low: 3, info: 4, total: 10, blocked: 1, unresolved: 6 } }, {});
+    assert.equal(summary.total, 10);
+    assert.equal(summary.blocked, 1);
+    assert.equal(summary.unresolved, 6);
+    assert.equal(internals.skReviewAllPhase({ lastScan: { status: 'complete', complete: true }, items: [{ state: 'PASSED' }] }), 'PASSED');
+    assert.equal(internals.skReviewAllPhase({ lastScan: { status: 'complete', complete: true }, items: [{ state: 'PASSED' }, { state: 'STALE' }] }), 'PARTIAL');
+    const allCounts = internals.skReviewAllSummary({ items: [{ summary: { high: 1, total: 1 } }, { summary: { medium: 2, total: 2 } }] });
+    assert.equal(allCounts.high, 1);
+    assert.equal(allCounts.medium, 2);
+    assert.equal(allCounts.total, 3);
+});
+
+
+// --- skill detail redesign -----------------------------------------------------
+check('markdown parser covers headings, lists, code, tables and frontmatter', () => {
+    const text = '---\nname: demo\ndescription: x\n---\n# Title\n\nA paragraph.\n\n- one\n- two\n\n| h | v |\n| --- | --- |\n| 1 | 2 |\n\n~~~js\nconst x = 1;\n~~~\n';
+    const blocks = internals.skParseMarkdown(text);
+    assert.deepEqual(Array.from(blocks.map(block => block.type)), ['heading', 'paragraph', 'list', 'table', 'code']);
+    assert.equal(blocks[0].level, 1);
+    assert.equal(blocks[2].items.length, 2);
+    assert.equal(blocks[3].rows[0][0], '1');
+    assert.equal(blocks[4].lang, 'js');
+    assert.equal(internals.skStripFrontmatter('---\nname: x\n---\nbody').trim(), 'body');
+});
+
+check('markdown links are protocol-limited and inline emphasis renders', () => {
+    assert.equal(internals.skSafeUrl('javascript:alert(1)'), null);
+    assert.equal(internals.skSafeUrl('data:text/html,x'), null);
+    assert.equal(internals.skSafeUrl('https://example.com'), 'https://example.com');
+    assert.equal(internals.skSafeUrl('mailto:a@example.com'), 'mailto:a@example.com');
+    const tick = String.fromCharCode(96);
+    const nodes = internals.skInline('**bold** and ' + tick + 'code' + tick + ' and [ok](https://example.com)', 'p');
+    const types = nodes.filter(node => node !== null && typeof node === 'object').map(node => node.type);
+    assert.ok(types.includes('strong'));
+    assert.ok(types.includes('code'));
+    assert.ok(types.includes('a'));
+});
+
+check('detail security helpers filter by skill and count unresolved findings', () => {
+    const skill = { name: 'demo', management: { path: '/skills/demo' } };
+    const findings = [
+        { id: 'a', target: 'skill:demo', severity: 'HIGH', status: 'detected', evidence: {} },
+        { id: 'b', target: 'skill:other', severity: 'CRITICAL', status: 'detected', evidence: {} },
+        { id: 'c', target: 'file:/skills/demo/SKILL.md', severity: 'LOW', status: 'blocked', evidence: { absolutePath: '/skills/demo/SKILL.md' } }
+    ];
+    const filtered = internals.skDetailSkillFindings(findings, skill);
+    assert.deepEqual(Array.from(filtered.map(row => row.id)), ['a', 'c']);
+    const counts = internals.skDetailSecurityCounts(filtered);
+    assert.equal(counts.high, 1);
+    assert.equal(counts.low, 1);
+    assert.equal(counts.unresolved, 2);
+});
+
+check('the tabbed drawer ships all four views and defaults to Introduction', () => {
+    for (const marker of ['detail.tab.intro', 'detail.tab.security', 'detail.tab.info', 'detail.tab.usage', 'sk_detailTabs', 'sk_tabsBody', 'sk_detailModal', 'sk_detailScrim', 'sk_detailConfirmOverlay', 'data-closing', 'SkDetailIntroTab', 'SkDetailSecurityTab', 'SkDetailInfoTab', 'SkDetailUsageTab', 'SkMarkdown']) {
+        assert.ok(bundle.includes(marker), 'bundle ships ' + marker);
+    }
+    const trigger = bundle.indexOf('function SkDetailDrawer(props)');
+    const initial = bundle.indexOf('var tabState = (0, import_react.useState)(', trigger);
+    const snippet = bundle.slice(initial, initial + 260);
+    assert.ok(snippet.includes('"intro"'), 'the initial tab is Introduction');
+    assert.equal(snippet.includes('localStorage'), false, 'the last tab is not persisted');
+});
+
+check('the detail close guard protects unsaved input and in-flight actions', () => {
+    assert.equal(internals.skDetailHasPending({}), false);
+    assert.equal(internals.skDetailHasPending({ tagDraft: 'draft' }), true);
+    assert.equal(internals.skDetailHasPending({ busy: 'migrate' }), true);
+    assert.equal(internals.skDetailHasPending({ securityBusy: 'full' }), true);
+    assert.equal(internals.skDetailHasPending({ confirmDelete: true }), true);
+    assert.equal(internals.skDetailHasPending({ busy: 'review' }), true);
+});
+
 // --- summary -------------------------------------------------------------------
 console.log(`\n${results.length} client smoke checks passed`);
